@@ -43,6 +43,8 @@ namespace EduSciencePro.Data.Repos.UserRepos
          foreach (var user in users)
          {
             userViewModels[i] = _mapper.Map<User, UserViewModel>(user);
+            var datebirth = DateOnly.Parse(user.Birthday);
+            userViewModels[i].Birthday = $"{datebirth.Day}.{datebirth.Month}.{datebirth.Year}";
             var typeUsers = await _db.TypeUsers.Where(t => t.UserId == user.Id).ToArrayAsync();
             var types = new TypeModel[typeUsers.Length];
             int j = 0;
@@ -63,6 +65,8 @@ namespace EduSciencePro.Data.Repos.UserRepos
       {
          var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == id);
          var userViewModel = _mapper.Map<User, UserViewModel>(user);
+         var datebirth = DateOnly.Parse(user.Birthday);
+         userViewModel.Birthday = $"{datebirth.Day}.{datebirth.Month}.{datebirth.Year}";
          var typeUsers = await _db.TypeUsers.Where(t => t.UserId == user.Id).ToArrayAsync();
          var types = new TypeModel[typeUsers.Length];
          int j = 0;
@@ -82,6 +86,8 @@ namespace EduSciencePro.Data.Repos.UserRepos
       {
          var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
          var userViewModel = _mapper.Map<User, UserViewModel>(user);
+         var datebirth = DateOnly.Parse(user.Birthday);
+         userViewModel.Birthday = $"{datebirth.Day}.{datebirth.Month}.{datebirth.Year}";
          var typeUsers = await _db.TypeUsers.Where(t => t.UserId == user.Id).ToArrayAsync();
          var types = new TypeModel[typeUsers.Length];
          int j = 0;

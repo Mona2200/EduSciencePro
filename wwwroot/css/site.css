@@ -71,3 +71,22 @@ input {
 .mr-2 {
     margin-right: 2em;
 }
+
+.bg_blue {
+    background: #CDE7FF;
+}
+
+.border_blue {
+    border: 1px #CDE7FF solid;
+}
+
+.button_dark {
+    background: #89C4FB;
+}
+    .button_dark:hover {
+        background: #65B5FF;
+    }
+
+.border_white {
+    border: 3px white solid;
+}

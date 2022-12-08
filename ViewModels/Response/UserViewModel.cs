@@ -10,8 +10,9 @@ namespace EduSciencePro.ViewModels.Response
       public string Birthday { get; set; }
       public TypeModel[] TypeUsers { get; set; }
       public string Email { get; set; }
-      public Link[] Links { get; set; }
-      public Resume Resume { get; set; }
+      public byte[] Image { get; set; }
+      public Link[]? Links { get; set; } = null;
+      public Resume? Resume { get; set; } = null;
       public Role Role { get; set; }
    }
 }

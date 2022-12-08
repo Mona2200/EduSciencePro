@@ -12,6 +12,7 @@ namespace EduSciencePro.Models.User
       public string Birthday { get; set; }
       public string Email { get; set; }
       public string Password { get; set; }
+      public byte[]? Image { get; set; }
       public Guid? ResumeId { get; set; }
       public Guid RoleId { get; set; }
    }
