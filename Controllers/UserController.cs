@@ -70,8 +70,19 @@ namespace EduSciencePro.Controllers
          var claims = new List<Claim>
             {
             new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
-            new Claim(ClaimsIdentity.DefaultRoleClaimType, role.Name)
+            new Claim(ClaimsIdentity.DefaultRoleClaimType, role.Name),
             };
+
+         var types = await _types.GetTypesByUserId(user.Id);
+         foreach (var type in types)
+         {
+            claims.Add(new Claim(ClaimTypes.Upn, type.Name));
+         }
+
+         if (user.Image?.Length != 0)
+         {
+            claims.Add(new Claim(ClaimTypes.UserData, Convert.ToBase64String(user.Image)));
+         }
 
          var claimsIdentity = new ClaimsIdentity(claims, "AppCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
          if (model.RememberMe)
