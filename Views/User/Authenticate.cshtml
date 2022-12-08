@@ -1,0 +1,33 @@
+﻿@using EduSciencePro.ViewModels.Request
+@model AuthenticateViewModel
+
+@{
+    ViewData["Title"] = "Авторизация";
+    Layout = "_Layout";
+}
+
+@if (!Context.User.Identity.IsAuthenticated)
+{
+    <div class="col-md-3 text-center">
+        <form class="m-3" method="post" asp-controller="User" asp-action="Authenticate">
+
+            <h3 class="mb-5 mt-5">Авторизация</h3>
+
+            <label asp-for="Email" class="w-100 text-start label_input"></label>
+            <p><input class="text-center w-100 p-1" placeholder="Email" asp-for="Email"></p>
+            <p><span asp-validation-for="Email" class="text-danger mb-3"></span></p>
+
+            <label asp-for="Password" class="w-100 text-start label_input"></label>
+            <p><input class="text-center w-100 p-1" placeholder="Пароль" asp-for="Password"></p>
+            <p><span asp-validation-for="Password" class="text-danger mb-3"></span></p>
+
+            <p class="text-start mt-4 p-2"><input class="checkbox" type="checkbox" asp-for="RememberMe" value="true"><span class="before_checkbox">Запомнить меня</span></p>
+
+            <p><button class="button form-control-plaintext m-auto w-50 mt-4">Войти</button></p>
+
+        </form>
+        <p class="small"><a asp-controller="Home" asp-action="Register">Забыли пароль?</a></p>
+
+    </div>
+    <p class="small mb-0 text-center"><span>Вы ещё не зарегестрированы?</span><a asp-controller="User" asp-action="Register">Зарегестрироваться</a></p>
+}

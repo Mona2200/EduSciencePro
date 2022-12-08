@@ -1,0 +1,73 @@
+@import url("../fonts/Geometria/stylesheet.css");
+
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+    font-family: Geometria, sans-serif;
+}
+
+input {
+    border: 1px black solid;
+}
+
+    input:focus {
+        outline: none;
+    }
+
+.label_input {
+    padding-left: 30px;
+}
+
+.button {
+    background: #AED7FD;
+}
+
+    .button:hover {
+        background: #89C4FB;
+    }
+
+.checkbox {
+    position: absolute;
+    opacity: 0;
+    width: 1em;
+    height: 1em;
+    margin-top: 2px;
+    margin-right: 2px;
+}
+
+.before_checkbox::before {
+    content: '';
+    display: inline-block;
+    width: 0.8em;
+    height: 0.8em;
+    flex-shrink: 0;
+    flex-grow: 0;
+    border-radius: 0;
+    box-shadow: 0 0 0 2px white, 0 0 0 3px black;
+    margin-right: 0.5em;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 50% 50%;
+}
+
+.checked::before {
+    background: black;
+}
+
+.mr-2 {
+    margin-right: 2em;
+}

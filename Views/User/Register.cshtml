@@ -1,0 +1,73 @@
+﻿@using EduSciencePro.ViewModels.Request
+@model RegisterViewModel
+
+@{
+    ViewData["Title"] = "Авторизация";
+    Layout = "_Layout";
+}
+
+<div class="col-md-4 text-center">
+    <form class="m-3" method="post" asp-controller="User" asp-action="Register">
+
+        <h3 class="mb-5 mt-5">Регистрация</h3>
+
+        <label asp-for="AddUserViewModel.FirstName" class="w-100 text-start label_input"></label>
+        <p><input class="text-center w-100 p-1" placeholder="Имя" asp-for="AddUserViewModel.FirstName"></p>
+        <p><span asp-validation-for="AddUserViewModel.FirstName" class="text-danger mb-3"></span></p>
+
+        <label asp-for="AddUserViewModel.LastName" class="w-100 text-start label_input"></label>
+        <p><input class="text-center w-100 p-1" placeholder="Фамилия" asp-for="AddUserViewModel.LastName"></p>
+        <p><span asp-validation-for="AddUserViewModel.LastName" class="text-danger mb-3"></span></p>
+
+        <label asp-for="AddUserViewModel.MiddleName" class="w-100 text-start label_input"></label>
+        <p><input class="text-center w-100 p-1" placeholder="Отчество" asp-for="AddUserViewModel.MiddleName"></p>
+        <p><span asp-validation-for="AddUserViewModel.MiddleName" class="text-danger mb-3"></span></p>
+
+        <div class="d-flex flex-md-row flex-sm-column">
+            <div class="d-inline-block mr-2 w-50">
+                <label asp-for="AddUserViewModel.Gender" class="w-100 text-start label_input"></label>
+                <p>
+                    <select size="1" class="text-center w-100 p-1" asp-for="AddUserViewModel.Gender">
+                        <option value="Мужской">Мужской</option>
+                        <option value="Женский">Женский</option>
+                    </select>
+                </p>
+                <p><span asp-validation-for="AddUserViewModel.Gender" class="text-danger mb-3"></span></p>
+            </div>
+
+            <div class="d-inline-block w-50">
+                <label asp-for="AddUserViewModel.Birthday" class="w-100 text-center"></label>
+                <p><input type="date" class="text-center w-100 p-1" value="@Model.AddUserViewModel.Birthday" asp-for="AddUserViewModel.Birthday"></p>
+                <p><span asp-validation-for="AddUserViewModel.Birthday" class="text-danger mb-3"></span></p>
+            </div>
+        </div>
+
+        <label asp-for="AddUserViewModel.Email" class="w-100 text-start label_input"></label>
+        <p><input class="text-center w-100 p-1" placeholder="Email" asp-for="AddUserViewModel.Email"></p>
+        <p><span asp-validation-for="AddUserViewModel.Email" class="text-danger mb-3"></span></p>
+
+        <input class="d-none" id="types_user" asp-for="AddUserViewModel.TypeUsers">
+
+        <label asp-for="AddUserViewModel.TypeUsers" class="w-100 text-start label_input"></label>
+        @foreach (var type in Model.Types)
+        {
+            <p class="text-start mt-4 p-2 type_user"><input class="checkbox" type="checkbox" value="@type.Id"><span class="before_checkbox">@type.Name</span></p>
+        }
+        <p><span asp-validation-for="AddUserViewModel.TypeUsers" class="text-danger mb-3"></span></p>
+
+        <label asp-for="AddUserViewModel.Password" class="w-100 text-start label_input"></label>
+        <p><input class="text-center w-100 p-1" placeholder="Пароль" asp-for="AddUserViewModel.Password"></p>
+        <p><span asp-validation-for="AddUserViewModel.Password" class="text-danger mb-3"></span></p>
+
+        <label asp-for="AddUserViewModel.PasswordConfirm" class="w-100 text-start label_input"></label>
+        <p><input class="text-center w-100 p-1" placeholder="Повторите пароль" asp-for="AddUserViewModel.PasswordConfirm"></p>
+        <p><span asp-validation-for="AddUserViewModel.PasswordConfirm" class="text-danger mb-3"></span></p>
+
+        <p class="text-start mt-4 p-2"><input class="checkbox" type="checkbox" asp-for="Consent" value="true"><span class="before_checkbox">Согласие на сбор информации. Политика конфиденциальности.</span></p>
+        <p><span asp-validation-for="Consent" class="text-danger mb-3"></span></p>
+
+        <p><button class="button form-control-plaintext m-auto w-50 mt-4">Зарегестрироваться</button></p>
+
+    </form>
+
+</div>
