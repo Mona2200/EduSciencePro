@@ -1,12 +1,12 @@
 @import url("../fonts/Geometria/stylesheet.css");
 
 html {
-  font-size: 14px;
+  font-size: 12px;
 }
 
 @media (min-width: 768px) {
   html {
-    font-size: 16px;
+    font-size: 14px;
   }
 }
 
@@ -16,8 +16,9 @@ html {
 }
 
 body {
-    margin-bottom: 60px;
+    margin-bottom: 250px;
     font-family: Geometria, sans-serif;
+    background: #F8F8F8;
 }
 
 input {
@@ -89,4 +90,12 @@ input {
 
 .border_white {
     border: 3px white solid;
+}
+
+.border_bottom_blue {
+    border-bottom: 1px #CDE7FF solid;
+}
+
+.bg_dark {
+    background: #303030;
 }
