@@ -13,7 +13,7 @@ namespace EduSciencePro.Data.Repos
       Task<UserViewModel> GetUserViewModelById(Guid id);
       Task<UserViewModel> GetUserViewModelByEmail(string email);
       Task Save(AddUserViewModel model);
-      Task Update(User updateUser, User newUser);
+      Task Update(AddUserViewModel model, User editUser);
       Task Delete(User user);
    }
 }

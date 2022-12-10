@@ -123,23 +123,55 @@ namespace EduSciencePro.Data.Repos.UserRepos
          await _db.SaveChangesAsync();
       }
 
-      public async Task Update(User updateUser, User newUser)
+      public async Task Update(AddUserViewModel model, User editUser)
       {
-         updateUser.FirstName = newUser.FirstName;
-         updateUser.LastName = newUser.LastName;
-         updateUser.MiddleName = newUser.MiddleName;
-         updateUser.Gender = newUser.Gender;
-         updateUser.Birthday = newUser.Birthday;
-         updateUser.Email = newUser.Email;
+         if (!String.IsNullOrEmpty(model.FirstName))
+            editUser.FirstName = model.FirstName;
+         if (!String.IsNullOrEmpty(model.LastName))
+            editUser.LastName = model.LastName;
+         if (!String.IsNullOrEmpty(model.MiddleName))
+            editUser.MiddleName = model.MiddleName;
+         if (!String.IsNullOrEmpty(model.Gender))
+            editUser.Gender = model.Gender;
+         if (!String.IsNullOrEmpty(model.Birthday))
+            editUser.Birthday = model.Birthday;
+         if (!String.IsNullOrEmpty(model.TypeUsers))
+         {
+            var typesUser = await _db.TypeUsers.Where(t => t.UserId == editUser.Id).ToArrayAsync();
+            foreach (var typeUser in typesUser)
+            {
+               _db.TypeUsers.Remove(typeUser);
+            }
 
-         if (!String.IsNullOrEmpty(newUser.Password))
-            updateUser.Password = newUser.Password;
+            var typesArray = model.TypeUsers.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToArray();
+            foreach (var type in typesArray)
+            {
+               var typeUser = new TypeUser() { TypeId = Guid.Parse(type), UserId = editUser.Id };
+               await _db.TypeUsers.AddAsync(typeUser);
+            }
 
-         var entry = _db.Entry(updateUser);
+         }
+         //if (!String.IsNullOrEmpty(model.Links))
+         //if (img != null)
+         //{
+         //   var i = img;
+         //   editUser.Image = GetByteArrayFromImage(i);
+         //}
+
+         var entry = _db.Entry(editUser);
          if (entry.State == EntityState.Detached)
-            _db.Users.Update(updateUser);
+            _db.Users.Update(editUser);
 
          await _db.SaveChangesAsync();
+      }
+
+      private byte[] GetByteArrayFromImage(IFormFile file)
+      {
+         using (var target = new MemoryStream())
+         {
+            file.CopyTo(target);
+            return target.ToArray();
+         }
       }
 
       public async Task Delete(User user)

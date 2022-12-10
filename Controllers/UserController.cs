@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System;
 
 namespace EduSciencePro.Controllers
 {
@@ -79,7 +81,7 @@ namespace EduSciencePro.Controllers
             claims.Add(new Claim(ClaimTypes.Upn, type.Name));
          }
 
-         if (user.Image?.Length != 0)
+         if (user.Image != null)
          {
             claims.Add(new Claim(ClaimTypes.UserData, Convert.ToBase64String(user.Image)));
          }
@@ -210,6 +212,54 @@ namespace EduSciencePro.Controllers
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
          var userViewModel = await _users.GetUserViewModelByEmail(claimEmail);
          return View(userViewModel);
+      }
+
+      [HttpGet]
+      [Route("EditUser")]
+      public async Task<IActionResult> EditUser()
+      {
+         ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+         var userViewModel = await _users.GetUserViewModelByEmail(claimEmail);
+         var editUserViewModel = new EditUserViewModel();
+         editUserViewModel.UserViewModel = userViewModel;
+         editUserViewModel.AddUserViewModel = new AddUserViewModel();
+         editUserViewModel.Types = await _types.GetTypes();
+         return View(editUserViewModel);
+      }
+
+      [HttpPost]
+      [Route("EditUser")]
+      public async Task<IActionResult> EditUser(EditUserViewModel model)
+      {
+         ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+         var user = await _users.GetUserByEmail(claimEmail);
+
+         if (!model.Consent)
+         {
+            ModelState.AddModelError("Consent", "Подтвердите согласие");
+            model.Types = await _types.GetTypes();
+            return View(model);
+         }
+
+         if (!String.IsNullOrEmpty(model.AddUserViewModel.Birthday) && (DateTime.Now.Year - DateTime.Parse(model.AddUserViewModel.Birthday).Year) < 7)
+         {
+            ModelState.AddModelError("AddUserViewModel.Birthday", "Вы должны быть не моложе 7 лет");
+            model.Types = await _types.GetTypes();
+            return View(model);
+         }
+
+         if (ModelState["AddUserViewModel.TypeUsers"].Errors.Count > 0)
+         {
+            ModelState.AddModelError($"AddUserViewModel.TypeUsers", $"{ModelState["AddUserViewModel.TypeUsers"].Errors[0].ErrorMessage}");
+            model.Types = await _types.GetTypes();
+            return View(model);
+         }
+
+
+         await _users.Update(model.AddUserViewModel, user);
+         return RedirectToAction("Main");
       }
 
       [HttpGet]
