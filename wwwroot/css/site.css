@@ -73,6 +73,10 @@ input {
     margin-right: 2em;
 }
 
+.ml-2 {
+    margin-left: 2em;
+}
+
 .bg_blue {
     background: #CDE7FF;
 }
@@ -98,4 +102,8 @@ input {
 
 .bg_dark {
     background: #303030;
+}
+
+.svg_white {
+    filter: brightness(0%) contrast(100%) invert(100%);
 }

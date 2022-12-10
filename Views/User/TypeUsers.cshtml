@@ -1,0 +1,85 @@
+﻿@using System.Security.Claims
+@using System.Web
+@{
+    string[] schoolchild = {
+   "<a>Конференции (научно-практические)</a>",
+    "<a>Научно-исследовательская деятельность - проекты</a>",
+        "<a>Обсуждения</a>"
+    };
+    string[] stud = {
+           "<a>Конференции (научно-практические)</a>",
+    "<a>Научно-исследовательская деятельность - проекты</a>",
+        "<a>Практики/стажировки</a>",
+    "<a>Актуальные новости</a>",
+            "<a>Обсуждения</a>"
+        };
+    string[] science = {
+               "<a>Конференции (научно-практические)</a>",
+    "<a>Научно-исследовательская деятельность - проекты</a>",
+        "<a>Практики/стажировки</a>",
+    "<a>Актуальные новости</a>",
+            "<a>Обсуждения</a>"
+    };
+    string[] professor = {
+                      "<a>Конференции (научно-практические)</a>",
+    "<a>Научно-исследовательская деятельность - проекты</a>",
+        "<a>Учебные материалы</a>",
+    "<a>Актуальные новости</a>",
+            "<a>Обсуждения</a>"
+    };
+    string[] secedu = {
+                             "<a>Конференции (научно-практические)</a>",
+    "<a>Курсы/программы</a>",
+        "<a>Учебные материалы</a>",
+    "<a>Актуальные новости</a>",
+            "<a>Обсуждения</a>"
+    };
+    string[] economy = {
+                                    "<a>Конференции (научно-практические)</a>",
+    "<a>Сборник резюме</a>",
+        "<a>Сотрудничество(проекты)</a>",
+    "<a>Актуальные новости</a>",
+            "<a>Обсуждения</a>"
+    };
+    ClaimsIdentity identMenu = Context.User.Identity as ClaimsIdentity;
+    var types = identMenu.Claims.Where(u => u.Type == ClaimTypes.Upn).ToArray();
+    string[] typeArray = { };
+    TagBuilder div = new TagBuilder("div");
+    div.AddCssClass("d-flex");
+    div.AddCssClass("justify-content-between");
+    div.AddCssClass("align-items-center");   
+    foreach (var type in types)
+    {
+        switch (type.Value)
+        {
+            case "Школьник":
+                typeArray = typeArray.Union(schoolchild).ToArray();
+                break;
+            case "Студент, Аспирант или Соискатель":
+                typeArray = typeArray.Union(stud).ToArray();
+                break;
+            case "Научный сотрудник":
+                typeArray = typeArray.Union(science).ToArray();
+                break;
+            case "Профессорско-преподавательский состав сферы высшего образования":
+                typeArray = typeArray.Union(professor).ToArray();
+                break;
+            case "Представитель сферы среднего профессионального образования":
+                typeArray = typeArray.Union(secedu).ToArray();
+                break;
+            case "Представитель реального сектора экономики":
+                typeArray = typeArray.Union(economy).ToArray();
+                break;
+        };
+    }
+    foreach (var typel in typeArray)
+    {
+        TagBuilder p = new TagBuilder("p");
+        p.AddCssClass("m-4");
+        p.AddCssClass("text-uppercase");
+        p.AddCssClass("small");
+        p.InnerHtml.AppendHtml(typel);
+        div.InnerHtml.AppendHtml(p);
+    }
+    @div
+}

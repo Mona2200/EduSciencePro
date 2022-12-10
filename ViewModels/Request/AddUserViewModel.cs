@@ -54,8 +54,9 @@ namespace EduSciencePro.ViewModels.Request
       [Display(Name = "Подтвердить пароль")]
       public string PasswordConfirm { get; set; }
 
-      public string NameLinks { get; set; } = "";
-      public string UrlLinks { get; set; } = "";
+      public string Links { get; set; } = "";
+
+      public IFormFile? Img;
 
       public AddUserViewModel()
       {
