@@ -5,6 +5,7 @@ using EduSciencePro.ViewModels.Request;
 using EduSciencePro.ViewModels.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata;
 using Type = EduSciencePro.Models.User.TypeModel;
 
 namespace EduSciencePro.Data.Repos.UserRepos
@@ -158,6 +159,18 @@ namespace EduSciencePro.Data.Repos.UserRepos
          //   editUser.Image = GetByteArrayFromImage(i);
          //}
 
+         if (model.Img != null)
+         {
+            byte[] imageData = null;
+            using (var fs1 = model.Img.OpenReadStream())
+            using (var ms1 = new MemoryStream())
+            {
+               fs1.CopyTo(ms1);
+               imageData = ms1.ToArray();
+            }
+            editUser.Image = imageData;
+         }
+
          var entry = _db.Entry(editUser);
          if (entry.State == EntityState.Detached)
             _db.Users.Update(editUser);
@@ -193,6 +206,18 @@ namespace EduSciencePro.Data.Repos.UserRepos
          var resume = await _db.Resumes.FirstOrDefaultAsync(r => r.Id == user.ResumeId);
          if (resume != null)
             _db.Resumes.Remove(resume);
+
+         await _db.SaveChangesAsync();
+      }
+
+      public async Task DeleteImage(Guid userId)
+      {
+         var user = await GetUserById(userId);
+         user.Image = null;
+
+         var entry = _db.Entry(user);
+         if (entry.State == EntityState.Detached)
+            _db.Users.Update(user);
 
          await _db.SaveChangesAsync();
       }

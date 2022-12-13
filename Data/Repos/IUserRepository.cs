@@ -15,5 +15,6 @@ namespace EduSciencePro.Data.Repos
       Task Save(AddUserViewModel model);
       Task Update(AddUserViewModel model, User editUser);
       Task Delete(User user);
+      Task DeleteImage(Guid userId);
    }
 }
