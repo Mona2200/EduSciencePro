@@ -1,5 +1,6 @@
 ﻿using EduSciencePro.Models.User;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduSciencePro.ViewModels.Request
 {
@@ -56,7 +57,9 @@ namespace EduSciencePro.ViewModels.Request
 
       public string Links { get; set; } = "";
 
-      public IFormFile? Img;
+      [Display(Name = "Фото профиля")]
+      [NotMapped]
+      public IFormFile? Img { get; set; }
 
       public AddUserViewModel()
       {

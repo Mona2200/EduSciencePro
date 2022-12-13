@@ -18,12 +18,14 @@ namespace EduSciencePro.Controllers
       private readonly IRoleRepository _roles;
       private readonly ITypeRepository _types;
       private readonly IMapper _mapper;
-      public UserController(IUserRepository users, IRoleRepository roles, ITypeRepository types, IMapper mapper)
+      private readonly IWebHostEnvironment _webHostEnvironment;
+      public UserController(IUserRepository users, IRoleRepository roles, ITypeRepository types, IMapper mapper, IWebHostEnvironment webHostEnvironment)
       {
          _users = users;
          _roles = roles;
          _types = types;
          _mapper = mapper;
+         _webHostEnvironment = webHostEnvironment;
       }
 
       public async Task<IActionResult> Index()
@@ -79,11 +81,6 @@ namespace EduSciencePro.Controllers
          foreach (var type in types)
          {
             claims.Add(new Claim(ClaimTypes.Upn, type.Name));
-         }
-
-         if (user.Image != null)
-         {
-            claims.Add(new Claim(ClaimTypes.UserData, Convert.ToBase64String(user.Image)));
          }
 
          var claimsIdentity = new ClaimsIdentity(claims, "AppCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
@@ -225,6 +222,26 @@ namespace EduSciencePro.Controllers
          editUserViewModel.UserViewModel = userViewModel;
          editUserViewModel.AddUserViewModel = new AddUserViewModel();
          editUserViewModel.Types = await _types.GetTypes();
+
+         editUserViewModel.AddUserViewModel.FirstName = editUserViewModel.UserViewModel?.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToArray()[0];
+         editUserViewModel.AddUserViewModel.LastName = editUserViewModel.UserViewModel?.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToArray()[1];
+         editUserViewModel.AddUserViewModel.MiddleName = editUserViewModel.UserViewModel?.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToArray()[2];
+
+         var year = editUserViewModel.UserViewModel?.Birthday.Split('.', StringSplitOptions.RemoveEmptyEntries).ToArray()[2];
+         var month = editUserViewModel.UserViewModel?.Birthday.Split('.', StringSplitOptions.RemoveEmptyEntries).ToArray()[1];
+         if (month != null && month.Length == 1)
+            month = $"0{month}";
+         var day = editUserViewModel.UserViewModel?.Birthday.Split('.', StringSplitOptions.RemoveEmptyEntries).ToArray()[0];
+         if (day != null && day.Length == 1)
+            day = $"0{day}";
+         if (year != null && month != null && day != null)
+            editUserViewModel.AddUserViewModel.Birthday = $"{year}-{month}-{day}";
+
+         foreach (var typeU in editUserViewModel.UserViewModel?.TypeUsers)
+         {
+            editUserViewModel.AddUserViewModel.TypeUsers += typeU.Id + " ";
+         }
+
          return View(editUserViewModel);
       }
 
@@ -239,6 +256,7 @@ namespace EduSciencePro.Controllers
          if (!model.Consent)
          {
             ModelState.AddModelError("Consent", "Подтвердите согласие");
+            model.UserViewModel = await _users.GetUserViewModelById(user.Id);
             model.Types = await _types.GetTypes();
             return View(model);
          }
@@ -246,6 +264,7 @@ namespace EduSciencePro.Controllers
          if (!String.IsNullOrEmpty(model.AddUserViewModel.Birthday) && (DateTime.Now.Year - DateTime.Parse(model.AddUserViewModel.Birthday).Year) < 7)
          {
             ModelState.AddModelError("AddUserViewModel.Birthday", "Вы должны быть не моложе 7 лет");
+            model.UserViewModel = await _users.GetUserViewModelById(user.Id);
             model.Types = await _types.GetTypes();
             return View(model);
          }
@@ -253,13 +272,54 @@ namespace EduSciencePro.Controllers
          if (ModelState["AddUserViewModel.TypeUsers"].Errors.Count > 0)
          {
             ModelState.AddModelError($"AddUserViewModel.TypeUsers", $"{ModelState["AddUserViewModel.TypeUsers"].Errors[0].ErrorMessage}");
+            model.UserViewModel = await _users.GetUserViewModelById(user.Id);
             model.Types = await _types.GetTypes();
             return View(model);
          }
 
+         IFormFileCollection files = Request.Form.Files;
+         if (files != null && files.Count != 0)
+         {
+            model.AddUserViewModel.Img = files[0];
+         }
 
          await _users.Update(model.AddUserViewModel, user);
+         user = await _users.GetUserById(user.Id);
+
+         var oldClaimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name);
+         ident.RemoveClaim(oldClaimEmail);
+
+         var newClaimEmail = new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email);
+
+         ident.AddClaim(newClaimEmail);
+
+         var claimsIdentity = new ClaimsIdentity(ident.Claims, "AppCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
          return RedirectToAction("Main");
+      }
+
+      [HttpGet]
+      [Route("EditEmail")]
+      public async Task<IActionResult> EditEmail()
+      {
+         ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+         var editViewModel = new EditUserViewModel();
+         editViewModel.UserViewModel = await _users.GetUserViewModelByEmail(claimEmail);
+         editViewModel.AddUserViewModel = new AddUserViewModel();
+         return View(editViewModel);
+      }
+
+      [HttpGet]
+      [Route("DeleteImage")]
+      public async Task<IActionResult> DeleteImage()
+      {
+         ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+         var user = await _users.GetUserByEmail(claimEmail);
+         await _users.DeleteImage(user.Id);
+         return RedirectToAction("EditUser");
       }
 
       [HttpGet]
@@ -278,7 +338,7 @@ namespace EduSciencePro.Controllers
          var user = await _users.GetUserByEmail(claimEmail);
 
          await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-         return RedirectToAction("Index", "Home");
+         return RedirectToAction("Index");
       }
    }
 }

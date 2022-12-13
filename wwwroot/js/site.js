@@ -14,4 +14,9 @@
             }
         };
     });
+
+    $("input[name = image]").change(function () {
+        console.log($(this).val());
+    });
+
 })
