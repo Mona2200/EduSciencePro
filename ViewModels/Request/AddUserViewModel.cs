@@ -55,6 +55,7 @@ namespace EduSciencePro.ViewModels.Request
       [Display(Name = "Подтвердить пароль")]
       public string PasswordConfirm { get; set; }
 
+      [Display(Name = "Ссылки")]
       public string Links { get; set; } = "";
 
       [Display(Name = "Фото профиля")]

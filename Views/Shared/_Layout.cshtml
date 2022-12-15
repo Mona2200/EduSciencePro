@@ -21,8 +21,8 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end col-md-4">
                     <ul class="navbar-nav align-items-center">
                         <li class="nav-item m-2">
-                            <input />
-                            <button><img src="src/search.svg" /></button>
+                            <input class="search_inp without_style" style="border-bottom: 1px black solid;" />
+                            <button class="without_style"><img src="src/search.svg" /></button>
                         </li>
                         <li class="nav-item m-2">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Контакты</a>
@@ -31,20 +31,19 @@
                             @{
                                if (Context.User.Identity.IsAuthenticated)
                                {
-                                    ClaimsIdentity ident = Context.User.Identity as ClaimsIdentity;
+                                            <a class="nav-link text-dark" style="cursor:pointer;" id="Menu_Link">Меню</a>
 
-                                    if (ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.UserData) != null)
-                                    {
-                                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy"><img style='width:65px; border-radius:100%' src='\"data:image/jpeg;base64," + @ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Upn).Value + "\"' /></a>
-                                    }
-                                    else
-                                    {
-                                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy"><img style='width:65px; border-radius:100%' src="src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png" /></a>
-                                    }
+                                            <div class="position-absolute border_blue menu_width d-none" id="desktop_menu">
+                                                <p class="p-2 border_bottom_dark m-0"><a asp-controller="User" asp-action="Main">Мой профиль</a></p>
+                                                <p class="p-2 border_bottom_dark m-0"><a>Комментарии</a></p>
+                                                <p class ="p-2 border_bottom_dark m-0"><a>Подписки</a></p>
+                                                <p class="p-2 border_bottom_dark m-0"><a>Сообщения</a></p>
+                                                <p class="p-2 m-0"><a asp-controller="User" asp-action="Logout">Выход</a></p>
+                                            </div>
                                }
                                else
                                {
-                                    <a asp-controller="User" asp-action="Authenticate">Вход в личный кабинет</a>
+                                            <a asp-controller="User" asp-action="Authenticate">Вход в личный кабинет</a>
                                }
                             }
                         </li>
@@ -84,8 +83,8 @@
             </div>
             <div class="d-flex">
                 <div class="m-4" style="display:flex;align-items:end;flex-direction:row;">
-                    <input />
-                    <button><img src="src/search.svg" /></button>
+                    <input class="search_inp without_style" style="border-bottom: 1px white solid;color:white;" />
+                    <button class="without_style svg_white"><img src="src/search.svg" /></button>
                 </div>
                 <div>
                     @if (!Context.User.Identity.IsAuthenticated)
@@ -106,6 +105,7 @@
         </div>
         <p class="text-center text-muted">&copy; 2022 - При цитировании информации с сайта EduSciencePro ссылка на первоисточник обязательна</p>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
