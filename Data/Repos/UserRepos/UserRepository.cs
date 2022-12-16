@@ -45,7 +45,15 @@ namespace EduSciencePro.Data.Repos.UserRepos
          {
             userViewModels[i] = _mapper.Map<User, UserViewModel>(user);
             var datebirth = DateOnly.Parse(user.Birthday);
-            userViewModels[i].Birthday = $"{datebirth.Day}.{datebirth.Month}.{datebirth.Year}";
+
+            var month = $"{datebirth.Month}";
+            if (month.Length == 1)
+               month = $"0{month}";
+            var day = $"{datebirth.Day}";
+            if (day.Length == 1)
+               day = $"0{day}";
+
+            userViewModels[i].Birthday = $"{day}.{month}.{datebirth.Year}";
             var typeUsers = await _db.TypeUsers.Where(t => t.UserId == user.Id).ToArrayAsync();
             var types = new TypeModel[typeUsers.Length];
             int j = 0;
@@ -67,7 +75,15 @@ namespace EduSciencePro.Data.Repos.UserRepos
          var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == id);
          var userViewModel = _mapper.Map<User, UserViewModel>(user);
          var datebirth = DateOnly.Parse(user.Birthday);
-         userViewModel.Birthday = $"{datebirth.Day}.{datebirth.Month}.{datebirth.Year}";
+
+         var month = $"{datebirth.Month}";
+         if (month.Length == 1)
+            month = $"0{month}";
+         var day = $"{datebirth.Day}";
+         if (day.Length == 1)
+            day = $"0{day}";
+
+         userViewModel.Birthday = $"{day}.{month}.{datebirth.Year}";
          var typeUsers = await _db.TypeUsers.Where(t => t.UserId == user.Id).ToArrayAsync();
          var types = new TypeModel[typeUsers.Length];
          int j = 0;
@@ -88,7 +104,15 @@ namespace EduSciencePro.Data.Repos.UserRepos
          var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
          var userViewModel = _mapper.Map<User, UserViewModel>(user);
          var datebirth = DateOnly.Parse(user.Birthday);
-         userViewModel.Birthday = $"{datebirth.Day}.{datebirth.Month}.{datebirth.Year}";
+
+         var month = $"{datebirth.Month}";
+         if (month.Length == 1)
+            month = $"0{month}";
+         var day = $"{datebirth.Day}";
+         if (day.Length == 1)
+            day = $"0{day}";
+
+         userViewModel.Birthday = $"{day}.{month}.{datebirth.Year}";
          var typeUsers = await _db.TypeUsers.Where(t => t.UserId == user.Id).ToArrayAsync();
          var types = new TypeModel[typeUsers.Length];
          int j = 0;
@@ -152,12 +176,114 @@ namespace EduSciencePro.Data.Repos.UserRepos
             }
 
          }
-         //if (!String.IsNullOrEmpty(model.Links))
-         //if (img != null)
-         //{
-         //   var i = img;
-         //   editUser.Image = GetByteArrayFromImage(i);
-         //}
+
+         if (!String.IsNullOrEmpty(model.TelegramLink))
+         {
+            var oldLink = await _db.Links.FirstOrDefaultAsync(l => l.UserId == editUser.Id && l.Name == "Telegram");
+            if (oldLink != null)
+            {
+               if (oldLink.Url != model.TelegramLink)
+               {
+                  _db.Links.Remove(oldLink);
+                  var linck = new Link() { Name = "Telegram", Url = model.TelegramLink, UserId = editUser.Id };
+                  await _db.AddAsync(linck);
+               }
+            }
+            else
+            {
+               var linck = new Link() { Name = "Telegram", Url = model.TelegramLink, UserId = editUser.Id };
+               await _db.AddAsync(linck);
+            }
+         }
+         else
+         {
+            var oldLink = await _db.Links.FirstOrDefaultAsync(l => l.UserId == editUser.Id && l.Name == "Telegram");
+            if (oldLink != null)
+            {
+               _db.Links.Remove(oldLink);
+            }
+         }
+
+         if (!String.IsNullOrEmpty(model.WhatsAppLink))
+         {
+            var oldLink = await _db.Links.FirstOrDefaultAsync(l => l.UserId == editUser.Id && l.Name == "WhatsApp");
+            if (oldLink != null)
+            {
+               if (oldLink.Url != model.WhatsAppLink)
+               {
+                  _db.Links.Remove(oldLink);
+                  var linck = new Link() { Name = "WhatsApp", Url = model.WhatsAppLink, UserId = editUser.Id };
+                  await _db.AddAsync(linck);
+               }
+            }
+            else
+            {
+               var linck = new Link() { Name = "WhatsApp", Url = model.WhatsAppLink, UserId = editUser.Id };
+               await _db.AddAsync(linck);
+            }
+         }
+         else
+         {
+            var oldLink = await _db.Links.FirstOrDefaultAsync(l => l.UserId == editUser.Id && l.Name == "WhatsApp");
+            if (oldLink != null)
+            {
+               _db.Links.Remove(oldLink);
+            }
+         }
+
+         if (!String.IsNullOrEmpty(model.EmailLink))
+         {
+            var oldLink = await _db.Links.FirstOrDefaultAsync(l => l.UserId == editUser.Id && l.Name == "Email");
+            if (oldLink != null)
+            {
+               if (oldLink.Url != model.EmailLink)
+               {
+                  _db.Links.Remove(oldLink);
+                  var linck = new Link() { Name = "Email", Url = model.EmailLink, UserId = editUser.Id };
+                  await _db.AddAsync(linck);
+               }
+            }
+            else
+            {
+               var linck = new Link() { Name = "Email", Url = model.EmailLink, UserId = editUser.Id };
+               await _db.AddAsync(linck);
+            }
+         }
+         else
+         {
+            var oldLink = await _db.Links.FirstOrDefaultAsync(l => l.UserId == editUser.Id && l.Name == "Email");
+            if (oldLink != null)
+            {
+               _db.Links.Remove(oldLink);
+            }
+         }
+
+         if (!String.IsNullOrEmpty(model.AnotherLink))
+         {
+            var oldLink = await _db.Links.FirstOrDefaultAsync(l => l.UserId == editUser.Id && l.Name == "");
+            if (oldLink != null)
+            {
+               if (oldLink.Url != model.EmailLink)
+               {
+                  _db.Links.Remove(oldLink);
+                  var linck = new Link() { Name = "", Url = model.AnotherLink, UserId = editUser.Id };
+                  await _db.AddAsync(linck);
+               }
+            }
+            else
+            {
+               var linck = new Link() { Name = "", Url = model.AnotherLink, UserId = editUser.Id };
+               await _db.AddAsync(linck);
+            }
+         }
+         else
+         {
+            var oldLink = await _db.Links.FirstOrDefaultAsync(l => l.UserId == editUser.Id && l.Name == "");
+            if (oldLink != null)
+            {
+               _db.Links.Remove(oldLink);
+            }
+         }
 
          if (model.Img != null)
          {

@@ -1,4 +1,5 @@
 ﻿using EduSciencePro.Models.User;
+using Newtonsoft.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -55,8 +56,17 @@ namespace EduSciencePro.ViewModels.Request
       [Display(Name = "Подтвердить пароль")]
       public string PasswordConfirm { get; set; }
 
-      [Display(Name = "Ссылки")]
-      public string Links { get; set; } = "";
+      [RegularExpression(@"^(?=.{5,32}$)(?!.*__)(?!^(telegram|admin|support))[a-z][a-z0-9_]*[a-z0-9]$", ErrorMessage = "Вводите имя пользователя без @")]
+      public string? TelegramLink { get; set; } = "";
+
+      [RegularExpression(@"\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})", ErrorMessage = "Используйте формат (999) 999 99 99")]
+      public string? WhatsAppLink { get; set; } = "";
+
+      [RegularExpression(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$", ErrorMessage = "Используйте формат example@email.ru")]
+      public string? EmailLink { get; set; } = "";
+
+      [RegularExpression(@"^(http|https|ftp|)\://|[a-zA-Z0-9\-\.]+\.[a-zA-Z](:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*[^\.\,\)\(\s]$", ErrorMessage = "Используйте формат https://example.ru")]    
+      public string? AnotherLink { get; set; } = "";
 
       [Display(Name = "Фото профиля")]
       [NotMapped]

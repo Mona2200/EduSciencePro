@@ -2,6 +2,12 @@
 
     $("#Link_Select").val("");
 
+    $("#Links_Div input").each(function () {
+        if ($(this).val() != '') {
+            $(this).parent().parent().removeClass('d-none');
+        };
+    });
+
     $("input[type = checkbox]").change(function () {
         $(this).parent().find('.before_checkbox').toggleClass('checked');
 
@@ -25,28 +31,38 @@
         var div = $("#Links_Div");
 
         if ($(this).val() == "Telegram") {
-            if (div.find('.Telegram_Link').length === 0) {
-                div.append(`<tr class="Telegram_Link d-flex flex-row m-2"><td style="width: 30%" class="text-start">Telegram:</td><td style="width: 70%"><input class="text-center w-100 p-1" placeholder="Введите имя пользователя" /><img class="Cross ml-2 position-absolute" style="transform: translateY(40%);" src="src/Cross.svg" /></td></tr>`);
+            if (div.find('.Telegram_Link').hasClass('d-none')) {
+                div.find('.Telegram_Link').toggleClass('d-none');
             }
             $(this).val("");
         } else if ($(this).val() == "WhatsApp") {
-            if (div.find('.WhatsApp_Link').length === 0) {
-                div.append(`<tr class="WhatsApp_Link d-flex flex-row m-2"><td style="width: 30%" class="text-start">WhatsApp:</td><td style="width: 70%"><input class="text-center w-100 p-1" placeholder="Введите номер" /><img class="Cross ml-2 position-absolute" style="transform: translateY(40%);" src="src/Cross.svg" /></td></tr>`);
+            if (div.find('.WhatsApp_Link').hasClass('d-none')) {
+                div.find('.WhatsApp_Link').toggleClass('d-none');
             }
             $(this).val("");
-        } else if ($(this).val() == "Email/Gmail") {
-            if (div.find('.Email_Link').length === 0) {
-                div.append(`<tr class="Email_Link d-flex flex-row m-2"><td style="width: 30%" class="text-start">Email/Gmail:</td><td style="width: 70%"><input class="text-center w-100 p-1" placeholder="Введите Email/Gmail" /><img class="Cross ml-2 position-absolute" style="transform: translateY(40%);" src="src/Cross.svg" /></td></tr>`);
+        } else if ($(this).val() == "Почта") {
+            if (div.find('.Email_Link').hasClass('d-none')) {
+                div.find('.Email_Link').toggleClass('d-none');
             }
             $(this).val("");
         } else {
-            if (div.find('.Another').find('input').val() != '')
-                div.append(`<tr class="Another d-flex flex-row m-2"><td style="width: 100%"><input class="text-center w-100 p-1" placeholder="Введите ссылку" /><img class="Cross ml-2 position-absolute" style="transform: translateY(40%);" src="src/Cross.svg" /></td></tr>`);
+            if (div.find('.Another').hasClass('d-none')) {
+                div.find('.Another').toggleClass('d-none');
+            }
             $(this).val("");
         }
-    });
 
-    $("#Link_Select > .Cross").click(function () {
-        $(this).parent().parent().remove();
+        if (!div.find('.Telegram_Link').hasClass('d-none') && !div.find('.WhatsApp_Link').hasClass('d-none') && !div.find('.Email_Link').hasClass('d-none') && !div.find('.Another').hasClass('d-none')) {
+            $(this).addClass('d-none');
+        }
+
     });
 })
+
+function Cross_Click(e) {
+    $(e).parent().parent().addClass('d-none');
+    $(e).prev().val("");
+    if ($("#Link_Select").hasClass('d-none')) {
+        $("#Link_Select").removeClass('d-none');
+    }
+};

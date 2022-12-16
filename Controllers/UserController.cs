@@ -132,9 +132,9 @@ namespace EduSciencePro.Controllers
             return View(model);
          }
 
-         if ((DateTime.Now.Year - DateTime.Parse(model.AddUserViewModel.Birthday).Year) < 7)
+         if ((DateTime.Now.Year - DateTime.Parse(model.AddUserViewModel.Birthday).Year) < 6)
          {
-            ModelState.AddModelError("AddUserViewModel.Birthday", "Вы должны быть не моложе 7 лет");
+            ModelState.AddModelError("AddUserViewModel.Birthday", "Вы должны быть не моложе 6 лет");
             model.Types = await _types.GetTypes();
             return View(model);
          }
@@ -261,9 +261,9 @@ namespace EduSciencePro.Controllers
             return View(model);
          }
 
-         if (!String.IsNullOrEmpty(model.AddUserViewModel.Birthday) && (DateTime.Now.Year - DateTime.Parse(model.AddUserViewModel.Birthday).Year) < 7)
+         if (!String.IsNullOrEmpty(model.AddUserViewModel.Birthday) && (DateTime.Now.Year - DateTime.Parse(model.AddUserViewModel.Birthday).Year) < 6)
          {
-            ModelState.AddModelError("AddUserViewModel.Birthday", "Вы должны быть не моложе 7 лет");
+            ModelState.AddModelError("AddUserViewModel.Birthday", "Вы должны быть не моложе 6 лет");
             model.UserViewModel = await _users.GetUserViewModelById(user.Id);
             model.Types = await _types.GetTypes();
             return View(model);
@@ -281,6 +281,38 @@ namespace EduSciencePro.Controllers
          if (files != null && files.Count != 0)
          {
             model.AddUserViewModel.Img = files[0];
+         }
+
+         if (ModelState["AddUserViewModel.TelegramLink"].Errors.Count > 0)
+         {
+            ModelState.AddModelError($"AddUserViewModel.TelegramLink", $"{ModelState["AddUserViewModel.TelegramLink"].Errors[0].ErrorMessage}");
+            model.UserViewModel = await _users.GetUserViewModelById(user.Id);
+            model.Types = await _types.GetTypes();
+            return View(model);
+         }
+
+         if (ModelState["AddUserViewModel.WhatsAppLink"].Errors.Count > 0)
+         {
+            ModelState.AddModelError($"AddUserViewModel.WhatsAppLink", $"{ModelState["AddUserViewModel.WhatsAppLink"].Errors[0].ErrorMessage}");
+            model.UserViewModel = await _users.GetUserViewModelById(user.Id);
+            model.Types = await _types.GetTypes();
+            return View(model);
+         }
+
+         if (ModelState["AddUserViewModel.EmailLink"].Errors.Count > 0)
+         {
+            ModelState.AddModelError($"AddUserViewModel.EmailLink", $"{ModelState["AddUserViewModel.EmailLink"].Errors[0].ErrorMessage}");
+            model.UserViewModel = await _users.GetUserViewModelById(user.Id);
+            model.Types = await _types.GetTypes();
+            return View(model);
+         }
+
+         if (ModelState["AddUserViewModel.AnotherLink"].Errors.Count > 0)
+         {
+            ModelState.AddModelError($"AddUserViewModel.AnotherLink", $"{ModelState["AddUserViewModel.AnotherLink"].Errors[0].ErrorMessage}");
+            model.UserViewModel = await _users.GetUserViewModelById(user.Id);
+            model.Types = await _types.GetTypes();
+            return View(model);
          }
 
          await _users.Update(model.AddUserViewModel, user);
