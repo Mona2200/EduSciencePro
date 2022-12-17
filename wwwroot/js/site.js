@@ -8,6 +8,13 @@
         };
     });
 
+    $("#Links_Div").find('.field-validation-error').each(function () {
+        if ($(this).parent().parent().prev().hasClass('d-none')) {
+            $(this).parent().parent().prev().removeClass('d-none');
+        }
+    });
+        
+
     $("input[type = checkbox]").change(function () {
         $(this).parent().find('.before_checkbox').toggleClass('checked');
 
