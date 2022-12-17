@@ -64,6 +64,17 @@
         }
 
     });
+
+    //$(".Skills_Input").change(function () {
+    //    var div = $("#Skills_List");
+
+
+    //});
+
+    $("#Add_Skills").click(function () {
+        var inp = $(".Skills_Input");
+    });
+
 })
 
 function Cross_Click(e) {

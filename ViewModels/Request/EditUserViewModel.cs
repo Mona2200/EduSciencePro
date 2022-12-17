@@ -7,6 +7,7 @@ namespace EduSciencePro.ViewModels.Request
    {
    public UserViewModel UserViewModel { get; set; }
    public AddUserViewModel AddUserViewModel { get; set; }
+   public EditResumeViewModel EditResumeViewModel { get; set; }
       public TypeModel[]? Types { get; set; }
 
       public bool Consent { get; set; }

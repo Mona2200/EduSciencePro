@@ -16,6 +16,7 @@ builder.Services.AddAutoMapper(assembly);
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IRoleRepository, RoleRepository>();
 builder.Services.AddSingleton<ITypeRepository, TypeRepository>();
+builder.Services.AddSingleton<IResumeRepository, ResumeRepository>();
 
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection), ServiceLifetime.Singleton);

@@ -79,7 +79,7 @@
 
         <label class="w-100 text-start label_input mb-3">Ссылки</label>
         <table id="Links_Div" class="d-flex flex-column">
-           <tr class="Telegram_Link d-flex flex-row m-2 d-none"><td style="width: 30%" class="text-start">Telegram:</td><td style="width: 70%"><input class="text-center w-100 p-1" placeholder="Введите имя пользователя" asp-for="AddUserViewModel.TelegramLink" value="@Model.UserViewModel.Links.FirstOrDefault(l => l.Name == "Telegram")?.Url" /><img onclick="Cross_Click(this)" class="Cross ml-2 position-absolute" style="transform: translateY(40%);" src="src/Cross.svg" /></td></tr>
+            <tr class="Telegram_Link d-flex flex-row m-2 d-none"><td style="width: 30%" class="text-start">Telegram:</td><td style="width: 70%"><span class="input-group-text d-inline-block">&#64;</span><input class="text-center w-75 p-1 d-inline-block" placeholder="Введите имя пользователя" asp-for="AddUserViewModel.TelegramLink" value="@Model.UserViewModel.Links.FirstOrDefault(l => l.Name == "Telegram")?.Url" /><img onclick="Cross_Click(this)" class="Cross ml-2 position-absolute" style="transform: translateY(40%);" src="src/Cross.svg" /></td></tr>
            <tr><td style="width: 100%"><span asp-validation-for="AddUserViewModel.TelegramLink" class="text-danger mb-3"></span></td></tr>
             
            <tr class="WhatsApp_Link d-flex flex-row m-2 d-none"><td style="width: 30%" class="text-start">WhatsApp:</td><td style="width: 70%"><input class="text-center w-100 p-1" placeholder="Введите номер" asp-for="AddUserViewModel.WhatsAppLink" value="@Model.UserViewModel.Links.FirstOrDefault(l => l.Name == "WhatsApp")?.Url" /><img onclick="Cross_Click(this)" class="Cross ml-2 position-absolute" style="transform: translateY(40%);" src="src/Cross.svg" /></td></tr>
@@ -107,7 +107,7 @@
 
     </form>
 
-    @await Html.PartialAsync("~/Views/User/EditResume.cshtml", Model);
+    @await Html.PartialAsync("~/Views/User/EditResume.cshtml", Model.EditResumeViewModel);
 
 </div>
 

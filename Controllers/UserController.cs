@@ -17,15 +17,15 @@ namespace EduSciencePro.Controllers
       private readonly IUserRepository _users;
       private readonly IRoleRepository _roles;
       private readonly ITypeRepository _types;
+      private readonly IResumeRepository _resumes;
       private readonly IMapper _mapper;
-      private readonly IWebHostEnvironment _webHostEnvironment;
-      public UserController(IUserRepository users, IRoleRepository roles, ITypeRepository types, IMapper mapper, IWebHostEnvironment webHostEnvironment)
+      public UserController(IUserRepository users, IRoleRepository roles, ITypeRepository types, IResumeRepository resumes, IMapper mapper)
       {
          _users = users;
          _roles = roles;
          _types = types;
+         _resumes = resumes;
          _mapper = mapper;
-         _webHostEnvironment = webHostEnvironment;
       }
 
       public async Task<IActionResult> Index()
@@ -242,6 +242,12 @@ namespace EduSciencePro.Controllers
             editUserViewModel.AddUserViewModel.TypeUsers += typeU.Id + " ";
          }
 
+         var editResumeViewModel = new EditResumeViewModel();
+         editResumeViewModel.AddResumeViewModel = new AddResumeViewModel();
+         editResumeViewModel.Resume = await _resumes.GetResumeByUserId(userViewModel.Id);
+
+         editUserViewModel.EditResumeViewModel = editResumeViewModel;
+
          return View(editUserViewModel);
       }
 
@@ -327,6 +333,22 @@ namespace EduSciencePro.Controllers
 
          var claimsIdentity = new ClaimsIdentity(ident.Claims, "AppCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
          await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+         return RedirectToAction("Main");
+      }
+
+      [HttpPost]
+      [Route("EditResume")]
+      public async Task<IActionResult> EditResume(EditResumeViewModel model)
+      {
+         if (ModelState["AddResumeViewModel.DateGraduationEducation"].Errors.Count > 0)
+         {
+            ModelState.AddModelError($"AddResumeViewModel.DateGraduationEducation", $"{ModelState["AddResumeViewModel.DateGraduationEducation"].Errors[0].ErrorMessage}");
+            return RedirectToAction("EditUser");
+         }
+
+         var resume = await _resumes.GetResumeById(model.Resume.Id);
+         await _resumes.Update(resume, model.AddResumeViewModel);
 
          return RedirectToAction("Main");
       }
