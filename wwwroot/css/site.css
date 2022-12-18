@@ -142,3 +142,18 @@ input {
 .w-30 {
     width: 30%;
 }
+
+.span_click {
+    padding: 0.375rem 0.75rem;
+    margin-left: 10px;
+    background-color: #CDE7FF;
+    cursor: pointer;
+}
+
+    .span_click:hover {
+        background: #89C4FB;
+    }
+
+.Cross {
+    cursor: pointer;
+}

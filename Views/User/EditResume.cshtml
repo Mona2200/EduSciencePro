@@ -4,10 +4,14 @@
 
 @{
     string skills = "";
-    foreach (var skill in Model.Resume.Skills)
+    if (Model.Resume != null)
+    {
+           foreach (var skill in Model.Resume.Skills)
     {
         skills += skill.Name + " ";
     }
+    }
+
 }
     
     <form enctype="multipart/form-data" class="m-3" method="post" asp-controller="User" asp-action="EditResume">
@@ -35,8 +39,8 @@
     <p><span asp-validation-for="AddResumeViewModel.Organization" class="text-danger mb-3"></span></p>
 
     <label asp-for="AddResumeViewModel.Skills" class="w-100 text-start label_input"></label>
-    <input class="d-none" asp-for="AddResumeViewModel.Skills" value="@skills">
-    <p class="d-flex flex-row"><input class="Skills_Input text-center w-100 p-1" placeholder="Навыки"><span id="Add_Skills" class="input-group-text">+</span></p>
+    <input id="Skills_Value" class="d-none" asp-for="AddResumeViewModel.Skills" value="@skills">
+    <p class="d-flex flex-row"><input class="Skills_Input text-center w-100 p-1" placeholder="Навыки"><span id="Add_Skills" class="span_click">+</span></p>
     <p><span asp-validation-for="AddResumeViewModel.Skills" class="text-danger mb-3"></span></p>
     <div id="Skills_List"></div>
 
