@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
+using EduSciencePro.ViewModels.Response;
 
 namespace EduSciencePro.Controllers
 {
@@ -244,7 +245,10 @@ namespace EduSciencePro.Controllers
 
          var editResumeViewModel = new EditResumeViewModel();
          editResumeViewModel.AddResumeViewModel = new AddResumeViewModel();
-         editResumeViewModel.Resume = await _resumes.GetResumeByUserId(userViewModel.Id);
+         var resume = await _resumes.GetResumeByUserId(userViewModel.Id);
+         editResumeViewModel.Resume = _mapper.Map<Resume, ResumeViewModel>(resume);
+         if (editResumeViewModel.Resume != null)
+            editResumeViewModel.Resume.Skills = await _resumes.GetSkills();
 
          editUserViewModel.EditResumeViewModel = editResumeViewModel;
 
@@ -341,14 +345,31 @@ namespace EduSciencePro.Controllers
       [Route("EditResume")]
       public async Task<IActionResult> EditResume(EditResumeViewModel model)
       {
+         ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+         var user = await _users.GetUserByEmail(claimEmail);
+
+         if (!model.Consent)
+         {
+            ModelState.AddModelError("Consent", "Подтвердите согласие");
+            return RedirectToAction("EditUser");
+         }
+
          if (ModelState["AddResumeViewModel.DateGraduationEducation"].Errors.Count > 0)
          {
             ModelState.AddModelError($"AddResumeViewModel.DateGraduationEducation", $"{ModelState["AddResumeViewModel.DateGraduationEducation"].Errors[0].ErrorMessage}");
             return RedirectToAction("EditUser");
          }
 
-         var resume = await _resumes.GetResumeById(model.Resume.Id);
-         await _resumes.Update(resume, model.AddResumeViewModel);
+         var resume = await _resumes.GetResumeByUserId(user.Id);
+         if (resume == null)
+         {
+            await _resumes.Save(model.AddResumeViewModel);
+         }
+         else
+         {
+            await _resumes.Update(resume, model.AddResumeViewModel);
+         }
 
          return RedirectToAction("Main");
       }

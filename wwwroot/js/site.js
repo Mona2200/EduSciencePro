@@ -13,7 +13,7 @@
             $(this).parent().parent().prev().removeClass('d-none');
         }
     });
-        
+
 
     $("input[type = checkbox]").change(function () {
         $(this).parent().find('.before_checkbox').toggleClass('checked');
@@ -78,6 +78,23 @@
         }
     });
 
+    //$(".Education").keyup(function (I) {
+    //    switch (I.keyCode) {
+
+    //        case 13:
+    //        case 27:
+    //        case 38:
+    //        case 40:
+    //            break;
+
+    //        default:
+
+    //            if ($(this).val().length > 2) {
+    //                input_initial_value = $(this).val();
+    //            };
+    //    }
+    //});
+
 })
 
 function Cross_Click(e) {
@@ -93,4 +110,19 @@ function Cross_Click_Skills(e) {
     val = val.replace($(e).prev().text(), "")
     $("#Skills_Value").val(val);
     $(e).parent().remove();
+};
+
+function Edu_KeyUp(NameEducations, inp) {
+    Console.log(NameEducations);
+    //if ($(inp).val().length > 2) {
+    //    input_initial_value = $(inp).val();
+    //    var n = 5;
+    //    var k = 0;
+    //    for (var i = 0; i < NameEducations.length && k < n; i++) {
+    //        //if (NameEducations[i].substring(0, input_initial_value.length) == input_initial_value) {
+    //        //    $(".Search_Education").append('<span>' + NameEducations[i] + '</span>');
+    //        //    k++;
+    //        //}
+    //    }
+    //};
 };

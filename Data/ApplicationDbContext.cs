@@ -19,12 +19,13 @@ namespace EduSciencePro.Data
       public DbSet<Skill> Skills { get; set; }
       public DbSet<TypeModel> TypeModels { get; set; }
       public DbSet<TypeUser> TypeUsers { get; set; }
+      public DbSet<ResumeSkill> ResumeSkills { get; set; }
       public DbSet<UserOrganization> UserOrganizations { get; set; }
 
       public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
       {
          Database.EnsureCreated();
-         //Database.Migrate();
+         Database.Migrate();
       }
 
       protected override void OnModelCreating(ModelBuilder builder)
@@ -39,6 +40,7 @@ namespace EduSciencePro.Data
          builder.Entity<Skill>().ToTable("Skills");
          builder.Entity<TypeModel>().ToTable("TypeModels");
          builder.Entity<TypeUser>().ToTable("TypeUsers");
+         builder.Entity<ResumeSkill>().ToTable("ResumeSkills");
          builder.Entity<UserOrganization>().ToTable("UserOrganizations");
       }
    }

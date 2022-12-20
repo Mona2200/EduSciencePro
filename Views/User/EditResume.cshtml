@@ -6,12 +6,20 @@
     string skills = "";
     if (Model.Resume != null)
     {
-           foreach (var skill in Model.Resume.Skills)
+        foreach (var skill in Model.Resume.Skills)
+        {
+            skills += skill.Name + " ";
+        }
+    }
+    string[] NameEducations = {};
+    if (Model.AllEducations != null)
     {
-        skills += skill.Name + " ";
+        NameEducations = new string[Model.AllEducations.Length];
+        for (int i = 0; i < Model.AllEducations.Length; i++)
+        {
+            NameEducations[i] = Model.AllEducations[i].Name;
+        }
     }
-    }
-
 }
     
     <form enctype="multipart/form-data" class="m-3" method="post" asp-controller="User" asp-action="EditResume">
@@ -19,7 +27,8 @@
     <h3 class="mb-5 mt-5">Редактирование резюме</h3>
 
     <label asp-for="AddResumeViewModel.Education" class="w-100 text-start label_input"></label>
-    <p><input class="text-center w-100 p-1" placeholder="Образование" asp-for="AddResumeViewModel.Education" value="@Model.Resume?.Education"></p>
+    <p><input class="text-center w-100 p-1" @*onkeyup="Edu_KeyUp(@NameEducations, this)"*@ placeholder="Образование" asp-for="AddResumeViewModel.Education" value="@Model.Resume?.Education"></p>
+    <p class="Search_Education w-100 position-absolute"></p>
     <p><span asp-validation-for="AddResumeViewModel.Education" class="text-danger mb-3"></span></p>
 
     <label asp-for="AddResumeViewModel.DateGraduationEducation" class="w-100 text-start label_input"></label>

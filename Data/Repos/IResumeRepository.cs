@@ -15,5 +15,7 @@ namespace EduSciencePro.Data.Repos
       Task Save(AddResumeViewModel resume);
       Task Update(Resume editResume, AddResumeViewModel newResume);
       Task Delete(Resume resume);
+
+      Task<Skill[]> GetSkills();
    }
 }
