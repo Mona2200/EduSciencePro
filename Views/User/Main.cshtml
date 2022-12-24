@@ -17,12 +17,14 @@
             {
                 <img class="border_white" style="width:300px;" src="src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png" />
             }
-
-            <p><a class="button_dark form-control-plaintext m-auto w-50 mt-4 mt-4" asp-controller="User" asp-action="EditUser">Редактировать</a></p>
+            @if (Context.User.Identity.Name == Model.Email)
+            {
+                <p><a class="button_dark form-control-plaintext m-auto w-50 mt-4" asp-controller="User" asp-action="EditUser">Редактировать</a></p>
+            }           
             @*<p class="small"><a asp-controller="Home" asp-action="Register">Скачать полное резюме</a></p>*@
         </div>
 
-        <div class="text-start">
+        <div class="text-start mt-4">
             @if (Model.Resume == null)
             {
                 <p class="text-center">О вас нет никакой информации</p>
@@ -102,7 +104,7 @@
                 <p class="mt-3">Дата рождения: <span>@Model.Birthday</span></p>
                 @if (@Model.Links?.FirstOrDefault(l => l.Name == "Email") != null)
                 {
-                    <p class="mt-3">Электронная почта: <a href="@Model.Links.FirstOrDefault(l => l.Name == "Email")?.Url">@Model.Links.FirstOrDefault(l => l.Name == "Email")?.Url</a></p>
+                    <p class="mt-3">Электронная почта: <a href="mailto:@Model.Links.FirstOrDefault(l => l.Name == "Email")?.Url">@Model.Links.FirstOrDefault(l => l.Name == "Email")?.Url</a></p>
                 }
                 @if (@Model.Links?.FirstOrDefault(l => l.Name == "") != null)
                 {

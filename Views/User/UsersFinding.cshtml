@@ -1,0 +1,42 @@
+﻿@using EduSciencePro.ViewModels.Response
+@model UserViewModel[];
+
+
+<div class="col-md-10">
+    <div class="border_blue p-4 m-3 bg-white">
+        @if (Model == null || Model.Length == 0)
+        {
+            <p>Поиск не дал результатов</p>
+        }
+        else
+        {
+            @foreach (var user in Model)
+            {
+                if (Context.User.Identity.Name != user.Email)
+                {
+                    <div class="d-flex flex-row align-items-center">
+                        <div class="m-3">
+                            @if (user.Image.Length != 0)
+                            {
+                                <img style='width:120px;' src="data:image/jpeg;base64,@(Convert.ToBase64String(user.Image))" />
+                            }
+                            else
+                            {
+                                <img style="width:120px;" src="src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png" />
+                            }
+                        </div>
+
+                        <div>
+                            <a asp-controller="User" asp-action="GetUser" asp-route-userId="@user.Id"><span style="font-size: 16px;" class="text-decoration-underline">@user.FullName</span></a>
+                            @foreach (var type in user.TypeUsers)
+                            {
+                                <span> | @type.Name</span>
+                            }
+                        </div>
+
+                    </div>
+                }
+            }
+        }      
+    </div>
+</div>

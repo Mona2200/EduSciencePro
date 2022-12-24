@@ -21,30 +21,32 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end col-md-4">
                     <ul class="navbar-nav align-items-center">
                         <li class="nav-item m-2">
-                            <input class="search_inp without_style" style="border-bottom: 1px black solid;" />
-                            <button class="without_style"><img src="src/search.svg" /></button>
+                            <form asp-controller="User" asp-action="UsersFinding">
+                                <input class="search_inp without_style" style="border-bottom: 1px black solid;" name="search" />
+                                <button class="without_style"><img src="src/search.svg" /></button>
+                            </form>
                         </li>
                         <li class="nav-item m-2">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Контакты</a>
                         </li>
                         <li class="nav-item m-2">
                             @{
-                               if (Context.User.Identity.IsAuthenticated)
-                               {
-                                            <a class="nav-link text-dark" style="cursor:pointer;" id="Menu_Link">Меню</a>
+                                if (Context.User.Identity.IsAuthenticated)
+                                {
+                                    <a class="nav-link text-dark" style="cursor:pointer;" id="Menu_Link">Меню</a>
 
-                                            <div class="position-absolute border_blue menu_width d-none" id="desktop_menu">
-                                                <p class="p-2 border_bottom_dark m-0"><a asp-controller="User" asp-action="Main">Мой профиль</a></p>
-                                                <p class="p-2 border_bottom_dark m-0"><a>Комментарии</a></p>
-                                                <p class ="p-2 border_bottom_dark m-0"><a>Подписки</a></p>
-                                                <p class="p-2 border_bottom_dark m-0"><a>Сообщения</a></p>
-                                                <p class="p-2 m-0"><a asp-controller="User" asp-action="Logout">Выход</a></p>
-                                            </div>
-                               }
-                               else
-                               {
-                                            <a asp-controller="User" asp-action="Authenticate">Вход в личный кабинет</a>
-                               }
+                                    <div class="position-absolute border_blue menu_width d-none" id="desktop_menu">
+                                        <a asp-controller="User" asp-action="Main" class="p-2 border_bottom_dark m-0 d-block">Мой профиль</a>
+                                        <a class="p-2 border_bottom_dark m-0 d-block">Комментарии</a>
+                                        <a class="p-2 border_bottom_dark m-0 d-block">Подписки</a>
+                                        <a class="p-2 border_bottom_dark m-0 d-block">Сообщения</a>
+                                        <a asp-controller="User" asp-action="Logout" class="p-2 border_bottom_dark m-0 d-block">Выход</a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <a asp-controller="User" asp-action="Authenticate">Вход в личный кабинет</a>
+                                }
                             }
                         </li>
                     </ul>
@@ -53,19 +55,19 @@
             </div>
             <div class="d-block">
                 <div class="container d-flex justify-content-between align-items-center">
-                   @if (Context.User.Identity.IsAuthenticated)
-                   {
-                                              <partial name="~/Views/User/TypeUsers.cshtml"></partial>
-                   }
-                   else
-                   {
+                    @if (Context.User.Identity.IsAuthenticated)
+                    {
+                        <partial name="~/Views/User/TypeUsers.cshtml"></partial>
+                    }
+                    else
+                    {
                         <p class="m-4 text-uppercase small"><a>Школьникам</a></p>
                         <p class="m-4 text-uppercase small"><a>Научным сотрудникам</a></p>
                         <p class="m-4 text-uppercase small"><a>Профессорско-преподавательскому составу сферы высшего образования</a></p>
                         <p class="m-4 text-uppercase small"><a>Представителям сферы среднего профессионального образования</a></p>
                         <p class="m-4 text-uppercase small"><a>Представителям реального сектора экономики</a></p>
                         <p class="m-4 text-uppercase small"><a>Представителям реального сектора экономики</a></p>
-                   }
+                    }
                 </div>
             </div>
         </nav>
@@ -79,12 +81,14 @@
     <footer class="bg_dark mt-5 position-absolute bottom-0 pt-5 text-white" style="right:0;left:0;">
         <div class="container d-flex justify-content-between">
             <div style="margin: auto 0;">
-                <img class="svg_white" src="src/Logo.svg" style="fill:white;" />
+                <a asp-area="" asp-controller="User" asp-action="Index"><img class="svg_white" src="src/Logo.svg" style="fill:white;" /></a>
             </div>
             <div class="d-flex">
                 <div class="m-4" style="display:flex;align-items:end;flex-direction:row;">
-                    <input class="search_inp without_style" style="border-bottom: 1px white solid;color:white;" />
-                    <button class="without_style svg_white"><img src="src/search.svg" /></button>
+                    <form asp-controller="User" asp-action="UsersFinding">
+                        <input class="search_inp without_style" style="border-bottom: 1px white solid;color:white;" name="search" />
+                        <button class="without_style svg_white"><img src="src/search.svg" /></button>
+                    </form>
                 </div>
                 <div>
                     @if (!Context.User.Identity.IsAuthenticated)

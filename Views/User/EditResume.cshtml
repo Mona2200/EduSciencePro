@@ -43,9 +43,9 @@
     <p><input class="text-center w-100 p-1" placeholder="Место работы" asp-for="AddResumeViewModel.PlaceWork" value="@Model.Resume?.PlaceWork?.Name"></p>
     <p><span asp-validation-for="AddResumeViewModel.PlaceWork" class="text-danger mb-3"></span></p>
 
-    <label asp-for="AddResumeViewModel.Organization" class="w-100 text-start label_input"></label>
+@*    <label asp-for="AddResumeViewModel.Organization" class="w-100 text-start label_input"></label>
     <p><input class="text-center w-100 p-1" placeholder="Организация" asp-for="AddResumeViewModel.Organization" value="@Model.Resume?.Organization?.Name"></p>
-    <p><span asp-validation-for="AddResumeViewModel.Organization" class="text-danger mb-3"></span></p>
+    <p><span asp-validation-for="AddResumeViewModel.Organization" class="text-danger mb-3"></span></p>*@
 
     <label asp-for="AddResumeViewModel.Skills" class="w-100 text-start label_input"></label>
     <input id="Skills_Value" class="d-none" asp-for="AddResumeViewModel.Skills" value="@skills">

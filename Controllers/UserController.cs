@@ -212,6 +212,14 @@ namespace EduSciencePro.Controllers
       }
 
       [HttpGet]
+      [Route("GetUser")]
+      public async Task<IActionResult> GetUser(Guid userId)
+      {
+         var userViewModel = await _users.GetUserViewModelById(userId);
+         return View("Main", userViewModel);
+      }
+
+      [HttpGet]
       [Route("EditUser")]
       public async Task<IActionResult> EditUser()
       {
@@ -340,6 +348,14 @@ namespace EduSciencePro.Controllers
          return await _users.GetUsers();
       }
 
+      [HttpPost]
+      [Route("UsersFinding")]
+      public async Task<IActionResult> UsersFinding(string search)
+      {
+         var users = await _users.GetUserViewModels();
+         return View(users.Where(u => u.FullName.Contains(search)).ToArray());
+      }
+
       [HttpGet]
       [Route("Logout")]
       public async Task<IActionResult> Logout()
@@ -387,7 +403,7 @@ namespace EduSciencePro.Controllers
          {
             model.UserViewModel = _mapper.Map<AddUserViewModel, UserViewModel>(model.AddUserViewModel);
             model.UserViewModel.TypeUsers = model.AddUserViewModel.TypeUsers.Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(s => new TypeModel() { Name = s }).ToArray();
-            
+
             List<Link> links = new List<Link>();
             if (model.AddUserViewModel.TelegramLink != null)
                links.Add(new Link() { Name = "Telegram", Url = model.AddUserViewModel.TelegramLink });
