@@ -157,3 +157,15 @@ input {
 .Cross {
     cursor: pointer;
 }
+
+.underline {
+    font-size: 16px;
+    padding: 5px 0;
+}
+    .underline::after {
+        display: block;
+        content: ' ';
+        height: 1px;
+        background-color: black;
+        width: 30px;
+    }

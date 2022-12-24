@@ -61,7 +61,6 @@ namespace EduSciencePro.Controllers
          }
 
          var hash = new PasswordHasher<User>();
-         //var hashPassword = hash.HashPassword(user, model.AddUserViewModel.Password);
 
          PasswordVerificationResult ver = hash.VerifyHashedPassword(user, user.Password, model.Password);
          if (ver == PasswordVerificationResult.Failed)
@@ -245,10 +244,7 @@ namespace EduSciencePro.Controllers
 
          var editResumeViewModel = new EditResumeViewModel();
          editResumeViewModel.AddResumeViewModel = new AddResumeViewModel();
-         var resume = await _resumes.GetResumeByUserId(userViewModel.Id);
-         editResumeViewModel.Resume = _mapper.Map<Resume, ResumeViewModel>(resume);
-         if (editResumeViewModel.Resume != null)
-            editResumeViewModel.Resume.Skills = await _resumes.GetSkills();
+         editResumeViewModel.Resume = await _resumes.GetResumeViewModelByUserId(userViewModel.Id);
 
          editUserViewModel.EditResumeViewModel = editResumeViewModel;
 
@@ -263,66 +259,14 @@ namespace EduSciencePro.Controllers
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
          var user = await _users.GetUserByEmail(claimEmail);
 
-         if (!model.Consent)
-         {
-            ModelState.AddModelError("Consent", "Подтвердите согласие");
-            model.UserViewModel = await _users.GetUserViewModelById(user.Id);
-            model.Types = await _types.GetTypes();
-            return View(model);
-         }
-
-         if (!String.IsNullOrEmpty(model.AddUserViewModel.Birthday) && (DateTime.Now.Year - DateTime.Parse(model.AddUserViewModel.Birthday).Year) < 6)
-         {
-            ModelState.AddModelError("AddUserViewModel.Birthday", "Вы должны быть не моложе 6 лет");
-            model.UserViewModel = await _users.GetUserViewModelById(user.Id);
-            model.Types = await _types.GetTypes();
-            return View(model);
-         }
-
-         if (ModelState["AddUserViewModel.TypeUsers"].Errors.Count > 0)
-         {
-            ModelState.AddModelError($"AddUserViewModel.TypeUsers", $"{ModelState["AddUserViewModel.TypeUsers"].Errors[0].ErrorMessage}");
-            model.UserViewModel = await _users.GetUserViewModelById(user.Id);
-            model.Types = await _types.GetTypes();
-            return View(model);
-         }
+         EditUserViewModel errormodel = await ValidEditUser(user, model);
+         if (errormodel != null)
+            return View(errormodel);
 
          IFormFileCollection files = Request.Form.Files;
          if (files != null && files.Count != 0)
          {
             model.AddUserViewModel.Img = files[0];
-         }
-
-         if (ModelState["AddUserViewModel.TelegramLink"].Errors.Count > 0)
-         {
-            ModelState.AddModelError($"AddUserViewModel.TelegramLink", $"{ModelState["AddUserViewModel.TelegramLink"].Errors[0].ErrorMessage}");
-            model.UserViewModel = await _users.GetUserViewModelById(user.Id);
-            model.Types = await _types.GetTypes();
-            return View(model);
-         }
-
-         if (ModelState["AddUserViewModel.WhatsAppLink"].Errors.Count > 0)
-         {
-            ModelState.AddModelError($"AddUserViewModel.WhatsAppLink", $"{ModelState["AddUserViewModel.WhatsAppLink"].Errors[0].ErrorMessage}");
-            model.UserViewModel = await _users.GetUserViewModelById(user.Id);
-            model.Types = await _types.GetTypes();
-            return View(model);
-         }
-
-         if (ModelState["AddUserViewModel.EmailLink"].Errors.Count > 0)
-         {
-            ModelState.AddModelError($"AddUserViewModel.EmailLink", $"{ModelState["AddUserViewModel.EmailLink"].Errors[0].ErrorMessage}");
-            model.UserViewModel = await _users.GetUserViewModelById(user.Id);
-            model.Types = await _types.GetTypes();
-            return View(model);
-         }
-
-         if (ModelState["AddUserViewModel.AnotherLink"].Errors.Count > 0)
-         {
-            ModelState.AddModelError($"AddUserViewModel.AnotherLink", $"{ModelState["AddUserViewModel.AnotherLink"].Errors[0].ErrorMessage}");
-            model.UserViewModel = await _users.GetUserViewModelById(user.Id);
-            model.Types = await _types.GetTypes();
-            return View(model);
          }
 
          await _users.Update(model.AddUserViewModel, user);
@@ -349,22 +293,14 @@ namespace EduSciencePro.Controllers
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
          var user = await _users.GetUserByEmail(claimEmail);
 
-         if (!model.Consent)
-         {
-            ModelState.AddModelError("Consent", "Подтвердите согласие");
-            return RedirectToAction("EditUser");
-         }
-
-         if (ModelState["AddResumeViewModel.DateGraduationEducation"].Errors.Count > 0)
-         {
-            ModelState.AddModelError($"AddResumeViewModel.DateGraduationEducation", $"{ModelState["AddResumeViewModel.DateGraduationEducation"].Errors[0].ErrorMessage}");
-            return RedirectToAction("EditUser");
-         }
+         EditUserViewModel errormodel = await ValidEditResume(user, model);
+         if (errormodel != null)
+            return View("~/Views/User/EditUser.cshtml", errormodel);
 
          var resume = await _resumes.GetResumeByUserId(user.Id);
          if (resume == null)
          {
-            await _resumes.Save(model.AddResumeViewModel);
+            await _resumes.Save(user, model.AddResumeViewModel);
          }
          else
          {
@@ -414,6 +350,112 @@ namespace EduSciencePro.Controllers
 
          await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
          return RedirectToAction("Index");
+      }
+
+      private async Task<EditUserViewModel> ValidEditUser(User user, EditUserViewModel model)
+      {
+         if (!model.UserConsent)
+         {
+            ModelState.AddModelError("UserConsent", "Подтвердите согласие");
+            return await GetEditUserViewModel(user, model);
+         }
+
+         if (!String.IsNullOrEmpty(model.AddUserViewModel.Birthday) && (DateTime.Now.Year - DateTime.Parse(model.AddUserViewModel.Birthday).Year) < 6)
+         {
+            ModelState.AddModelError("AddUserViewModel.Birthday", "Вы должны быть не моложе 6 лет");
+            return await GetEditUserViewModel(user, model);
+         }
+
+         string[] errorMessages = { "AddUserViewModel.TypeUsers", "AddUserViewModel.TelegramLink", "AddUserViewModel.WhatsAppLink", "AddUserViewModel.EmailLink", "AddUserViewModel.AnotherLink" };
+
+         foreach (var error in ModelState)
+         {
+            if (error.Value.Errors.Count > 0 && errorMessages.Contains(error.Key))
+            {
+               ModelState.AddModelError(error.Key, ModelState[error.Key].Errors[0].ErrorMessage);
+               return await GetEditUserViewModel(user, model);
+            }
+         }
+
+         return null;
+      }
+
+      private async Task<EditUserViewModel> GetEditUserViewModel(User user, EditUserViewModel model)
+      {
+         model.UserViewModel = await _users.GetUserViewModelById(user.Id);
+         if (model.AddUserViewModel != null)
+         {
+            model.UserViewModel = _mapper.Map<AddUserViewModel, UserViewModel>(model.AddUserViewModel);
+            model.UserViewModel.TypeUsers = model.AddUserViewModel.TypeUsers.Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(s => new TypeModel() { Name = s }).ToArray();
+            
+            List<Link> links = new List<Link>();
+            if (model.AddUserViewModel.TelegramLink != null)
+               links.Add(new Link() { Name = "Telegram", Url = model.AddUserViewModel.TelegramLink });
+            if (model.AddUserViewModel.WhatsAppLink != null)
+               links.Add(new Link() { Name = "WhatsApp", Url = model.AddUserViewModel.WhatsAppLink });
+            if (model.AddUserViewModel.EmailLink != null)
+               links.Add(new Link() { Name = "Email", Url = model.AddUserViewModel.EmailLink });
+            if (model.AddUserViewModel.AnotherLink != null)
+               links.Add(new Link() { Name = "", Url = model.AddUserViewModel.AnotherLink });
+
+            model.UserViewModel.Links = links.ToArray();
+         }
+         model.AddUserViewModel = new AddUserViewModel();
+
+         model.AddUserViewModel.FirstName = model.UserViewModel?.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToArray()[0];
+         model.AddUserViewModel.LastName = model.UserViewModel?.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToArray()[1];
+         model.AddUserViewModel.MiddleName = model.UserViewModel?.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToArray()[2];
+
+         var year = model.UserViewModel?.Birthday.Split('.', StringSplitOptions.RemoveEmptyEntries).ToArray()[2];
+         var month = model.UserViewModel?.Birthday.Split('.', StringSplitOptions.RemoveEmptyEntries).ToArray()[1];
+         if (month != null && month.Length == 1)
+            month = $"0{month}";
+         var day = model.UserViewModel?.Birthday.Split('.', StringSplitOptions.RemoveEmptyEntries).ToArray()[0];
+         if (day != null && day.Length == 1)
+            day = $"0{day}";
+         if (year != null && month != null && day != null)
+            model.AddUserViewModel.Birthday = $"{year}-{month}-{day}";
+
+         foreach (var typeU in model.UserViewModel?.TypeUsers)
+         {
+            model.AddUserViewModel.TypeUsers += typeU.Id + " ";
+         }
+
+         model.Types = await _types.GetTypes();
+         if (model.EditResumeViewModel == null)
+         {
+            model.EditResumeViewModel = new EditResumeViewModel();
+            //model.EditResumeViewModel.Resume = await _resumes.GetResumeViewModelByUserId(user.Id);
+            //if (model.EditResumeViewModel.AddResumeViewModel != null)
+            //{
+            //   model.EditResumeViewModel.Resume = _mapper.Map<AddResumeViewModel, ResumeViewModel>(model.EditResumeViewModel.AddResumeViewModel);
+            //   model.EditResumeViewModel.Resume.Education = new Education() { Name = model.EditResumeViewModel.AddResumeViewModel.Education };
+            //   model.EditResumeViewModel.Resume.PlaceWork = new PlaceWork() { Name = model.EditResumeViewModel.AddResumeViewModel.PlaceWork };
+            //   model.EditResumeViewModel.Resume.Organization = new Organization() { Name = model.EditResumeViewModel.AddResumeViewModel.Organization };
+            //   model.EditResumeViewModel.Resume.Skills = model.EditResumeViewModel.AddResumeViewModel.Skills.Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(s => new Skill() { Name = s }).ToArray();
+            //}
+            //model.EditResumeViewModel.AddResumeViewModel = new AddResumeViewModel();
+         }
+         model.EditResumeViewModel.Resume = await _resumes.GetResumeViewModelByUserId(user.Id);
+         model.EditResumeViewModel.AddResumeViewModel = new AddResumeViewModel();
+         return model;
+      }
+
+      private async Task<EditUserViewModel> ValidEditResume(User user, EditResumeViewModel model)
+      {
+         if (!model.ResumeConsent)
+         {
+            ModelState.AddModelError("ResumeConsent", "Подтвердите согласие");
+            return await GetEditUserViewModel(user, new EditUserViewModel() { EditResumeViewModel = model });
+         }
+
+         if (ModelState["AddResumeViewModel.DateGraduationEducation"].Errors.Count > 0)
+         {
+            ModelState.AddModelError($"AddResumeViewModel.DateGraduationEducation", $"{ModelState["AddResumeViewModel.DateGraduationEducation"].Errors[0].ErrorMessage}");
+            return await GetEditUserViewModel(user, new EditUserViewModel() { EditResumeViewModel = model });
+         }
+
+         return null;
       }
    }
 }

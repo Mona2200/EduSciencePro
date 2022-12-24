@@ -11,6 +11,6 @@ namespace EduSciencePro.ViewModels.Request
       public PlaceWork[] AllPlaceWorks { get; set; }
       public Organization[] AllOrganizations { get; set; }
       public Skill[] AllSkills { get; set; }
-      public bool Consent { get; set; }
+      public bool ResumeConsent { get; set; }
    }
 }

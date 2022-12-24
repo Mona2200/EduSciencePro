@@ -59,7 +59,7 @@ namespace EduSciencePro.ViewModels.Request
       [RegularExpression(@"^(?=.{5,32}$)(?!.*__)(?!^(telegram|admin|support))[a-z][a-z0-9_]*[a-z0-9]$", ErrorMessage = "Вводите имя пользователя без @")]
       public string? TelegramLink { get; set; } = "";
 
-      [RegularExpression(@"\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})", ErrorMessage = "Используйте формат (999) 999 99 99")]
+      [RegularExpression("^\\+?\\d{1,4}?[-.\\s]?\\(?\\d{1,3}?\\)?[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,9}$", ErrorMessage = "Используйте формат 8 (999) 999 99 99")]
       public string? WhatsAppLink { get; set; } = "";
 
       [RegularExpression(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$", ErrorMessage = "Используйте формат example@email.ru")]

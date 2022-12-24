@@ -10,6 +10,6 @@ namespace EduSciencePro.ViewModels.Request
    public EditResumeViewModel EditResumeViewModel { get; set; }
       public TypeModel[]? Types { get; set; }
 
-      public bool Consent { get; set; }
+      public bool UserConsent { get; set; }
    }
 }

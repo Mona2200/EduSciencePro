@@ -9,10 +9,10 @@ namespace EduSciencePro.Data.Repos
       Task<Resume[]> GetResumes();
       Task<Resume> GetResumeById(Guid id);
       Task<Resume> GetResumeByUserId(Guid userId);
-      //Task<ResumeViewModel[]> GetResumeViewModels();
-      //Task<ResumeViewModel> GetResumeViewModelById(Guid id);
-      //Task<ResumeViewModel> GetResumeViewModelByUserUd(Guid userId);
-      Task Save(AddResumeViewModel resume);
+      Task<ResumeViewModel[]> GetResumeViewModels();
+      Task<ResumeViewModel> GetResumeViewModelById(Guid id);
+      Task<ResumeViewModel> GetResumeViewModelByUserId(Guid userId);
+      Task Save(User user, AddResumeViewModel resume);
       Task Update(Resume editResume, AddResumeViewModel newResume);
       Task Delete(Resume resume);
 

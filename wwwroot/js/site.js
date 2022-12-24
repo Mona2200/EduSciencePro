@@ -1,5 +1,7 @@
 ﻿$(document).ready(function () {
 
+
+
     $("#Link_Select").val("");
 
     $("#Links_Div input").each(function () {
@@ -68,7 +70,7 @@
     $("#Add_Skills").click(function () {
         var inp = $(".Skills_Input");
         if (inp.val() != "") {
-            var skills = inp.val().match(/[^\s,]+/g);
+            var skills = inp.val();
             for (var i = 0; i < skills.length; i++) {
                 $("#Skills_List").append('<p class="text-start"><span class="p-1" style="background-color: #e9ecef;">' + skills[i] + '</span><img onclick="Cross_Click_Skills(this)" class="Cross ml-2 position-absolute" style="transform: translateY(40%);" src="src/Cross.svg" /></p>');
                 $("#Skills_Value").val($("#Skills_Value").val() + skills[i] + " ");

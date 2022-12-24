@@ -15,10 +15,15 @@ namespace EduSciencePro.Data.Repos.UserRepos
       private readonly ApplicationDbContext _db;
       private readonly IMapper _mapper;
 
-      public UserRepository(ApplicationDbContext db, IMapper mapper)
+      private readonly IResumeRepository _resumes;
+      private readonly ITypeRepository _types;
+
+      public UserRepository(ApplicationDbContext db, IMapper mapper, IResumeRepository resumes, ITypeRepository types)
       {
          _db = db;
          _mapper = mapper;
+         _resumes = resumes;
+         _types = types;
       }
 
       public async Task<User[]> GetUsers()
@@ -54,17 +59,14 @@ namespace EduSciencePro.Data.Repos.UserRepos
                day = $"0{day}";
 
             userViewModels[i].Birthday = $"{day}.{month}.{datebirth.Year}";
-            var typeUsers = await _db.TypeUsers.Where(t => t.UserId == user.Id).ToArrayAsync();
-            var types = new TypeModel[typeUsers.Length];
-            int j = 0;
-            foreach (var typeUser in typeUsers)
-            {
-               types[j++] = await _db.TypeModels.FirstOrDefaultAsync(t => t.Id == typeUser.TypeId);
-            }
-            userViewModels[i].TypeUsers = types;
-            var links = await _db.Links.Where(l => l.UserId == user.Id).ToArrayAsync();
+            userViewModels[i].TypeUsers = await _types.GetTypesByUserId(user.Id);
+
+            Link[] links = await _db.Links.Where(l => l.UserId == user.Id).ToArrayAsync();
+            foreach (var l in links)
+               l.Url = l.Url.Replace(" ", "");
             userViewModels[i].Links = links;
-            userViewModels[i].Resume = await _db.Resumes.FirstOrDefaultAsync(r => r.Id == user.ResumeId);
+
+            userViewModels[i].Resume = await _resumes.GetResumeViewModelById((Guid)user.ResumeId);
             userViewModels[i++].Role = await _db.Roles.FirstOrDefaultAsync(r => r.Id == user.RoleId);
          }
          return userViewModels;
@@ -84,17 +86,13 @@ namespace EduSciencePro.Data.Repos.UserRepos
             day = $"0{day}";
 
          userViewModel.Birthday = $"{day}.{month}.{datebirth.Year}";
-         var typeUsers = await _db.TypeUsers.Where(t => t.UserId == user.Id).ToArrayAsync();
-         var types = new TypeModel[typeUsers.Length];
-         int j = 0;
-         foreach (var typeUser in typeUsers)
-         {
-            types[j++] = await _db.TypeModels.FirstOrDefaultAsync(t => t.Id == typeUser.TypeId);
-         }
-         userViewModel.TypeUsers = types;
+         userViewModel.TypeUsers = await _types.GetTypesByUserId(user.Id);
          var links = await _db.Links.Where(l => l.UserId == user.Id).ToArrayAsync();
+         foreach (var l in links)
+            l.Url = l.Url.Replace(" ", "");
          userViewModel.Links = links;
-         userViewModel.Resume = await _db.Resumes.FirstOrDefaultAsync(r => r.Id == user.ResumeId);
+
+         userViewModel.Resume = await _resumes.GetResumeViewModelById((Guid)user.ResumeId);
          userViewModel.Role = await _db.Roles.FirstOrDefaultAsync(r => r.Id == user.RoleId);
          return userViewModel;
       }
@@ -113,17 +111,13 @@ namespace EduSciencePro.Data.Repos.UserRepos
             day = $"0{day}";
 
          userViewModel.Birthday = $"{day}.{month}.{datebirth.Year}";
-         var typeUsers = await _db.TypeUsers.Where(t => t.UserId == user.Id).ToArrayAsync();
-         var types = new TypeModel[typeUsers.Length];
-         int j = 0;
-         foreach (var typeUser in typeUsers)
-         {
-            types[j++] = await _db.TypeModels.FirstOrDefaultAsync(t => t.Id == typeUser.TypeId);
-         }
-         userViewModel.TypeUsers = types;
+         userViewModel.TypeUsers = await _types.GetTypesByUserId(user.Id);
          var links = await _db.Links.Where(l => l.UserId == user.Id).ToArrayAsync();
+         foreach (var l in links)
+            l.Url = l.Url.Replace(" ", "");
          userViewModel.Links = links;
-         userViewModel.Resume = await _db.Resumes.FirstOrDefaultAsync(r => r.Id == user.ResumeId);
+
+         userViewModel.Resume = await _resumes.GetResumeViewModelById((Guid)user.ResumeId);
          userViewModel.Role = await _db.Roles.FirstOrDefaultAsync(r => r.Id == user.RoleId);
          return userViewModel;
       }
