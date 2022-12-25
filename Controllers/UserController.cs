@@ -10,6 +10,7 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using EduSciencePro.ViewModels.Response;
+using EduSciencePro.Data.Services;
 
 namespace EduSciencePro.Controllers
 {
@@ -354,9 +355,51 @@ namespace EduSciencePro.Controllers
       {
          var users = await _users.ShortInfoUserViewModels();
          if (!String.IsNullOrEmpty(search))
-            return View(users.Where(u => u.FullName.Contains(search)).ToArray());
+            return View(users.Where(u => u.FullName.ToLower().Contains(search.ToLower())).ToArray());
          else
             return View(users);
+      }
+
+      [HttpGet]
+      [Route("ForgotPassword")]
+      public async Task<IActionResult> ForgotPassword()
+      {
+         return View(new ForgotPasswordViewModel());
+      }
+
+      [HttpPost]
+      [Route("ForgotPassword")]
+      public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+      {
+         Random random = new Random();
+         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+         string code = new string(Enumerable.Repeat(chars, 6).Select(s => s[random.Next(s.Length)]).ToArray());
+         EmailService emailService = new EmailService();
+         await emailService.SendEmailAsync(model.Email, "Код подтверждения для сайта EduSciencePro", $"Тест письма: Ваш код подтверждения: {code}\nНе отвечайте на это письмо");
+         model.Code = code;
+         return View("~/Views/User/ConfirmationCode.schtml", model);
+      }
+
+      [HttpPost]
+      [Route("ConfirmationCode")]
+      public async Task<IActionResult> ConfirmationCode(ForgotPasswordViewModel model)
+      {
+         if (model.Code == model.ConfirmationCode)
+            return View("~/Views/User/ChabgePassword.schtml", new ChangePasswordViewModel() { Email = model.Email });
+         else
+            return View(model);
+      }
+
+      [HttpPost]
+      [Route("ChangePassword")]
+      public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+      {
+         if (!ModelState.IsValid)
+            return View(model);
+         var user = await _users.GetUserByEmail(model.Email);
+         user.Password = model.NewPassword;
+         await _users.UpdatePassword(user);
+         return RedirectToAction("Authenticate");
       }
 
       [HttpGet]
@@ -419,27 +462,30 @@ namespace EduSciencePro.Controllers
 
             model.UserViewModel.Links = links.ToArray();
          }
-         model.AddUserViewModel = new AddUserViewModel();
-
-         model.AddUserViewModel.FirstName = model.UserViewModel?.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToArray()[0];
-         model.AddUserViewModel.LastName = model.UserViewModel?.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToArray()[1];
-         model.AddUserViewModel.MiddleName = model.UserViewModel?.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToArray()[2];
-
-         var year = model.UserViewModel?.Birthday.Split('.', StringSplitOptions.RemoveEmptyEntries).ToArray()[2];
-         var month = model.UserViewModel?.Birthday.Split('.', StringSplitOptions.RemoveEmptyEntries).ToArray()[1];
-         if (month != null && month.Length == 1)
-            month = $"0{month}";
-         var day = model.UserViewModel?.Birthday.Split('.', StringSplitOptions.RemoveEmptyEntries).ToArray()[0];
-         if (day != null && day.Length == 1)
-            day = $"0{day}";
-         if (year != null && month != null && day != null)
-            model.AddUserViewModel.Birthday = $"{year}-{month}-{day}";
-
-         foreach (var typeU in model.UserViewModel?.TypeUsers)
+         else
          {
-            model.AddUserViewModel.TypeUsers += typeU.Id + " ";
-         }
+            model.AddUserViewModel = new AddUserViewModel();
 
+            model.AddUserViewModel.FirstName = model.UserViewModel?.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToArray()[0];
+            model.AddUserViewModel.LastName = model.UserViewModel?.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToArray()[1];
+            model.AddUserViewModel.MiddleName = model.UserViewModel?.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToArray()[2];
+
+            var year = model.UserViewModel?.Birthday.Split('.', StringSplitOptions.RemoveEmptyEntries).ToArray()[2];
+            var month = model.UserViewModel?.Birthday.Split('.', StringSplitOptions.RemoveEmptyEntries).ToArray()[1];
+            if (month != null && month.Length == 1)
+               month = $"0{month}";
+            var day = model.UserViewModel?.Birthday.Split('.', StringSplitOptions.RemoveEmptyEntries).ToArray()[0];
+            if (day != null && day.Length == 1)
+               day = $"0{day}";
+            if (year != null && month != null && day != null)
+               model.AddUserViewModel.Birthday = $"{year}-{month}-{day}";
+
+            foreach (var typeU in model.UserViewModel?.TypeUsers)
+            {
+               model.AddUserViewModel.TypeUsers += typeU.Id + " ";
+            }
+         }
+         
          model.Types = await _types.GetTypes();
          if (model.EditResumeViewModel == null)
          {

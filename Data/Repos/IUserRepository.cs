@@ -15,6 +15,7 @@ namespace EduSciencePro.Data.Repos
       Task<UserViewModel> GetUserViewModelByEmail(string email);
       Task Save(AddUserViewModel model);
       Task Update(AddUserViewModel model, User editUser);
+      Task UpdatePassword(User user);
       Task Delete(User user);
       Task DeleteImage(Guid userId);
    }

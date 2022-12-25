@@ -100,6 +100,7 @@
 
 function Cross_Click(e) {
     $(e).parent().parent().addClass('d-none');
+    $(e).parent().parent().next().addClass('d-none');
     $(e).prev().val("");
     if ($("#Link_Select").hasClass('d-none')) {
         $("#Link_Select").removeClass('d-none');

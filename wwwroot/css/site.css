@@ -129,7 +129,7 @@ input {
     background: white;
 }
 
-    #desktop_menu > p:hover {
+    #desktop_menu > a:hover {
         background: #D3D3D3;
     }
 

@@ -1,0 +1,19 @@
+﻿@using EduSciencePro.ViewModels.Request
+@model ForgotPasswordViewModel
+<div class="col-md-3 text-center">
+    <form class="m-3" method="post" asp-controller="User" asp-action="ConfirmationCode">
+
+        <h3 class="mb-5 mt-5">Подтверждение кода</h3>
+
+        <label asp-for="Email" class="w-100 text-start label_input"></label>
+        <p><input class="text-center w-100 p-1" placeholder="Email" asp-for="Email" value="@Model.Email" disabled></p>
+        <p><span asp-validation-for="Email" class="text-danger mb-3"></span></p>
+
+        <label asp-for="ConfirmationCode" class="w-100 text-start label_input"></label>
+        <p><input class="text-center w-100 p-1" placeholder="Код подтверждения" asp-for="ConfirmationCode"></p>
+        <p><span asp-validation-for="ConfirmationCode" class="text-danger mb-3"></span></p>
+
+        <p><button class="button form-control-plaintext m-auto w-50 mt-4">Подтвердить</button></p>
+
+    </form>
+</div>

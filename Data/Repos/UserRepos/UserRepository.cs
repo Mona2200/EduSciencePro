@@ -104,8 +104,8 @@ namespace EduSciencePro.Data.Repos.UserRepos
          foreach (var l in links)
             l.Url = l.Url.Replace(" ", "");
          userViewModel.Links = links;
-
-         userViewModel.Resume = await _resumes.GetResumeViewModelById((Guid)user.ResumeId);
+         if (user.ResumeId != null)
+            userViewModel.Resume = await _resumes.GetResumeViewModelById((Guid)user.ResumeId);
          userViewModel.Role = await _db.Roles.FirstOrDefaultAsync(r => r.Id == user.RoleId);
          return userViewModel;
       }
@@ -130,7 +130,8 @@ namespace EduSciencePro.Data.Repos.UserRepos
             l.Url = l.Url.Replace(" ", "");
          userViewModel.Links = links;
 
-         userViewModel.Resume = await _resumes.GetResumeViewModelById((Guid)user.ResumeId);
+         if (user.ResumeId != null)
+            userViewModel.Resume = await _resumes.GetResumeViewModelById((Guid)user.ResumeId);
          userViewModel.Role = await _db.Roles.FirstOrDefaultAsync(r => r.Id == user.RoleId);
          return userViewModel;
       }
@@ -307,6 +308,15 @@ namespace EduSciencePro.Data.Repos.UserRepos
          var entry = _db.Entry(editUser);
          if (entry.State == EntityState.Detached)
             _db.Users.Update(editUser);
+
+         await _db.SaveChangesAsync();
+      }
+
+      public async Task UpdatePassword(User user)
+      {
+         var entry = _db.Entry(user);
+         if (entry.State == EntityState.Detached)
+            _db.Users.Update(user);
 
          await _db.SaveChangesAsync();
       }
