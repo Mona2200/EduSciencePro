@@ -72,6 +72,19 @@ namespace EduSciencePro.Data.Repos.UserRepos
          return userViewModels;
       }
 
+      public async Task<UserViewModel[]> ShortInfoUserViewModels()
+      {
+         var users = await _db.Users.ToArrayAsync();
+         var userViewModels = new UserViewModel[users.Length];
+         int i = 0;
+         foreach (var user in users)
+         {
+            userViewModels[i] = _mapper.Map<User, UserViewModel>(user);
+            userViewModels[i++].TypeUsers = await _types.GetTypesByUserId(user.Id);
+         }
+         return userViewModels;
+      }
+
       public async Task<UserViewModel> GetUserViewModelById(Guid id)
       {
          var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == id);

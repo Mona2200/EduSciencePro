@@ -352,8 +352,11 @@ namespace EduSciencePro.Controllers
       [Route("UsersFinding")]
       public async Task<IActionResult> UsersFinding(string search)
       {
-         var users = await _users.GetUserViewModels();
-         return View(users.Where(u => u.FullName.Contains(search)).ToArray());
+         var users = await _users.ShortInfoUserViewModels();
+         if (!String.IsNullOrEmpty(search))
+            return View(users.Where(u => u.FullName.Contains(search)).ToArray());
+         else
+            return View(users);
       }
 
       [HttpGet]

@@ -10,6 +10,7 @@ namespace EduSciencePro.Data.Repos
       Task<User> GetUserById(Guid id);
       Task<User> GetUserByEmail(string email);
       Task<UserViewModel[]> GetUserViewModels();
+      Task<UserViewModel[]> ShortInfoUserViewModels();
       Task<UserViewModel> GetUserViewModelById(Guid id);
       Task<UserViewModel> GetUserViewModelByEmail(string email);
       Task Save(AddUserViewModel model);

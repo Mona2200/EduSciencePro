@@ -27,25 +27,25 @@
                             </form>
                         </li>
                         <li class="nav-item m-2">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Контакты</a>
+                            <a class="nav-link text-dark">Контакты</a>
                         </li>
                         <li class="nav-item m-2">
                             @{
                                 if (Context.User.Identity.IsAuthenticated)
                                 {
-                                    <a class="nav-link text-dark" style="cursor:pointer;" id="Menu_Link">Меню</a>
+                                                        <a class="nav-link text-dark" style="cursor:pointer;" id="Menu_Link">Меню</a>
 
-                                    <div class="position-absolute border_blue menu_width d-none" id="desktop_menu">
-                                        <a asp-controller="User" asp-action="Main" class="p-2 border_bottom_dark m-0 d-block">Мой профиль</a>
-                                        <a class="p-2 border_bottom_dark m-0 d-block">Комментарии</a>
-                                        <a class="p-2 border_bottom_dark m-0 d-block">Подписки</a>
-                                        <a class="p-2 border_bottom_dark m-0 d-block">Сообщения</a>
-                                        <a asp-controller="User" asp-action="Logout" class="p-2 border_bottom_dark m-0 d-block">Выход</a>
-                                    </div>
+                                                        <div class="position-absolute border_blue menu_width d-none" id="desktop_menu">
+                                                            <a asp-controller="User" asp-action="Main" class="p-2 border_bottom_dark m-0 d-block">Мой профиль</a>
+                                                            <a class="p-2 border_bottom_dark m-0 d-block">Комментарии</a>
+                                                            <a class="p-2 border_bottom_dark m-0 d-block">Подписки</a>
+                                                            <a class="p-2 border_bottom_dark m-0 d-block">Сообщения</a>
+                                                            <a asp-controller="User" asp-action="Logout" class="p-2 border_bottom_dark m-0 d-block">Выход</a>
+                                                        </div>
                                 }
                                 else
                                 {
-                                    <a asp-controller="User" asp-action="Authenticate">Вход в личный кабинет</a>
+                                                        <a asp-controller="User" asp-action="Authenticate">Вход в личный кабинет</a>
                                 }
                             }
                         </li>
@@ -113,6 +113,23 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+@*    <script>
+        jQuery(function ($) {
+            $(".search_inp").keyup(function (e) {
+                $.ajax({
+                    url: '@Url.Action("UsersFinding", "User")',
+                    type: 'POST',
+                    data: { 'search': $(this).val() },
+                    success: function (data) {
+                        
+
+                    }
+                });
+            });
+        })
+    </script>*@
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
