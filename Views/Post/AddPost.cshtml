@@ -1,0 +1,20 @@
+﻿@using EduSciencePro.ViewModels.Request
+@model AddPostViewModel;
+
+<div class="col-md-3 text-center">
+    <form class="m-3" method="post" asp-controller="Post" asp-action="AddPost">
+
+        <h3 class="mb-5 mt-5">Создание публикации</h3>
+
+        <label asp-for="Title" class="w-100 text-start label_input"></label>
+        <p><input class="text-center w-100 p-1" placeholder="Название" asp-for="Title" value="@Model.Title"></p>
+        <p><span asp-validation-for="Title" class="text-danger mb-3"></span></p>
+
+        <label asp-for="Content" class="w-100 text-start label_input"></label>
+        <p><textarea class="text-center w-100 p-1" placeholder="Содержание" asp-for="Content" value="@Model.Content"></textarea></p>
+        <p><span asp-validation-for="Content" class="text-danger mb-3"></span></p>
+
+      @* <p><button class="button form-control-plaintext m-auto w-50 mt-4">Далее</button></p>*@
+
+    </form>
+</div>

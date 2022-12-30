@@ -41,13 +41,15 @@ namespace EduSciencePro.ViewModels.Request
 
       [Required(ErrorMessage = "Данное поле обязательно для заполнения")]
       [Display(Name = "Email")]
+      [RegularExpression(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$", ErrorMessage = "Используйте формат example@email.ru")]
       [EmailAddress]
       public string Email { get; set; }
 
       [Required(ErrorMessage = "Данное поле обязательно для заполнения")]
       [DataType(DataType.Password)]
       [Display(Name = "Пароль")]
-      [StringLength(20, ErrorMessage = "Поле {0} должно иметь минимум {2} и максимум {1} символов.", MinimumLength = 8)]
+      [StringLength(20, ErrorMessage = "Поле {0} должно иметь минимум {2} и максимум {1} символов", MinimumLength = 8)]
+      [RegularExpression("^(?=.*?[A-Za-zа-яА-Я])(?=.*?[0-9]).{8,}$", ErrorMessage = "Пароль должен содержать цифры и буквы любого регистра")]
       public string Password { get; set; }
 
       [Required(ErrorMessage = "Данное поле обязательно для заполнения")]

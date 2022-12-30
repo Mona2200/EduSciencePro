@@ -22,6 +22,8 @@ namespace EduSciencePro.Data
       public DbSet<ResumeSkill> ResumeSkills { get; set; }
       public DbSet<UserOrganization> UserOrganizations { get; set; }
 
+      public DbSet<Post> Posts { get; set; }
+
       public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
       {
          Database.EnsureCreated();
@@ -42,6 +44,8 @@ namespace EduSciencePro.Data
          builder.Entity<TypeUser>().ToTable("TypeUsers");
          builder.Entity<ResumeSkill>().ToTable("ResumeSkills");
          builder.Entity<UserOrganization>().ToTable("UserOrganizations");
+
+         builder.Entity<Post>().ToTable("Posts");
       }
    }
 }

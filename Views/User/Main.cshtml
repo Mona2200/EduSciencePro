@@ -129,4 +129,12 @@
         </div>
 
     </div>
+
+    <div class="border_blue p-4 m-3 bg-white">
+        @if (Context.User.Identity.Name == Model.Email)
+        {
+            <p><a class="button_light form-control-plaintext text-center m-auto w-25 p-2 mt-4" asp-controller="Post" asp-action="AddPost">Создать публикацию</a></p>
+        }
+        
+       </div>
 </div>

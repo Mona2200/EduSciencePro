@@ -89,6 +89,14 @@ input {
     border: 1px #CDE7FF solid;
 }
 
+.button_light {
+    background: #CDE7FF;
+}
+
+    .button_light:hover {
+        background: #89C4FB;
+    }
+
 .button_dark {
     background: #89C4FB;
 }
