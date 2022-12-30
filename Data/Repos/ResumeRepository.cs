@@ -34,8 +34,7 @@ namespace EduSciencePro.Data.Repos
       }
 
       public async Task<ResumeViewModel[]> GetResumeViewModels()
-      {63333333333333++++++++++++++++++++++++++tyh1000000g nb
-      v4
+      {
          var resumes = await GetResumes();
          var models = new ResumeViewModel[resumes.Length];
          int i = 0;
