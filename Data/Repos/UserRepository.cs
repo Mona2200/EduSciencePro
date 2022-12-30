@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata;
 using Type = EduSciencePro.Models.User.TypeModel;
 
-namespace EduSciencePro.Data.Repos.UserRepos
+namespace EduSciencePro.Data.Repos
 {
    public class UserRepository : IUserRepository
    {
@@ -364,5 +364,21 @@ namespace EduSciencePro.Data.Repos.UserRepos
 
          await _db.SaveChangesAsync();
       }
+   }
+
+   public interface IUserRepository
+   {
+      Task<User[]> GetUsers();
+      Task<User> GetUserById(Guid id);
+      Task<User> GetUserByEmail(string email);
+      Task<UserViewModel[]> GetUserViewModels();
+      Task<UserViewModel[]> ShortInfoUserViewModels();
+      Task<UserViewModel> GetUserViewModelById(Guid id);
+      Task<UserViewModel> GetUserViewModelByEmail(string email);
+      Task Save(AddUserViewModel model);
+      Task Update(AddUserViewModel model, User editUser);
+      Task UpdatePassword(User user);
+      Task Delete(User user);
+      Task DeleteImage(Guid userId);
    }
 }

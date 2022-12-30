@@ -33,19 +33,19 @@
                             @{
                                 if (Context.User.Identity.IsAuthenticated)
                                 {
-                                                        <a class="nav-link text-dark" style="cursor:pointer;" id="Menu_Link">Меню</a>
+                                                                                                <a class="nav-link text-dark" style="cursor:pointer;" id="Menu_Link">Меню</a>
 
-                                                        <div class="position-absolute border_blue menu_width d-none" id="desktop_menu">
-                                                            <a asp-controller="User" asp-action="Main" class="p-2 border_bottom_dark m-0 d-block">Мой профиль</a>
-                                                            <a class="p-2 border_bottom_dark m-0 d-block">Комментарии</a>
-                                                            <a class="p-2 border_bottom_dark m-0 d-block">Подписки</a>
-                                                            <a class="p-2 border_bottom_dark m-0 d-block">Сообщения</a>
-                                                            <a asp-controller="User" asp-action="Logout" class="p-2 border_bottom_dark m-0 d-block">Выход</a>
-                                                        </div>
+                                                                                                <div class="position-absolute border_blue menu_width d-none" id="desktop_menu">
+                                                                                                    <a asp-controller="User" asp-action="Main" class="p-2 border_bottom_dark m-0 d-block">Мой профиль</a>
+                                                                                                    <a class="p-2 border_bottom_dark m-0 d-block">Комментарии</a>
+                                                                                                    <a class="p-2 border_bottom_dark m-0 d-block">Подписки</a>
+                                                                                                    <a class="p-2 border_bottom_dark m-0 d-block">Сообщения</a>
+                                                                                                    <a asp-controller="User" asp-action="Logout" class="p-2 border_bottom_dark m-0 d-block">Выход</a>
+                                                                                                </div>
                                 }
                                 else
                                 {
-                                                        <a asp-controller="User" asp-action="Authenticate">Вход в личный кабинет</a>
+                                                                                                <a asp-controller="User" asp-action="Authenticate">Вход в личный кабинет</a>
                                 }
                             }
                         </li>
@@ -114,21 +114,105 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-@*    <script>
+    <script>
         jQuery(function ($) {
-            $(".search_inp").keyup(function (e) {
+            $(".EducationInput").keyup(function (e) {
+                $(".Search_Education p").each(function () {
+                    $(this).remove();
+                });
+                //if (!$(".Search_Education").hasClass('d-none')) {
+                //    $(".Search_Education").addClass('d-none');
+                //};
                 $.ajax({
-                    url: '@Url.Action("UsersFinding", "User")',
+                    url: '@Url.Action("GetEducation", "User")',
                     type: 'POST',
                     data: { 'search': $(this).val() },
                     success: function (data) {
-                        
+                        var width = $(".EducationInput").parent().width();
+                        for (var i = 0; i < data.length && i < 5; i++) {
+                            $(".Search_Education").append("<p onclick='Search_Education_Click(this)'>" + data[i].name + "</p>");
+                        };
+                        //if ($(".Search_Education").hasClass('d-none'))
+                        //{
+                        //    $(".Search_Education").removeClass('d-none');
+                        //};
+                    },
+                    error: function () {
 
                     }
                 });
             });
+
+            $(".PlaceWorkInput").keyup(function (e) {
+                $(".Search_PlaceWork p").each(function () {
+                    $(this).remove();
+                });
+                //if (!$(".Search_PlaceWork").hasClass('d-none')) {
+                //    $(".Search_PlaceWork").addClass('d-none');
+                //};
+                $.ajax({
+                    url: '@Url.Action("GetPlaceWork", "User")',
+                    type: 'POST',
+                    data: { 'search': $(this).val() },
+                    success: function (data) {
+                        for (var i = 0; i < data.length && i < 5; i++) {
+                            $(".Search_PlaceWork").append("<p onclick='Search_PlaceWork_Click(this)'>" + data[i].name + "</p>");
+                        };
+                        //if ($(".Search_PlaceWork").hasClass('d-none')) {
+                        //    $(".Search_PlaceWork").removeClass('d-none');
+                        //};
+                    },
+                    error: function () {
+
+                    }
+                });
+            });
+
+            $(".OrganizationInput").keyup(function (e) {
+                $(".Search_Organization p").each(function () {
+                    $(this).remove();
+                });
+
+                $(".field-validation-error[data-valmsg-for='AddResumeViewModel.Organization']").hide();
+                
+                //if (!$(".Search_PlaceWork").hasClass('d-none')) {
+                //    $(".Search_PlaceWork").addClass('d-none');
+                //};
+                if ($(this).val() != '')
+                {
+                    $.ajax({
+                        url: '@Url.Action("GetOrganization", "User")',
+                        type: 'POST',
+                        data: { 'search': $(this).val() },
+                        success: function (data) {
+                            if (data.length == 0) {
+                                if ($(".Not_Found_Organization").length == 0) {
+                                    $(".Search_Organization").after("<p class='Not_Found_Organization text-danger'>Организация не найдена</p>")
+                                }
+                            }
+                            else {
+                                $(".Not_Found_Organization").remove();
+                                for (var i = 0; i < data.length && i < 5; i++) {
+                                    $(".Search_Organization").append("<p onclick='Search_Organization_Click(this)'>" + data[i].name + "</p>");
+                                };
+                            }
+                            
+                            
+                            //if ($(".Search_PlaceWork").hasClass('d-none')) {
+                            //    $(".Search_PlaceWork").removeClass('d-none');
+                            //};
+                        },
+                        error: function () {
+
+                        }
+                    });
+                }
+                else {
+                    $(".Not_Found_Organization").remove();
+                }
+            });
         })
-    </script>*@
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

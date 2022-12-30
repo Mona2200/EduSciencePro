@@ -1,6 +1,10 @@
 ﻿$(document).ready(function () {
 
+    $(".Search_Education").width($(".EducationInput").parent().width() - 2 + "px");
 
+    $(".Search_PlaceWork").width($(".PlaceWorkInput").parent().width() - 2 + "px");
+
+    $(".Search_Organization").width($(".OrganizationInput").parent().width() - 2 + "px");
 
     $("#Link_Select").val("");
 
@@ -97,6 +101,27 @@
     //});
 
 })
+
+function Search_Education_Click(e) {
+    $(".EducationInput").val($(e).text());
+    $(".Search_Education p").each(function () {
+        $(this).remove();
+    });
+};
+
+function Search_PlaceWork_Click(e) {
+    $(".PlaceWorkInput").val($(e).text());
+    $(".Search_PlaceWork p").each(function () {
+        $(this).remove();
+    });
+};
+
+function Search_Organization_Click(e) {
+    $(".OrganizationInput").val($(e).text());
+    $(".Search_Organization p").each(function () {
+        $(this).remove();
+    });
+};
 
 function Cross_Click(e) {
     $(e).parent().parent().addClass('d-none');

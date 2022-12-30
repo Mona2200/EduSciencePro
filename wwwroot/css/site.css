@@ -1,18 +1,18 @@
 @import url("../fonts/Geometria/stylesheet.css");
 
 html {
-  font-size: 12px;
+    font-size: 12px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 14px;
-  }
+    html {
+        font-size: 14px;
+    }
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
@@ -92,6 +92,7 @@ input {
 .button_dark {
     background: #89C4FB;
 }
+
     .button_dark:hover {
         background: #65B5FF;
     }
@@ -162,10 +163,30 @@ input {
     font-size: 16px;
     padding: 5px 0;
 }
+
     .underline::after {
         display: block;
         content: ' ';
         height: 1px;
         background-color: black;
         width: 30px;
+    }
+
+.Search {
+    background: white;
+    transform: translateY(-1.1rem);
+    border-bottom: 1px black solid;
+    border-right: 1px black solid;
+    border-left: 1px black solid;
+    margin: 0;
+}
+
+    .Search > p {
+        border-top: 1px #D3D3D3 solid;
+        padding: 0.5rem;
+        margin: 0;
+    }
+
+    .Search > p:hover {
+        background-color: #D3D3D3;
     }

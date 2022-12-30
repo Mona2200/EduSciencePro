@@ -9,7 +9,6 @@ namespace EduSciencePro.Models.User
         public string? DateGraduationEducation { get; set; }
         public string? Specialization { get; set; }
         public Guid? PlaceWorkId { get; set; }
-        public Guid? OrganizationId { get; set; }
         //public QualificationImprovement QualificationImprovement { get; set; }
         //public DateOnly DateGraduationImprovement { get; set; }
         public string? AboutYourself { get; set; }

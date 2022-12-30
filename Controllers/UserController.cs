@@ -20,14 +20,22 @@ namespace EduSciencePro.Controllers
       private readonly IRoleRepository _roles;
       private readonly ITypeRepository _types;
       private readonly IResumeRepository _resumes;
+
+      private readonly IEducationRepository _educations;
+      private readonly IPlaceWorkRepository _placeWorks;
+      private readonly IOrganizationRepository _organizations;
+
       private readonly IMapper _mapper;
-      public UserController(IUserRepository users, IRoleRepository roles, ITypeRepository types, IResumeRepository resumes, IMapper mapper)
+      public UserController(IUserRepository users, IRoleRepository roles, ITypeRepository types, IResumeRepository resumes, IMapper mapper, IEducationRepository education, IPlaceWorkRepository placeWork, IOrganizationRepository organizations)
       {
          _users = users;
          _roles = roles;
          _types = types;
          _resumes = resumes;
          _mapper = mapper;
+         _educations = education;
+         _placeWorks = placeWork;
+         _organizations = organizations;
       }
 
       public async Task<IActionResult> Index()
@@ -313,7 +321,7 @@ namespace EduSciencePro.Controllers
          }
          else
          {
-            await _resumes.Update(resume, model.AddResumeViewModel);
+            await _resumes.Update(user, resume, model.AddResumeViewModel);
          }
 
          return RedirectToAction("Main");
@@ -365,6 +373,46 @@ namespace EduSciencePro.Controllers
       public async Task<IActionResult> ForgotPassword()
       {
          return View(new ForgotPasswordViewModel());
+      }
+
+      [HttpPost]
+      [Route("GetEducation")]
+      public async Task<Education[]> GetEducation(string search) => await _educations.GetEducationsSearch(search);
+
+      [HttpPost]
+      [Route("GetPlaceWork")]
+      public async Task<PlaceWork[]> GetPlaceWork(string search) => await _placeWorks.GetPlaceWorksSearch(search);
+
+      [HttpPost]
+      [Route("GetOrganization")]
+      public async Task<Organization[]> GetOrganization(string search) => await _organizations.GetOrganizationsSearch(search);
+
+      [HttpGet]
+      [Route("AddOrganization")]
+      public async Task<IActionResult> AddOrganization() => View(new AddOrganizationViewModel());
+
+      [HttpPost]
+      [Route("AddOrganization")]
+      public async Task<IActionResult> AddOrganization(AddOrganizationViewModel model)
+      {
+         ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+         var user = await _users.GetUserByEmail(claimEmail);
+
+         foreach (var error in ModelState)
+         {
+            if (error.Value.Errors.Count > 0)
+            {
+               ModelState.AddModelError(error.Key, ModelState[error.Key].Errors[0].ErrorMessage);
+               return View(model);
+            }
+         }
+
+         var organization = new Organization() { Name = model.Name, Description = model.Description, LeaderId = user.Id };
+         await _organizations.Save(user, organization);
+
+         return RedirectToAction("Main");
+
       }
 
       [HttpPost]
@@ -485,7 +533,7 @@ namespace EduSciencePro.Controllers
                model.AddUserViewModel.TypeUsers += typeU.Id + " ";
             }
          }
-         
+
          model.Types = await _types.GetTypes();
          if (model.EditResumeViewModel == null)
          {
@@ -518,6 +566,16 @@ namespace EduSciencePro.Controllers
          {
             ModelState.AddModelError($"AddResumeViewModel.DateGraduationEducation", $"{ModelState["AddResumeViewModel.DateGraduationEducation"].Errors[0].ErrorMessage}");
             return await GetEditUserViewModel(user, new EditUserViewModel() { EditResumeViewModel = model });
+         }
+
+         if (!String.IsNullOrEmpty(model.AddResumeViewModel.Organization))
+         {
+            var trOrganization = await _organizations.GetOrganizationsSearch(model.AddResumeViewModel.Organization);
+            if (trOrganization.Length == 0)
+            {
+               ModelState.AddModelError("AddResumeViewModel.Organization", "Организация не найдена");
+               return await GetEditUserViewModel(user, new EditUserViewModel() { EditResumeViewModel = model });
+            }
          }
 
          return null;

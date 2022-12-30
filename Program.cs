@@ -1,7 +1,6 @@
 using EduSciencePro;
 using EduSciencePro.Data;
 using EduSciencePro.Data.Repos;
-using EduSciencePro.Data.Repos.UserRepos;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -17,6 +16,10 @@ builder.Services.AddSingleton<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IRoleRepository, RoleRepository>();
 builder.Services.AddSingleton<ITypeRepository, TypeRepository>();
 builder.Services.AddSingleton<IResumeRepository, ResumeRepository>();
+
+builder.Services.AddSingleton<IEducationRepository, EducationRepository>();
+builder.Services.AddSingleton<IPlaceWorkRepository, PlaceWorkRepository>();
+builder.Services.AddSingleton<IOrganizationRepository, OrganizationRepository>();
 
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection), ServiceLifetime.Singleton);

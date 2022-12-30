@@ -1,0 +1,19 @@
+﻿@using EduSciencePro.ViewModels.Request
+@model AddOrganizationViewModel
+<div class="col-md-3 text-center">
+    <form class="m-3" method="post" asp-controller="User" asp-action="AddOrganization">
+
+        <h3 class="mb-5 mt-5">Добавление организации</h3>
+
+        <label asp-for="Name" class="w-100 text-start label_input"></label>
+        <p><input class="text-center w-100 p-1" placeholder="Название" asp-for="Name" value="@Model.Name"></p>
+        <p><span asp-validation-for="Name" class="text-danger mb-3"></span></p>
+
+        <label asp-for="Description" class="w-100 text-start label_input"></label>
+        <p><textarea class="text-center w-100 p-1" placeholder="Описание" asp-for="Description" value="@Model.Description"></textarea></p>
+        <p><span asp-validation-for="Description" class="text-danger mb-3"></span></p>
+
+        <p><button class="button form-control-plaintext m-auto w-50 mt-4">Далее</button></p>
+
+    </form>
+</div>

@@ -4,7 +4,7 @@ using EduSciencePro.ViewModels.Request;
 using EduSciencePro.ViewModels.Response;
 using Microsoft.EntityFrameworkCore;
 
-namespace EduSciencePro.Data.Repos.UserRepos
+namespace EduSciencePro.Data.Repos
 {
    public class ResumeRepository : IResumeRepository
    {
@@ -34,16 +34,22 @@ namespace EduSciencePro.Data.Repos.UserRepos
       }
 
       public async Task<ResumeViewModel[]> GetResumeViewModels()
-      {
+      {63333333333333++++++++++++++++++++++++++tyh1000000g nb
+      v4
          var resumes = await GetResumes();
          var models = new ResumeViewModel[resumes.Length];
          int i = 0;
          foreach (var res in resumes)
          {
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.ResumeId == res.Id);
+
             models[i] = _mapper.Map<Resume, ResumeViewModel>(res);
             models[i].PlaceWork = await _db.PlaceWorks.FirstOrDefaultAsync(p => p.Id == res.PlaceWorkId);
             models[i].Education = await _db.Educations.FirstOrDefaultAsync(e => e.Id == res.EducationId);
-            models[i].Organization = await _db.Organizations.FirstOrDefaultAsync(o => o.Id == res.OrganizationId);
+
+            var userOrg = await _db.UserOrganizations.FirstOrDefaultAsync(u => u.IdUser == user.Id);
+            if (userOrg != null)
+               models[i].Organization = await _db.Organizations.FirstOrDefaultAsync(o => o.Id == userOrg.IdOrganization);
 
             var resumeSkills = await _db.ResumeSkills.Where(rs => rs.ResumeId == res.Id).ToArrayAsync();
             var skills = new Skill[resumeSkills.Length];
@@ -62,13 +68,18 @@ namespace EduSciencePro.Data.Repos.UserRepos
 
       public async Task<ResumeViewModel> GetResumeViewModelById(Guid id)
       {
+         var user = await _db.Users.FirstOrDefaultAsync(u => u.ResumeId == id);
+
          var resume = await GetResumeById(id);
          if (resume == null)
             return new ResumeViewModel();
          var model = _mapper.Map<Resume, ResumeViewModel>(resume);
          model.PlaceWork = await _db.PlaceWorks.FirstOrDefaultAsync(p => p.Id == resume.PlaceWorkId);
          model.Education = await _db.Educations.FirstOrDefaultAsync(e => e.Id == resume.EducationId);
-         model.Organization = await _db.Organizations.FirstOrDefaultAsync(o => o.Id == resume.OrganizationId);
+
+         var userOrg = await _db.UserOrganizations.FirstOrDefaultAsync(u => u.IdUser == user.Id);
+         if (userOrg != null)
+            model.Organization = await _db.Organizations.FirstOrDefaultAsync(o => o.Id == userOrg.IdOrganization);
 
          var resumeSkills = await _db.ResumeSkills.Where(rs => rs.ResumeId == resume.Id).ToArrayAsync();
          var skills = new Skill[resumeSkills.Length];
@@ -92,7 +103,10 @@ namespace EduSciencePro.Data.Repos.UserRepos
          ResumeViewModel model = _mapper.Map<Resume, ResumeViewModel>(resume);
          model.PlaceWork = await _db.PlaceWorks.FirstOrDefaultAsync(p => p.Id == resume.PlaceWorkId);
          model.Education = await _db.Educations.FirstOrDefaultAsync(e => e.Id == resume.EducationId);
-         model.Organization = await _db.Organizations.FirstOrDefaultAsync(o => o.Id == resume.OrganizationId);
+
+         var userOrg = await _db.UserOrganizations.FirstOrDefaultAsync(u => u.IdUser == userId);
+         if (userOrg != null)
+            model.Organization = await _db.Organizations.FirstOrDefaultAsync(o => o.Id == userOrg.IdOrganization);
 
          var resumeSkills = await _db.ResumeSkills.Where(rs => rs.ResumeId == resume.Id).ToArrayAsync();
          var skills = new Skill[resumeSkills.Length];
@@ -142,13 +156,20 @@ namespace EduSciencePro.Data.Repos.UserRepos
             else
             {
                var placeWork = new PlaceWork() { Name = model.PlaceWork };
-               await _db.AddAsync(placeWork);
+               await _db.PlaceWorks.AddAsync(placeWork);
                resume.PlaceWorkId = placeWork.Id;
             }
 
          }
-         //if (!String.IsNullOrEmpty(model.Organization))
-         //resume.Organization = new Organization() { Name = model.Organization };
+         if (!String.IsNullOrEmpty(model.Organization))
+         {
+            var tryOrganization = await _db.Organizations.FirstOrDefaultAsync(o => o.Name == model.Organization);
+            if (tryOrganization != null)
+            {
+               var userOrganization = new UserOrganization() { IdOrganization = tryOrganization.Id, IdUser = user.Id };
+               await _db.UserOrganizations.AddAsync(userOrganization);
+            }
+         }
          if (!String.IsNullOrEmpty(model.Skills))
          {
             var nameskills = model.Skills.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -184,7 +205,7 @@ namespace EduSciencePro.Data.Repos.UserRepos
          await _db.SaveChangesAsync();
       }
 
-      public async Task Update(Resume editResume, AddResumeViewModel newResume)
+      public async Task Update(User user, Resume editResume, AddResumeViewModel newResume)
       {
          if (!String.IsNullOrEmpty(newResume.Education))
          {
@@ -200,7 +221,7 @@ namespace EduSciencePro.Data.Repos.UserRepos
          }
          else
          {
-               editResume.EducationId= null;
+            editResume.EducationId = null;
          }
 
          if (!String.IsNullOrEmpty(newResume.DateGraduationEducation))
@@ -230,8 +251,15 @@ namespace EduSciencePro.Data.Repos.UserRepos
          {
             editResume.PlaceWorkId = null;
          }
-         //if (!String.IsNullOrEmpty(newResume.Organization))
-         //editResume.Organization = new Organization() { Name = newResume.Organization };
+         if (!String.IsNullOrEmpty(newResume.Organization))
+         {
+            var tryOrganization = await _db.Organizations.FirstOrDefaultAsync(o => o.Name == newResume.Organization);
+            if (tryOrganization != null)
+            {
+               var userOrganization = new UserOrganization() { IdOrganization = tryOrganization.Id, IdUser = user.Id };
+               await _db.UserOrganizations.AddAsync(userOrganization);
+            }
+         }
          var oldResumeSkills = await _db.ResumeSkills.Where(rs => rs.ResumeId == editResume.Id).ToArrayAsync();
          foreach (var rs in oldResumeSkills)
          {
@@ -279,5 +307,21 @@ namespace EduSciencePro.Data.Repos.UserRepos
       {
          return await _db.Skills.ToArrayAsync();
       }
+   }
+
+   public interface IResumeRepository
+   {
+      Task<Resume[]> GetResumes();
+      Task<Resume> GetResumeById(Guid id);
+      Task<Resume> GetResumeByUserId(Guid userId);
+      Task<ResumeViewModel[]> GetResumeViewModels();
+      Task<ResumeViewModel> GetResumeViewModelById(Guid id);
+      Task<ResumeViewModel> GetResumeViewModelByUserId(Guid userId);
+
+      Task Save(User user, AddResumeViewModel resume);
+      Task Update(User user, Resume editResume, AddResumeViewModel newResume);
+      Task Delete(Resume resume);
+
+      Task<Skill[]> GetSkills();
    }
 }

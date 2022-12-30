@@ -11,7 +11,7 @@
             skills += skill.Name + " ";
         }
     }
-    string[] NameEducations = {};
+    string[] NameEducations = { };
     if (Model.AllEducations != null)
     {
         NameEducations = new string[Model.AllEducations.Length];
@@ -21,14 +21,14 @@
         }
     }
 }
-    
-    <form enctype="multipart/form-data" class="m-3" method="post" asp-controller="User" asp-action="EditResume">
+
+<form enctype="multipart/form-data" class="m-3" method="post" asp-controller="User" asp-action="EditResume">
 
     <h3 class="mb-5 mt-5">Редактирование резюме</h3>
 
     <label asp-for="AddResumeViewModel.Education" class="w-100 text-start label_input"></label>
-    <p><input class="text-center w-100 p-1" placeholder="Образование" asp-for="AddResumeViewModel.Education" value="@Model.Resume?.Education?.Name"></p>
-    <p class="Search_Education w-100 position-absolute"></p>
+    <p><input class="EducationInput text-center w-100 p-1" placeholder="Образование" asp-for="AddResumeViewModel.Education" value="@Model.Resume?.Education?.Name"></p>
+    <p class="Search_Education Search position-absolute m-0"></p>
     <p><span asp-validation-for="AddResumeViewModel.Education" class="text-danger mb-3"></span></p>
 
     <label asp-for="AddResumeViewModel.DateGraduationEducation" class="w-100 text-start label_input"></label>
@@ -40,12 +40,14 @@
     <p><span asp-validation-for="AddResumeViewModel.Specialization" class="text-danger mb-3"></span></p>
 
     <label asp-for="AddResumeViewModel.PlaceWork" class="w-100 text-start label_input"></label>
-    <p><input class="text-center w-100 p-1" placeholder="Место работы" asp-for="AddResumeViewModel.PlaceWork" value="@Model.Resume?.PlaceWork?.Name"></p>
+    <p><input class="PlaceWorkInput text-center w-100 p-1" placeholder="Место работы" asp-for="AddResumeViewModel.PlaceWork" value="@Model.Resume?.PlaceWork?.Name"></p>
+    <p class="Search_PlaceWork Search position-absolute m-0"></p>
     <p><span asp-validation-for="AddResumeViewModel.PlaceWork" class="text-danger mb-3"></span></p>
 
-@*    <label asp-for="AddResumeViewModel.Organization" class="w-100 text-start label_input"></label>
-    <p><input class="text-center w-100 p-1" placeholder="Организация" asp-for="AddResumeViewModel.Organization" value="@Model.Resume?.Organization?.Name"></p>
-    <p><span asp-validation-for="AddResumeViewModel.Organization" class="text-danger mb-3"></span></p>*@
+    <label asp-for="AddResumeViewModel.Organization" class="w-100 text-start label_input"></label>
+    <p><input class="OrganizationInput text-center w-100 p-1" placeholder="Организация" asp-for="AddResumeViewModel.Organization" value="@Model.Resume?.Organization?.Name"><a asp-action="AddOrganization" asp-controller="User" class="ml-2 position-absolute" style="transform: translateY(25%);">Добавить организацию</a></p>
+    <p class="Search_Organization Search position-absolute m-0"></p>
+    <p><span asp-validation-for="AddResumeViewModel.Organization" class="text-danger mb-3"></span></p>
 
     <label asp-for="AddResumeViewModel.Skills" class="w-100 text-start label_input"></label>
     <input id="Skills_Value" class="d-none" asp-for="AddResumeViewModel.Skills" value="@skills">
@@ -55,7 +57,7 @@
         {
             foreach (var skill in Model.Resume.Skills)
             {
-                    <p class="text-start"><span class="p-1" style="background-color: #e9ecef;">@skill.Name</span><img onclick="Cross_Click_Skills(this)" class="Cross ml-2 position-absolute" style="transform: translateY(40%);" src="src/Cross.svg" /></p>
+                <p class="text-start"><span class="p-1" style="background-color: #e9ecef;">@skill.Name</span><img onclick="Cross_Click_Skills(this)" class="Cross ml-2 position-absolute" style="transform: translateY(40%);" src="src/Cross.svg" /></p>
             }
         }
     </div>
@@ -69,4 +71,6 @@
 
     <p><button class="button form-control-plaintext m-auto w-50 mt-4">Сохранить</button></p>
 
-    </form>
+</form>
+
+

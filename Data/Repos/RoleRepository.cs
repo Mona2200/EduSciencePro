@@ -2,7 +2,7 @@
 using EduSciencePro.Models.User;
 using Microsoft.EntityFrameworkCore;
 
-namespace EduSciencePro.Data.Repos.UserRepos
+namespace EduSciencePro.Data.Repos
 {
    public class RoleRepository : IRoleRepository
    {
@@ -41,5 +41,15 @@ namespace EduSciencePro.Data.Repos.UserRepos
          _db.Roles.Remove(role);
          await _db.SaveChangesAsync();
       }
+   }
+
+    public interface IRoleRepository
+   {
+      Task<Role[]> GetRoles();
+      Task<Role> GetRoleById(Guid id);
+
+      Task<Role> GetRoleByName(string name);
+      Task Save(Role user);
+      Task Delete(Role user);
    }
 }
