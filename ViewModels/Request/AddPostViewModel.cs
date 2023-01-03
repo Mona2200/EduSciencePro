@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Reflection.Metadata;
 
 namespace EduSciencePro.ViewModels.Request
 {
@@ -13,8 +14,13 @@ namespace EduSciencePro.ViewModels.Request
       public string Content{ get; set; }
 
       [Display(Name = "Обложка")]
-      public byte[]? Cover { get; set; }
+      public IFormFile? Cover { get; set; }
 
+      [Display(Name = "Теги")]
       public string? Tags { get; set; }
+
+      public bool IsNew { get; set; }
+
+      public Guid? UserId { get; set; }
     }
 }

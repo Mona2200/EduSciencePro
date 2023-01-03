@@ -21,6 +21,9 @@ builder.Services.AddSingleton<IEducationRepository, EducationRepository>();
 builder.Services.AddSingleton<IPlaceWorkRepository, PlaceWorkRepository>();
 builder.Services.AddSingleton<IOrganizationRepository, OrganizationRepository>();
 
+builder.Services.AddSingleton<ITagRepository, TagRepository>();
+builder.Services.AddSingleton<IPostRepository, PostRepository>();
+
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection), ServiceLifetime.Singleton);
 

@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/EduSciencePro.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
 </head>
 <body>
     <header>
@@ -33,19 +34,19 @@
                             @{
                                 if (Context.User.Identity.IsAuthenticated)
                                 {
-                                                                                                <a class="nav-link text-dark" style="cursor:pointer;" id="Menu_Link">Меню</a>
+                                                                                                                                                                                                                                                            <a class="nav-link text-dark" style="cursor:pointer;" id="Menu_Link">Меню</a>
 
-                                                                                                <div class="position-absolute border_blue menu_width d-none" id="desktop_menu">
-                                                                                                    <a asp-controller="User" asp-action="Main" class="p-2 border_bottom_dark m-0 d-block">Мой профиль</a>
-                                                                                                    <a class="p-2 border_bottom_dark m-0 d-block">Комментарии</a>
-                                                                                                    <a class="p-2 border_bottom_dark m-0 d-block">Подписки</a>
-                                                                                                    <a class="p-2 border_bottom_dark m-0 d-block">Сообщения</a>
-                                                                                                    <a asp-controller="User" asp-action="Logout" class="p-2 border_bottom_dark m-0 d-block">Выход</a>
-                                                                                                </div>
+                                                                                                                                                                                                                                                            <div class="position-absolute border_blue menu_width d-none" id="desktop_menu">
+                                                                                                                                                                                                                                                                <a asp-controller="User" asp-action="Main" class="p-2 border_bottom_dark m-0 d-block">Мой профиль</a>
+                                                                                                                                                                                                                                                                <a class="p-2 border_bottom_dark m-0 d-block">Комментарии</a>
+                                                                                                                                                                                                                                                                <a class="p-2 border_bottom_dark m-0 d-block">Подписки</a>
+                                                                                                                                                                                                                                                                <a class="p-2 border_bottom_dark m-0 d-block">Сообщения</a>
+                                                                                                                                                                                                                                                                <a asp-controller="User" asp-action="Logout" class="p-2 border_bottom_dark m-0 d-block">Выход</a>
+                                                                                                                                                                                                                                                            </div>
                                 }
                                 else
                                 {
-                                                                                                <a asp-controller="User" asp-action="Authenticate">Вход в личный кабинет</a>
+                                                                                                                                                                                                                                                            <a asp-controller="User" asp-action="Authenticate">Вход в личный кабинет</a>
                                 }
                             }
                         </li>
@@ -112,10 +113,25 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+    <script src="https://uicdn.toast.com/editor/latest/i18n/ru-ru.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     <script>
         jQuery(function ($) {
+
+            const Editor = toastui.Editor;
+
+            const editor = new Editor({
+                el: document.querySelector('#editor'),
+                initialEditType: 'wysiwyg',
+                height: '500px',
+                previewStyle: 'tab',
+                language: 'ru-RU',
+            });
+
+            $(".toastui-editor-mode-switch").css({display: "none"});
+
             $(".EducationInput").keyup(function (e) {
                 $(".Search_Education p").each(function () {
                     $(this).remove();
@@ -174,12 +190,11 @@
                 });
 
                 $(".field-validation-error[data-valmsg-for='AddResumeViewModel.Organization']").hide();
-                
+
                 //if (!$(".Search_PlaceWork").hasClass('d-none')) {
                 //    $(".Search_PlaceWork").addClass('d-none');
                 //};
-                if ($(this).val() != '')
-                {
+                if ($(this).val() != '') {
                     $.ajax({
                         url: '@Url.Action("GetOrganization", "User")',
                         type: 'POST',
@@ -196,8 +211,8 @@
                                     $(".Search_Organization").append("<p onclick='Search_Organization_Click(this)'>" + data[i].name + "</p>");
                                 };
                             }
-                            
-                            
+
+
                             //if ($(".Search_PlaceWork").hasClass('d-none')) {
                             //    $(".Search_PlaceWork").removeClass('d-none');
                             //};
@@ -210,6 +225,57 @@
                 else {
                     $(".Not_Found_Organization").remove();
                 }
+            });
+
+            //$(".TagsInput").keyup(function (e) {
+            //    $(".Search_Tags p").each(function () {
+            //        $(this).remove();
+            //    });
+            //    $.ajax({
+            //        url: '@Url.Action("GetTagsSearch", "Post")',
+            //        type: 'POST',
+            //        data: { 'search': $(this).val() },
+            //        success: function (data) {
+            //            for (var i = 0; i < data.length && i < 5; i++) {
+            //                $(".Search_Tags").append("<p onclick='Search_Tags_Click(this)'>" + data[i].name + "</p>");
+            //            };
+            //        },
+            //        error: function () {
+
+            //        }
+            //    });
+            //});
+
+            $("#button_addpost").click(function () {
+                var html = $("#editor").find(".ProseMirror.toastui-editor-contents").html();
+                $('input[name="Content"]').val(html);
+                var file = $('input[type="file"]')[1].files[0];
+                var model = new FormData();
+                model.append('Title', $(".input_title_post").val());
+                model.append('IsNew', $(".publ_inp:checked").val());
+                model.append('Content', $('input[name="Content"]').val());
+                model.append('Tags', $("#tags_input").val());
+                model.append('Cover', file);
+
+                var headers = {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'RequestVerificationToken': $scope.token,
+                    'Content-Type': 'text/html; charset=utf-8;'
+                };
+                
+                $.ajax({
+                    url: '@Url.Action("AddPost", "Post")',
+                    type: 'POST',
+                    headers: headers,
+                    cache: true,
+                    data: model,
+                    success: function (data) {
+                        console.log(true);
+                    },
+                    error: function () {
+
+                    }
+                });
             });
         })
     </script>

@@ -22,7 +22,11 @@ namespace EduSciencePro.Data
       public DbSet<ResumeSkill> ResumeSkills { get; set; }
       public DbSet<UserOrganization> UserOrganizations { get; set; }
 
-      public DbSet<Post> Posts { get; set; }
+      public DbSet<NewsPost> News { get; set; }
+      public DbSet<DiscussionPost> Discussions { get; set; }
+      public DbSet<Tag> Tags { get; set; }
+
+      public DbSet<TagPost> TagPosts { get; set; }
 
       public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
       {
@@ -45,7 +49,10 @@ namespace EduSciencePro.Data
          builder.Entity<ResumeSkill>().ToTable("ResumeSkills");
          builder.Entity<UserOrganization>().ToTable("UserOrganizations");
 
-         builder.Entity<Post>().ToTable("Posts");
+         builder.Entity<NewsPost>().ToTable("News");
+         builder.Entity<DiscussionPost>().ToTable("Discussions");
+         builder.Entity<Tag>().ToTable("Tags");
+         builder.Entity<TagPost>().ToTable("TagPosts");
       }
    }
 }

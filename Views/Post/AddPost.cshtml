@@ -1,20 +1,38 @@
 ﻿@using EduSciencePro.ViewModels.Request
 @model AddPostViewModel;
 
-<div class="col-md-3 text-center">
-    <form class="m-3" method="post" asp-controller="Post" asp-action="AddPost">
+<div class="col-md-8">
+    <form class="text-center d-flex flex-column" method='post' enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
 
         <h3 class="mb-5 mt-5">Создание публикации</h3>
 
-        <label asp-for="Title" class="w-100 text-start label_input"></label>
-        <p><input class="text-center w-100 p-1" placeholder="Название" asp-for="Title" value="@Model.Title"></p>
-        <p><span asp-validation-for="Title" class="text-danger mb-3"></span></p>
+        <input class="d-none" asp-for="Content" name="Content"/>
+        <div id="editor" class="text-start border_black"></div>
 
-        <label asp-for="Content" class="w-100 text-start label_input"></label>
-        <p><textarea class="text-center w-100 p-1" placeholder="Содержание" asp-for="Content" value="@Model.Content"></textarea></p>
-        <p><span asp-validation-for="Content" class="text-danger mb-3"></span></p>
+        <label asp-for="Title" class="text-start label_input mt-4"></label>
+        <p class="col-md-6"><input class="input_title_post text-center w-100 p-1" placeholder="Название" name="Title" value="@Model.Title"></p>
+        <p><span asp-validation-for="Title" class="text-danger mb-3 col-md-6 text-start"></span></p>
 
-      @* <p><button class="button form-control-plaintext m-auto w-50 mt-4">Далее</button></p>*@
+        <label asp-for="Tags" class="text-start label_input mt-3"></label>
+        <input id="tags_input" class="d-none" name="Tags" value="@Model.Tags">
+        <p class="col-md-6 text-start"><input class="TagsInput text-center w-75 p-1" placeholder="Теги"><span id="tag_click" class="span_click">+</span></p>
+        <p class="Search_Tags position-absolute m-0"></p>
+        <div class="text-start mb-4" id="div_tags"></div>
+
+        <label class="text-start label_input mt-3">Опубликовать как</label>
+        <div class="col-md-4 d-flex align-content-between mt-2">
+            <p class="mt-2 m-2"><input class="publ_inp" type="radio" name="IsNew" value="false" />Обсуждение</p>
+            <p class="mt-2 m-2"><input class="publ_inp" type="radio" name="IsNew" value="true" />Новость</p>
+        </div>
+
+        <div class="d-none div_cover">
+            <label asp-for="Cover" class="text-start label_input mt-4 w-100"></label>
+            <p class="col-md-6"><input type="file" name="Cover" class="text-center w-100 p-1" accept="image/jpeg,image/png"></p>
+        </div>
+
+        <p><button class="button form-control-plaintext m-auto w-50 mt-4" id="button_addpost">Опубликовать</button></p>
 
     </form>
 </div>
+
