@@ -177,10 +177,10 @@ input {
 
 .underline {
     font-size: 16px;
-    padding: 5px 0;
 }
 
     .underline::after {
+        margin-top: 2px;
         display: block;
         content: ' ';
         height: 1px;
@@ -210,3 +210,11 @@ input {
     .border_black {
         border: 1px black solid  !important;
     }
+.color-blue {
+    color: #89C4FB;
+}
+
+.title {
+    font-weight: 600;
+    font-size: 14px;
+}

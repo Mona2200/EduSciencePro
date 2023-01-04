@@ -1,0 +1,18 @@
+﻿@using EduSciencePro.ViewModels.Response
+@model PostViewModel[];
+
+@if (Model == null || Model.Length == 0)
+{
+    <p>Публикаций нет</p>
+}
+else
+{
+    @foreach (var post in Model)
+    {
+        <div class="mb-5 mt-5">
+            <p class="title">@post.Title</p>
+            <p class="color-blue">@post.CreatedDate</p>
+            <div class="mt-2">@Html.Raw(@post.Content)</div>
+       </div>
+    }
+}

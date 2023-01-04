@@ -47,7 +47,7 @@ namespace EduSciencePro.Controllers
             return RedirectToAction("Main");
          }
          else
-            return RedirectToAction("Authenticate");
+            return RedirectToAction("AllPosts", "Post");
       }
 
       [HttpGet]
@@ -419,6 +419,14 @@ namespace EduSciencePro.Controllers
       [Route("ForgotPassword")]
       public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
       {
+         var user = await _users.GetUserByEmail(model.Email);
+
+         if (user == null)
+         {
+            ModelState.AddModelError("Email", "Пользователь с такой почтой не найден");
+         return View(model);
+         }
+         
          Random random = new Random();
          const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
          string code = new string(Enumerable.Repeat(chars, 6).Select(s => s[random.Next(s.Length)]).ToArray());

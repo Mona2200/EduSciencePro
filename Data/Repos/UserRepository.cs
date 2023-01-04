@@ -109,6 +109,9 @@ namespace EduSciencePro.Data.Repos
          if (user.ResumeId != null)
             userViewModel.Resume = await _resumes.GetResumeViewModelById((Guid)user.ResumeId);
          userViewModel.Role = await _db.Roles.FirstOrDefaultAsync(r => r.Id == user.RoleId);
+
+         userViewModel.Posts = await _posts.GetPostViewModelsByUserId(user.Id);
+
          return userViewModel;
       }
 

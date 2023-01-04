@@ -1,0 +1,25 @@
+﻿@using EduSciencePro.ViewModels.Response
+@model AllPostsViewModel;
+
+<div class="col-md-12 row">
+   <div class="col-md-8 row">
+        <p class="underline mt-3 mb-3" style="margin-left:10px;">Новости</p>
+      @foreach (var news in Model.News)
+      {
+            <div class="col-md-6" style="padding:10px;">
+                <div class="position-relative" style="height:270px;background-image:url(data:image/jpeg;base64,@(Convert.ToBase64String(news.Cover)));background-position:center;background-size:cover;">
+                    <div style="height:270px;background: rgba(0, 0, 0, 0.6);left:0;right:0;" class="position-absolute"></div>
+                    <div style="height:270px;padding: 20px;left:0;right:0;" class="position-absolute d-flex flex-column justify-content-end">
+                        <p class="small color-blue">@news.CreatedDate</p>
+                        <p class="text-uppercase text-white">@news.Title</p>
+                    </div>
+                </div>
+            </div>
+            
+      }
+   </div>
+
+   <div class="col-md-4">
+        <p class="underline mt-3 mb-3" style="margin-left:10px;">Актуальные обсуждения</p>
+   </div>
+</div>

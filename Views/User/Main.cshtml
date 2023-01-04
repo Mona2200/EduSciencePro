@@ -135,18 +135,8 @@
         {
             <p><a class="button_light form-control-plaintext text-center m-auto w-25 p-2 mt-4" asp-controller="Post" asp-action="AddPost">Создать публикацию</a></p>
         }
-        @if (Model.Posts == null)
-        {
-           <p>Публикаций нет</p>
-        }
-        else
-        {
-           @foreach (var post in Model.Posts)
-           {
-               <p>@post.Title</p>
-               <p>@post.CreatedDate.Date</p>
-               <div>@Html.Raw(@post.Content)</div>
-           }
-        }
+        <div style="width:85%;margin:auto;">
+            @await Html.PartialAsync("~/Views/Post/Posts.cshtml", Model.Posts)
+        </div>      
     </div>
 </div>

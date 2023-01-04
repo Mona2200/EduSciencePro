@@ -2,6 +2,7 @@
 using EduSciencePro.Models;
 using EduSciencePro.Models.User;
 using EduSciencePro.ViewModels.Request;
+using EduSciencePro.ViewModels.Response;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Security.Claims;
@@ -59,6 +60,18 @@ namespace EduSciencePro.Controllers
          await _posts.Save(model);
 
          return RedirectToAction("Main", "User");
+      }
+
+      [HttpGet]
+      [Route("AllPosts")]
+      public async Task<IActionResult> AllPosts()
+      {
+         var posts = new AllPostsViewModel()
+         {
+            News = await _posts.GetPostViewModelsNews(),
+            Discuss = await _posts.GetPostViewModelsDiscussions()
+         };
+         return View(posts);
       }
 
       private bool PostValid(AddPostViewModel model)

@@ -33,6 +33,23 @@ namespace EduSciencePro.Data.Repos
          foreach (var post in posts)
          {
             postViewModels[i] = _mapper.Map<Post, PostViewModel>(post);
+
+            var day = post.CreatedDate.Day.ToString();
+            var month = post.CreatedDate.Month.ToString();
+            string date = "";
+
+            if (day.Length == 1)
+               date += "0" + day + ".";
+            else
+               date += day + ".";
+
+            if (month.Length == 1)
+               date += "0" + month + ".";
+            else
+               date += month + ".";
+            date += post.CreatedDate.Year;
+            postViewModels[i].CreatedDate = date;
+
             postViewModels[i++].Tags = await _tags.GetTagsByPostId(post.Id);
          }
          return postViewModels;
@@ -48,6 +65,83 @@ namespace EduSciencePro.Data.Repos
          foreach (var post in posts)
          {
             postViewModels[i] = _mapper.Map<Post, PostViewModel>(post);
+
+            var day = post.CreatedDate.Day.ToString();
+            var month = post.CreatedDate.Month.ToString();
+            string date = "";
+
+            if (day.Length == 1)
+               date += "0" + day + ".";
+            else
+               date += day + ".";
+
+            if (month.Length == 1)
+               date += "0" + month + ".";
+            else
+               date += month + ".";
+            date += post.CreatedDate.Year;
+            postViewModels[i].CreatedDate = date;
+
+            postViewModels[i++].Tags = await _tags.GetTagsByPostId(post.Id);
+         }
+         return postViewModels;
+      }
+
+      public async Task<PostViewModel[]> GetPostViewModelsNews()
+      {
+      var news = await _db.Posts.Where(p => p.IsNews == true).Take(4).ToArrayAsync();
+         var postViewModels = new PostViewModel[news.Length];
+         int i = 0;
+         foreach (var post in news)
+         {
+            postViewModels[i] = _mapper.Map<Post, PostViewModel>(post);
+
+            var day = post.CreatedDate.Day.ToString();
+            var month = post.CreatedDate.Month.ToString();
+            string date = "";
+
+            if (day.Length == 1)
+               date += "0" + day + ".";
+            else
+               date += day + ".";
+
+            if (month.Length == 1)
+               date += "0" + month + ".";
+            else
+               date += month + ".";
+            date += post.CreatedDate.Year;
+            postViewModels[i].CreatedDate = date;
+
+            postViewModels[i++].Tags = await _tags.GetTagsByPostId(post.Id);
+         }
+         return postViewModels;
+      }
+
+      public async Task<PostViewModel[]> GetPostViewModelsDiscussions()
+      {
+         var discus = await _db.Posts.Where(p => p.IsNews == false).Take(4).ToArrayAsync();
+         var postViewModels = new PostViewModel[discus.Length];
+         int i = 0;
+         foreach (var post in discus)
+         {
+            postViewModels[i] = _mapper.Map<Post, PostViewModel>(post);
+
+            var day = post.CreatedDate.Day.ToString();
+            var month = post.CreatedDate.Month.ToString();
+            string date = "";
+
+            if (day.Length == 1)
+               date += "0" + day + ".";
+            else
+               date += day + ".";
+
+            if (month.Length == 1)
+               date += "0" + month + ".";
+            else
+               date += month + ".";
+            date += post.CreatedDate.Year;
+            postViewModels[i].CreatedDate = date;
+
             postViewModels[i++].Tags = await _tags.GetTagsByPostId(post.Id);
          }
          return postViewModels;
@@ -74,6 +168,8 @@ namespace EduSciencePro.Data.Repos
             post.Cover = imageData;
          }
 
+         post.IsNews = model.IsNew;
+
          var entry = _db.Entry(post);
          if (entry.State == EntityState.Detached)
             await _db.Posts.AddAsync(post);
@@ -88,6 +184,8 @@ namespace EduSciencePro.Data.Repos
       Task<PostViewModel[]> GetPostViewModels();
       Task<Post[]> GetPostsByUserId(Guid userId);
       Task<PostViewModel[]> GetPostViewModelsByUserId(Guid userId);
+      Task<PostViewModel[]> GetPostViewModelsNews();
+      Task<PostViewModel[]> GetPostViewModelsDiscussions();
       //Task<Post> GetPostById(int id);
       //Task<Post[]> GetPostsByUserId(Guid userId);
 

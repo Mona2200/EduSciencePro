@@ -6,7 +6,7 @@ namespace EduSciencePro.ViewModels.Response
     {
       public string Title { get; set; }
       public string Content { get; set; }
-      public DateTime CreatedDate { get; set; }
+      public string CreatedDate { get; set; }
       public byte[]? Cover { get; set; }
       public bool IsNews { get; set; }
       public Tag[]? Tags { get; set; }
