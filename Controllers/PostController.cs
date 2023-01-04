@@ -51,19 +51,13 @@ namespace EduSciencePro.Controllers
             return View(model);
          }
 
-         if (model.IsNew)
+         IFormFileCollection files = Request.Form.Files;
+         if (files != null && files.Count != 0)
          {
-            IFormFileCollection files = Request.Form.Files;
-            if (files != null && files.Count != 0)
-            {
-               model.Cover = files[0];
-            }
-            var postId = await _posts.SaveNews(model);
+            model.Cover = files[0];
          }
-         else
-         {
-            var postId = await _posts.SaveDiscussion(model);
-         }
+         await _posts.Save(model);
+
          return RedirectToAction("Main", "User");
       }
 

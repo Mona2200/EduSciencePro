@@ -14,5 +14,7 @@ namespace EduSciencePro.ViewModels.Response
       public Link[]? Links { get; set; } = null;
       public ResumeViewModel? Resume { get; set; } = null;
       public Role Role { get; set; }
+
+      public PostViewModel[] Posts { get; set; }
    }
 }

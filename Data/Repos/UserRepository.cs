@@ -17,13 +17,15 @@ namespace EduSciencePro.Data.Repos
 
       private readonly IResumeRepository _resumes;
       private readonly ITypeRepository _types;
+      private readonly IPostRepository _posts;
 
-      public UserRepository(ApplicationDbContext db, IMapper mapper, IResumeRepository resumes, ITypeRepository types)
+      public UserRepository(ApplicationDbContext db, IMapper mapper, IResumeRepository resumes, ITypeRepository types, IPostRepository posts)
       {
          _db = db;
          _mapper = mapper;
          _resumes = resumes;
          _types = types;
+         _posts = posts;
       }
 
       public async Task<User[]> GetUsers()
@@ -133,6 +135,9 @@ namespace EduSciencePro.Data.Repos
          if (user.ResumeId != null)
             userViewModel.Resume = await _resumes.GetResumeViewModelById((Guid)user.ResumeId);
          userViewModel.Role = await _db.Roles.FirstOrDefaultAsync(r => r.Id == user.RoleId);
+
+         userViewModel.Posts = await _posts.GetPostViewModelsByUserId(user.Id);
+
          return userViewModel;
       }
 

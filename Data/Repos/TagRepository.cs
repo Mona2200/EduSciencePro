@@ -17,6 +17,18 @@ namespace EduSciencePro.Data.Repos
 
       public async Task<Tag[]> GetTags() => await _db.Tags.ToArrayAsync();
 
+      public async Task<Tag[]> GetTagsByPostId(Guid postId)
+      {
+         var tagPosts = await _db.TagPosts.Where(t => t.PostId == postId).ToArrayAsync();
+         var tags = new Tag[tagPosts.Length];
+         int i = 0;
+         foreach (var tagPost in tagPosts)
+         {
+            tags[i++] = await GetTagById(tagPost.TagId);
+         }
+         return tags;
+      }
+
       public async Task<Tag> GetTagById(Guid id) => await _db.Tags.FirstOrDefaultAsync(t => t.Id == id);
 
       public async Task<Tag> GetTagByName(string name) => await _db.Tags.FirstOrDefaultAsync(t => t.Name == name);
@@ -48,6 +60,7 @@ namespace EduSciencePro.Data.Repos
    public interface ITagRepository
    {
       Task<Tag[]> GetTags();
+      Task<Tag[]> GetTagsByPostId(Guid postId);
       Task<Tag> GetTagById(Guid id);
       Task<Tag[]> GetTagsSearch(string search);
       Task Save(string[] tags, Guid postId);
