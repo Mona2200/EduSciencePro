@@ -218,3 +218,8 @@ input {
     font-weight: 600;
     font-size: 14px;
 }
+
+.types_user {
+    width: 0;
+    flex-basis: 100%;
+}

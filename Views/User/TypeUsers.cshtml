@@ -44,10 +44,6 @@
     ClaimsIdentity identMenu = Context.User.Identity as ClaimsIdentity;
     var types = identMenu.Claims.Where(u => u.Type == ClaimTypes.Upn).ToArray();
     string[] typeArray = { };
-    TagBuilder div = new TagBuilder("div");
-    div.AddCssClass("d-flex");
-    div.AddCssClass("justify-content-between");
-    div.AddCssClass("align-items-center");   
     foreach (var type in types)
     {
         switch (type.Value)
@@ -78,8 +74,8 @@
         p.AddCssClass("m-4");
         p.AddCssClass("text-uppercase");
         p.AddCssClass("small");
+        p.AddCssClass("types_user");
         p.InnerHtml.AppendHtml(typel);
-        div.InnerHtml.AppendHtml(p);
+        @p
     }
-    @div
 }
