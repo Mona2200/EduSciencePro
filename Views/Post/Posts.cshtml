@@ -3,7 +3,7 @@
 
 @if (Model == null || Model.Length == 0)
 {
-    <p>Публикаций нет</p>
+    <p class="text-center mt-5">Публикаций нет</p>
 }
 else
 {
@@ -13,6 +13,12 @@ else
             <p class="title">@post.Title</p>
             <p class="color-blue">@post.CreatedDate</p>
             <div class="mt-2">@Html.Raw(@post.Content)</div>
+            <p>
+               @foreach (var tag in post.Tags)
+               {
+                  <span class="bg_blue p-2 m-2">@tag.Name</span>
+               }
+            </p>
        </div>
     }
 }

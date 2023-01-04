@@ -1,7 +1,7 @@
 ﻿@using EduSciencePro.ViewModels.Request
 @model ForgotPasswordViewModel
 <div class="col-md-3 text-center">
-    <form class="m-3" method="post" asp-controller="User" asp-action="ConfirmationCode">
+    <form class="m-3" method="post" asp-controller="User" asp-action="ConfirmationCode" asp-route-Email="@Model.Email">
 
         <h3 class="mb-5 mt-5">Подтверждение кода</h3>
 

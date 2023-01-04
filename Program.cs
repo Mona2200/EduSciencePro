@@ -17,6 +17,8 @@ builder.Services.AddSingleton<IRoleRepository, RoleRepository>();
 builder.Services.AddSingleton<ITypeRepository, TypeRepository>();
 builder.Services.AddSingleton<IResumeRepository, ResumeRepository>();
 
+builder.Services.AddSingleton<IConfirmationCodeRepository, ConfirmationCodeRepository>();
+
 builder.Services.AddSingleton<IEducationRepository, EducationRepository>();
 builder.Services.AddSingleton<IPlaceWorkRepository, PlaceWorkRepository>();
 builder.Services.AddSingleton<IOrganizationRepository, OrganizationRepository>();

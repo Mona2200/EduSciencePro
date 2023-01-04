@@ -21,12 +21,14 @@ namespace EduSciencePro.Controllers
       private readonly ITypeRepository _types;
       private readonly IResumeRepository _resumes;
 
+      private readonly IConfirmationCodeRepository _codes;
+
       private readonly IEducationRepository _educations;
       private readonly IPlaceWorkRepository _placeWorks;
       private readonly IOrganizationRepository _organizations;
 
       private readonly IMapper _mapper;
-      public UserController(IUserRepository users, IRoleRepository roles, ITypeRepository types, IResumeRepository resumes, IMapper mapper, IEducationRepository education, IPlaceWorkRepository placeWork, IOrganizationRepository organizations)
+      public UserController(IUserRepository users, IRoleRepository roles, ITypeRepository types, IResumeRepository resumes, IMapper mapper, IEducationRepository education, IPlaceWorkRepository placeWork, IOrganizationRepository organizations, IConfirmationCodeRepository codes)
       {
          _users = users;
          _roles = roles;
@@ -36,6 +38,7 @@ namespace EduSciencePro.Controllers
          _educations = education;
          _placeWorks = placeWork;
          _organizations = organizations;
+         _codes = codes;
       }
 
       public async Task<IActionResult> Index()
@@ -426,24 +429,25 @@ namespace EduSciencePro.Controllers
             ModelState.AddModelError("Email", "Пользователь с такой почтой не найден");
          return View(model);
          }
-         
-         Random random = new Random();
-         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-         string code = new string(Enumerable.Repeat(chars, 6).Select(s => s[random.Next(s.Length)]).ToArray());
+
+         var code = await _codes.Save(model.Email);
          EmailService emailService = new EmailService();
          await emailService.SendEmailAsync(model.Email, "Код подтверждения для сайта EduSciencePro", $"Тест письма: Ваш код подтверждения: {code}\nНе отвечайте на это письмо");
-         model.Code = code;
-         return View("~/Views/User/ConfirmationCode.schtml", model);
+         return View("~/Views/User/ConfirmationCode.cshtml", model);
       }
 
       [HttpPost]
       [Route("ConfirmationCode")]
       public async Task<IActionResult> ConfirmationCode(ForgotPasswordViewModel model)
       {
-         if (model.Code == model.ConfirmationCode)
-            return View("~/Views/User/ChabgePassword.schtml", new ChangePasswordViewModel() { Email = model.Email });
+         var code = await _codes.GetCodeByEmail(model.Email);
+         if (code.Code == model.ConfirmationCode)
+            return View("~/Views/User/ChangePassword.cshtml", new ChangePasswordViewModel() { Email = model.Email });
          else
+         {
+            ModelState.AddModelError("ConfirmationCode", "Неверный код подтверждения");
             return View(model);
+         }
       }
 
       [HttpPost]
@@ -451,11 +455,22 @@ namespace EduSciencePro.Controllers
       public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
       {
          if (!ModelState.IsValid)
+         {
+            foreach (var key in ModelState.Keys)
+            {
+               if (ModelState[key].Errors.Count > 0)
+                  ModelState.AddModelError($"{key}", $"{ModelState[key].Errors[0].ErrorMessage}");
+            }
             return View(model);
+         }
          var user = await _users.GetUserByEmail(model.Email);
-         user.Password = model.NewPassword;
+
+         var hash = new PasswordHasher<User>();
+         var hashPassword = hash.HashPassword(user, model.NewPassword);
+
+         user.Password = hashPassword;
          await _users.UpdatePassword(user);
-         return RedirectToAction("Authenticate");
+         return RedirectToAction("Index");
       }
 
       [HttpGet]

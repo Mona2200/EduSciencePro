@@ -19,7 +19,7 @@ namespace EduSciencePro.Data.Services
 
          using (var client = new SmtpClient())
          {
-            await client.ConnectAsync("188.42.151.19", 465, false);
+            await client.ConnectAsync("plesk2.d.fozzy.com", 465, true);
             await client.AuthenticateAsync("admin@sraka.top", "w01i1ApT7p");
             await client.SendAsync(emailMessage);
 

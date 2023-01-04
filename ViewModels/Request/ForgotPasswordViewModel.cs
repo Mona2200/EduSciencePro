@@ -8,11 +8,8 @@ namespace EduSciencePro.ViewModels.Request
       [Display(Name = "Email")]
       public string Email { get; set; }
 
-      public string Code { get; set; }
-
       [Display(Name = "Код подтверждения")]
       [Required(ErrorMessage = "Введите код подтверждения")]
-      [Compare("Code", ErrorMessage = "Неверный код")]
       public string ConfirmationCode { get; set; }
    }
 
@@ -23,6 +20,7 @@ namespace EduSciencePro.ViewModels.Request
       [DataType(DataType.Password)]
       [Display(Name = "Новый пароль")]
       [StringLength(20, ErrorMessage = "Поле {0} должно иметь минимум {2} и максимум {1} символов.", MinimumLength = 8)]
+      [RegularExpression("^(?=.*?[A-Za-zа-яА-Я])(?=.*?[0-9]).{8,}$", ErrorMessage = "Пароль должен содержать цифры и буквы любого регистра")]
       public string NewPassword { get; set; }
 
       [Required(ErrorMessage = "Данное поле обязательно для заполнения")]

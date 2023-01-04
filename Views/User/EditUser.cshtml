@@ -71,7 +71,7 @@
         <p><input class="text-center w-100 p-1" placeholder="Email" value="@Model.UserViewModel.Email" disabled><a class="ml-2 position-absolute" style="transform: translateY(25%);">Редактировать</a></p>
 
         <label asp-for="AddUserViewModel.Password" class="w-100 text-start label_input"></label>
-        <p><input class="text-center w-100 p-1" placeholder="Пароль" disabled><a class="ml-2 position-absolute" style="transform: translateY(25%);">Редактировать</a></p>
+        <p><input class="text-center w-100 p-1" placeholder="Пароль" disabled><a class="ml-2 position-absolute" style="transform: translateY(25%);" asp-controller="User" asp-action="ForgotPassword">Редактировать</a></p>
 
         <label asp-for="AddUserViewModel.Img" class="w-100 text-start label_input"></label>
         <p><input type="file" name="image" class="text-center w-100 p-1" accept="image/jpeg,image/png" asp-for="AddUserViewModel.Img"></p>
