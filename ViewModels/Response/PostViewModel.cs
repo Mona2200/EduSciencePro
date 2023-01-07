@@ -1,4 +1,5 @@
 ﻿using EduSciencePro.Models;
+using EduSciencePro.Models.User;
 
 namespace EduSciencePro.ViewModels.Response
 {
@@ -10,6 +11,6 @@ namespace EduSciencePro.ViewModels.Response
       public byte[]? Cover { get; set; }
       public bool IsNews { get; set; }
       public Tag[]? Tags { get; set; }
-      public Guid UserId { get; set; }
+      public User User { get; set; }
    }
 }

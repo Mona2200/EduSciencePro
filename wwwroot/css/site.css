@@ -223,3 +223,17 @@ input {
     width: 0;
     flex-basis: 100%;
 }
+
+.underline_h3::after {
+    margin: auto;
+    margin-top: 2px;
+    display: block;
+    content: ' ';
+    height: 1px;
+    background-color: black;
+    width: 30px;
+}
+
+.posts_content img {
+    width: 100%;
+}

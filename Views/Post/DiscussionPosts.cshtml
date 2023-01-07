@@ -1,5 +1,40 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@using EduSciencePro.ViewModels.Response
+@model PostViewModel[];
+
+<div class="border_blue p-4 m-3 bg-white">
+    <h3 class="mb-5 mt-5 underline_h3 text-center">Актуальные новости</h3>
+
+    <div class="row justify-content-center">
+        @{
+            foreach (var discuss in Model)
+            {
+                    <div class="col-md-10" style="padding:10px;">
+                        <div class="d-flex flex-row align-items-center">
+                            @if (discuss.User.Image != null)
+                        {
+                                <div style="height:40px;width:40px;background-image:url(data:image/jpeg;base64,@(Convert.ToBase64String(discuss.User.Image)));background-position:center;background-size:cover;"></div>
+                        }
+                        else
+                        {
+                                <div style="height:40px;width:40px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;"></div>
+                        }
+                            @{
+                            var fullName = $"{discuss.User.FirstName} {discuss.User.LastName} {discuss.User.MiddleName}";
+                            }
+                            <p style="margin:0 10px;">@fullName</p>
+                        <p class="color-blue" style="margin:0 10px;">@discuss.CreatedDate</p>
+                        </div>
+
+                        <div>
+                        <h5 style="margin: 20px 0;">@discuss.Title</h5>
+                        </div>
+
+                        <div>
+                            <p class="posts_content">@Html.Raw(discuss.Content)</p>
+                        </div>
+                    </div>
+            }
+        }
+    </div>
+
+</div>

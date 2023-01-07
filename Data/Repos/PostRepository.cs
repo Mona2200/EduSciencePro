@@ -50,6 +50,8 @@ namespace EduSciencePro.Data.Repos
             date += post.CreatedDate.Year;
             postViewModels[i].CreatedDate = date;
 
+            postViewModels[i].User = await _db.Users.FirstOrDefaultAsync(u => u.Id == post.UserId);
+
             postViewModels[i++].Tags = await _tags.GetTagsByPostId(post.Id);
          }
          return postViewModels;
@@ -82,6 +84,8 @@ namespace EduSciencePro.Data.Repos
             date += post.CreatedDate.Year;
             postViewModels[i].CreatedDate = date;
 
+            postViewModels[i].User = await _db.Users.FirstOrDefaultAsync(u => u.Id == post.UserId);
+
             postViewModels[i++].Tags = await _tags.GetTagsByPostId(post.Id);
          }
          return postViewModels;
@@ -112,6 +116,8 @@ namespace EduSciencePro.Data.Repos
             date += post.CreatedDate.Year;
             postViewModels[i].CreatedDate = date;
 
+            postViewModels[i].User = await _db.Users.FirstOrDefaultAsync(u => u.Id == post.UserId);
+
             postViewModels[i++].Tags = await _tags.GetTagsByPostId(post.Id);
          }
          return postViewModels;
@@ -141,6 +147,8 @@ namespace EduSciencePro.Data.Repos
                date += month + ".";
             date += post.CreatedDate.Year;
             postViewModels[i].CreatedDate = date;
+
+            postViewModels[i].User = await _db.Users.FirstOrDefaultAsync(u => u.Id == post.UserId);
 
             postViewModels[i++].Tags = await _tags.GetTagsByPostId(post.Id);
          }

@@ -1,5 +1,53 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@using EduSciencePro.ViewModels.Response
+@model PostViewModel[];
+
+<div class="border_blue p-4 m-3 bg-white">
+    <h3 class="mb-5 mt-5 underline_h3 text-center">Актуальные новости</h3>
+
+    <div class="row">
+        @{
+            int i = 0;
+            foreach (var news in Model)
+            {
+                if (i % 5 == 0 && i > 0)
+                {
+                    <div class="col-md-12" style="padding:10px;">
+                            <div class="position-relative" style="height:160px;background-image:url(/src/bg_post.png);background-position:center;background-size:cover;">
+                                <div style="height:160px;padding: 20px;left:0;right:0;" class="position-absolute d-flex flex-column justify-content-end">
+                                    <p class="small text-black">@news.CreatedDate</p>
+                                <p class="text-uppercase text-black">@news.Title</p>
+                                </div>
+                            </div>                       
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-6" style="padding:10px;">
+                        @if (news.Cover != null)
+                        {
+                            <div class="position-relative" style="height:270px;background-image:url(data:image/jpeg;base64,@(Convert.ToBase64String(news.Cover)));background-position:center;background-size:cover;">
+                                <div style="height:270px;background: rgba(0, 0, 0, 0.6);left:0;right:0;" class="position-absolute"></div>
+                                <div style="height:270px;padding: 20px;left:0;right:0;" class="position-absolute d-flex flex-column justify-content-end">
+                                    <p class="small color-blue">@news.CreatedDate</p>
+                                    <p class="text-uppercase text-white">@news.Title</p>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="position-relative" style="height:270px;background-image:url(/src/bg_post.png);background-position:center;background-size:cover;">
+                                <div style="height:270px;background: rgba(0, 0, 0, 0.6);left:0;right:0;" class="position-absolute"></div>
+                                <div style="height:270px;padding: 20px;left:0;right:0;" class="position-absolute d-flex flex-column justify-content-end">
+                                    <p class="small color-blue">@news.CreatedDate</p>
+                                    <p class="text-uppercase text-white">@news.Title</p>
+                                </div>
+                            </div>
+                        }                      
+                    </div>
+                }
+                i++;
+            }
+        }
+    </div>
+
+</div>

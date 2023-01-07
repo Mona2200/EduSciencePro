@@ -23,11 +23,6 @@ namespace EduSciencePro.Controllers
          _posts = posts;
       }
 
-      public IActionResult Index()
-      {
-         return View();
-      }
-
       [HttpGet]
       [Route("AddPost")]
       public async Task<IActionResult> AddPost() => View(new AddPostViewModel());
@@ -72,6 +67,22 @@ namespace EduSciencePro.Controllers
             Discuss = await _posts.GetPostViewModelsDiscussions()
          };
          return View(posts);
+      }
+
+      [HttpGet]
+      [Route("NewsPosts")]
+      public async Task<IActionResult> NewsPosts()
+      {
+         var news = await _posts.GetPostViewModelsNews();
+         return View(news);
+      }
+
+      [HttpGet]
+      [Route("DiscussionPosts")]
+      public async Task<IActionResult> DiscussionPosts()
+      {
+         var discuss = await _posts.GetPostViewModelsDiscussions();
+         return View(discuss);
       }
 
       private bool PostValid(AddPostViewModel model)
