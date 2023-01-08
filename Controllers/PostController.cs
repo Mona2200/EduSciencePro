@@ -139,6 +139,28 @@ namespace EduSciencePro.Controllers
          return RedirectToAction("Main", "User");
       }
 
+      [HttpGet]
+      [Route("LookingPost")]
+      public async Task<IActionResult> LookingPost(Guid postId)
+      {
+         var postViewModel = await _posts.GetPostViewModelById(postId);
+
+         ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name)?.Value;
+         User user;
+         if (claimEmail != null)
+         {
+            user = await _users.GetUserByEmail(claimEmail);
+            var pair = new LookingPostViewModel() { Post = postViewModel, UserId = user.Id, AddComment = new AddCommentViewModel() { PostId = postId} };
+            return View(pair);
+         }
+         else
+         {
+            var pair = new LookingPostViewModel() { Post = postViewModel, UserId = Guid.Empty, AddComment = new AddCommentViewModel() { PostId = postId} };
+            return View(pair);
+         }            
+      }
+
       [HttpPost]
       [Route("LikePost")]
       public async Task<int> LikePost(Guid postId)

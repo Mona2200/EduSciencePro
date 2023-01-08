@@ -13,7 +13,7 @@ namespace EduSciencePro.ViewModels.Response
       public bool IsNews { get; set; }
       public Tag[]? Tags { get; set; }
       public LikePost[] Likes { get; set; }
-      public bool isLiked { get; set; }
+      public CommentViewModel[] Comments { get; set; }
       public User User { get; set; }
    }
 }

@@ -1,0 +1,17 @@
+﻿@using EduSciencePro.ViewModels.Request
+@model AddCommentViewModel;
+
+<div class="border_blue p-4 m-3 bg-white d-flex justify-content-center">
+    <div class="col-md-10">
+        <form method="post" asp-action="AddComment" asp-controller="Comment">
+
+            <input class="d-none" asp-for="PostId" value="@Model.PostId" />
+
+            <label asp-for="Content" class="text-start label_input mt-4"></label>
+            <p><textarea class="input_title_post w-100 p-1" asp-for="Content" rows="4"></textarea></p>
+            <p><span asp-validation-for="Content" class="text-danger mb-3 text-center"></span></p>
+
+            <p><button class="button form-control-plaintext m-auto w-25 mt-4" id="button_addpost">Отправить</button></p>
+        </form>
+    </div>
+</div>

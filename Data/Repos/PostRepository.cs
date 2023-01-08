@@ -10,18 +10,20 @@ using System.Text;
 
 namespace EduSciencePro.Data.Repos
 {
-    public class PostRepository : IPostRepository
-    {
+   public class PostRepository : IPostRepository
+   {
       private readonly ApplicationDbContext _db;
       private readonly IMapper _mapper;
 
       private readonly ITagRepository _tags;
+      private readonly ICommentRepository _comments;
 
-      public PostRepository(ApplicationDbContext db, IMapper mapper, ITagRepository tags)
+      public PostRepository(ApplicationDbContext db, IMapper mapper, ITagRepository tags, ICommentRepository comments)
       {
          _db = db;
          _mapper = mapper;
          _tags = tags;
+         _comments = comments;
       }
 
       public async Task<Post[]> GetPosts() => await _db.Posts.ToArrayAsync();
@@ -54,6 +56,7 @@ namespace EduSciencePro.Data.Repos
             postViewModels[i].User = await _db.Users.FirstOrDefaultAsync(u => u.Id == post.UserId);
             var likePosts = await _db.LikePosts.Where(l => l.PostId == post.Id).ToArrayAsync();
             postViewModels[i].Likes = likePosts;
+            postViewModels[i].Comments = await _comments.GetCommentViewModelsByPostId(post.Id);
 
             postViewModels[i++].Tags = await _tags.GetTagsByPostId(post.Id);
          }
@@ -85,6 +88,7 @@ namespace EduSciencePro.Data.Repos
          postViewModel.User = await _db.Users.FirstOrDefaultAsync(u => u.Id == post.UserId);
          var likePosts = await _db.LikePosts.Where(l => l.PostId == post.Id).ToArrayAsync();
          postViewModel.Likes = likePosts;
+         postViewModel.Comments = await _comments.GetCommentViewModelsByPostId(post.Id);
 
          postViewModel.Tags = await _tags.GetTagsByPostId(post.Id);
          return postViewModel;
@@ -120,6 +124,7 @@ namespace EduSciencePro.Data.Repos
             postViewModels[i].User = await _db.Users.FirstOrDefaultAsync(u => u.Id == post.UserId);
             var likePosts = await _db.LikePosts.Where(l => l.PostId == post.Id).ToArrayAsync();
             postViewModels[i].Likes = likePosts;
+            postViewModels[i].Comments = await _comments.GetCommentViewModelsByPostId(post.Id);
 
             postViewModels[i++].Tags = await _tags.GetTagsByPostId(post.Id);
          }
@@ -128,7 +133,7 @@ namespace EduSciencePro.Data.Repos
 
       public async Task<PostViewModel[]> GetPostViewModelsNews()
       {
-      var news = await _db.Posts.Where(p => p.IsNews == true).Take(4).ToArrayAsync();
+         var news = await _db.Posts.Where(p => p.IsNews == true).Take(4).ToArrayAsync();
          var postViewModels = new PostViewModel[news.Length];
          int i = 0;
          foreach (var post in news)
@@ -154,6 +159,7 @@ namespace EduSciencePro.Data.Repos
             postViewModels[i].User = await _db.Users.FirstOrDefaultAsync(u => u.Id == post.UserId);
             var likePosts = await _db.LikePosts.Where(l => l.PostId == post.Id).ToArrayAsync();
             postViewModels[i].Likes = likePosts;
+            postViewModels[i].Comments = await _comments.GetCommentViewModelsByPostId(post.Id);
 
             postViewModels[i++].Tags = await _tags.GetTagsByPostId(post.Id);
          }
@@ -188,6 +194,7 @@ namespace EduSciencePro.Data.Repos
             postViewModels[i].User = await _db.Users.FirstOrDefaultAsync(u => u.Id == post.UserId);
             var likePosts = await _db.LikePosts.Where(l => l.PostId == post.Id).ToArrayAsync();
             postViewModels[i].Likes = likePosts;
+            postViewModels[i].Comments = await _comments.GetCommentViewModelsByPostId(post.Id);
 
             postViewModels[i++].Tags = await _tags.GetTagsByPostId(post.Id);
          }
@@ -264,17 +271,21 @@ namespace EduSciencePro.Data.Repos
             foreach (var tag in tagPosts)
                _db.TagPosts.Remove(tag);
 
-               var likes = await _db.LikePosts.Where(l => l.PostId == postId).ToArrayAsync();
-               foreach (var like in likes)
+            var likes = await _db.LikePosts.Where(l => l.PostId == postId).ToArrayAsync();
+            foreach (var like in likes)
                _db.LikePosts.Remove(like);
 
+            var comments = await _db.Comments.Where(c => c.PostId == postId).ToArrayAsync();
+            foreach (var comm in comments)
+               _db.Comments.Remove(comm);
+
             await _db.SaveChangesAsync();
-         }         
+         }
       }
    }
 
-    public interface IPostRepository
-    {
+   public interface IPostRepository
+   {
       Task<Post[]> GetPosts();
       Task<PostViewModel[]> GetPostViewModels();
       Task<Post> GetPostById(Guid postId);

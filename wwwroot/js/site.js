@@ -122,10 +122,16 @@
     });
 
     $(".ability_post").click(function () {
-        if ($(this).next().hasClass('d-none')) {
-            $(this).next().removeClass('d-none');
+        if ($(this).next('.div_ability_post').hasClass('d-none')) {
+            $(this).next('.div_ability_post').removeClass('d-none');
         } else {
-            $(this).next().addClass('d-none');
+            $(this).next('.div_ability_post').addClass('d-none');
+        }
+
+        if ($(this).parent().next('.div_ability_post').hasClass('d-none')) {
+            $(this).parent().next('.div_ability_post').removeClass('d-none');
+        } else {
+            $(this).parent().next('.div_ability_post').addClass('d-none');
         }
     });
 

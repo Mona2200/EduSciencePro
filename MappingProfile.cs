@@ -24,6 +24,7 @@ namespace EduSciencePro
          //CreateMap<AddPostViewModel, DiscussionPost>().ForMember(m => m.Content, opt => opt.MapFrom(n => Encoding.UTF8.GetBytes(n.Content)));
          CreateMap<AddPostViewModel, Post>().ForMember(m => m.Content, opt => opt.MapFrom(n => Encoding.UTF8.GetBytes(n.Content))).ForMember(m => m.Cover, opt => opt.Ignore());
          CreateMap<EditPostViewModel, Post>().ForMember(m => m.Content, opt => opt.MapFrom(n => Encoding.UTF8.GetBytes(n.Content))).ForMember(m => m.Cover, opt => opt.Ignore());
+         CreateMap<AddCommentViewModel, Comment>();
 
          CreateMap<User, UserViewModel>().ForMember(m => m.FullName, opt => opt.MapFrom(u => $"{u.LastName} {u.FirstName} {u.MiddleName}"));
          //CreateMap<UserViewModel, AddUserViewModel>().ForMember(m => m.FirstName, opt => opt.MapFrom(u => u.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToArray()[0]))
@@ -32,6 +33,7 @@ namespace EduSciencePro
          //                                            .ForMember(m => m.TypeUsers, opt => opt.MapFrom(u => u.TypeUsers.))
          CreateMap<Resume, ResumeViewModel>();
          CreateMap<Post, PostViewModel>().ForMember(m => m.Content, opt => opt.MapFrom(p => Encoding.UTF8.GetString(p.Content))).ForMember(m => m.CreatedDate, opt => opt.Ignore());
+         CreateMap<Comment, CommentViewModel>().ForMember(m => m.CreatedDate, opt => opt.Ignore());
       }
    }
 }
