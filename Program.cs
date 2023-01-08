@@ -25,6 +25,7 @@ builder.Services.AddSingleton<IOrganizationRepository, OrganizationRepository>()
 
 builder.Services.AddSingleton<ITagRepository, TagRepository>();
 builder.Services.AddSingleton<IPostRepository, PostRepository>();
+builder.Services.AddSingleton<ILikePostRepository, LikePostRepository>();
 
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection), ServiceLifetime.Singleton);

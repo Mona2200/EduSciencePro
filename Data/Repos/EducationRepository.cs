@@ -22,7 +22,7 @@ namespace EduSciencePro.Data.Repos
       {
          var entry = _db.Entry(education);
          if (entry.State == EntityState.Detached)
-            _db.Educations.AddAsync(education);
+            await _db.Educations.AddAsync(education);
 
          await _db.SaveChangesAsync();
       }

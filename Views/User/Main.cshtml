@@ -136,7 +136,7 @@
             <p><a class="button_light form-control-plaintext text-center m-auto w-25 p-2 mt-4" asp-controller="Post" asp-action="AddPost">Создать публикацию</a></p>
         }
         <div style="width:85%;margin:auto;">
-            @await Html.PartialAsync("~/Views/Post/Posts.cshtml", Model.Posts)
+            @await Html.PartialAsync("~/Views/Post/Posts.cshtml", new PostsAndUserIdViewModel() {UserId = Model.Id, Posts = Model.Posts})
         </div>      
     </div>
 </div>

@@ -10,6 +10,15 @@
 
     $("#Link_Select").val("");
 
+    //var tags = $("#tags_input").val().split(/\s+/);
+    //if (tags != "") {
+    //    for (var int = 0; i < tags.length; i++) {
+    //        $("#div_tags").append('<span class="bg_blue p-2 m-2">' + tags[i] + '</span>');
+    //    }
+    //}
+
+
+
     $("#Links_Div input").each(function () {
         if ($(this).val() != '') {
             $(this).parent().parent().removeClass('d-none');
@@ -88,7 +97,7 @@
     $("#tag_click").click(function () {
         var str = $(this).prev().val();
         if (str.replace(/\s/g, "") != "") {
-            $("#div_tags").append('<span class="bg_blue p-2 m-2">' + str + '</span>');
+            $("#div_tags").append('<span class="bg_blue p-2 m-2"><span>' + str + '</span><span style="padding-left: 5px;cursor:pointer;" onclick="remove_tag(this)">&#10008</span></span>');
             $("#tags_input").val($("#tags_input").val() + " " + str);
             $(this).prev().val('');
         }
@@ -109,6 +118,14 @@
                     $(".div_cover").addClass("d-none");
                 }
             }
+        }
+    });
+
+    $(".ability_post").click(function () {
+        if ($(this).next().hasClass('d-none')) {
+            $(this).next().removeClass('d-none');
+        } else {
+            $(this).next().addClass('d-none');
         }
     });
 
@@ -175,6 +192,14 @@ function Cross_Click_Skills(e) {
     $(e).parent().remove();
 };
 
+function remove_tag(e) {
+    var tag = $(e).prev().text();
+    var inputTag = $("#tags_input").val();
+    inputTag = inputTag.replace(tag, '')
+    $("#tags_input").val(inputTag);
+    $(e).parent().remove();
+};
+
 function Edu_KeyUp(NameEducations, inp) {
     Console.log(NameEducations);
     //if ($(inp).val().length > 2) {
@@ -214,6 +239,7 @@ function Button_Add_Post(e) {
         }
     });
 };
+
 
 //$("#button_addpost").click(function () {
 //    var html = $("#editor").find(".ProseMirror.toastui-editor-contents").html();

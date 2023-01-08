@@ -6,6 +6,7 @@ using EduSciencePro.ViewModels.Response;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using System.Security.Claims;
+using System.Text;
 
 namespace EduSciencePro.Data.Repos
 {
@@ -51,10 +52,42 @@ namespace EduSciencePro.Data.Repos
             postViewModels[i].CreatedDate = date;
 
             postViewModels[i].User = await _db.Users.FirstOrDefaultAsync(u => u.Id == post.UserId);
+            var likePosts = await _db.LikePosts.Where(l => l.PostId == post.Id).ToArrayAsync();
+            postViewModels[i].Likes = likePosts;
 
             postViewModels[i++].Tags = await _tags.GetTagsByPostId(post.Id);
          }
          return postViewModels;
+      }
+
+      public async Task<Post> GetPostById(Guid postId) => await _db.Posts.FirstOrDefaultAsync(u => u.Id == postId);
+
+      public async Task<PostViewModel> GetPostViewModelById(Guid postId)
+      {
+         var post = await GetPostById(postId);
+         var postViewModel = _mapper.Map<Post, PostViewModel>(post);
+         var day = post.CreatedDate.Day.ToString();
+         var month = post.CreatedDate.Month.ToString();
+         string date = "";
+
+         if (day.Length == 1)
+            date += "0" + day + ".";
+         else
+            date += day + ".";
+
+         if (month.Length == 1)
+            date += "0" + month + ".";
+         else
+            date += month + ".";
+         date += post.CreatedDate.Year;
+         postViewModel.CreatedDate = date;
+
+         postViewModel.User = await _db.Users.FirstOrDefaultAsync(u => u.Id == post.UserId);
+         var likePosts = await _db.LikePosts.Where(l => l.PostId == post.Id).ToArrayAsync();
+         postViewModel.Likes = likePosts;
+
+         postViewModel.Tags = await _tags.GetTagsByPostId(post.Id);
+         return postViewModel;
       }
 
       public async Task<Post[]> GetPostsByUserId(Guid userId) => await _db.Posts.Where(p => p.UserId == userId).ToArrayAsync();
@@ -85,6 +118,8 @@ namespace EduSciencePro.Data.Repos
             postViewModels[i].CreatedDate = date;
 
             postViewModels[i].User = await _db.Users.FirstOrDefaultAsync(u => u.Id == post.UserId);
+            var likePosts = await _db.LikePosts.Where(l => l.PostId == post.Id).ToArrayAsync();
+            postViewModels[i].Likes = likePosts;
 
             postViewModels[i++].Tags = await _tags.GetTagsByPostId(post.Id);
          }
@@ -117,6 +152,8 @@ namespace EduSciencePro.Data.Repos
             postViewModels[i].CreatedDate = date;
 
             postViewModels[i].User = await _db.Users.FirstOrDefaultAsync(u => u.Id == post.UserId);
+            var likePosts = await _db.LikePosts.Where(l => l.PostId == post.Id).ToArrayAsync();
+            postViewModels[i].Likes = likePosts;
 
             postViewModels[i++].Tags = await _tags.GetTagsByPostId(post.Id);
          }
@@ -149,6 +186,8 @@ namespace EduSciencePro.Data.Repos
             postViewModels[i].CreatedDate = date;
 
             postViewModels[i].User = await _db.Users.FirstOrDefaultAsync(u => u.Id == post.UserId);
+            var likePosts = await _db.LikePosts.Where(l => l.PostId == post.Id).ToArrayAsync();
+            postViewModels[i].Likes = likePosts;
 
             postViewModels[i++].Tags = await _tags.GetTagsByPostId(post.Id);
          }
@@ -184,12 +223,62 @@ namespace EduSciencePro.Data.Repos
 
          await _db.SaveChangesAsync();
       }
+
+      public async Task Update(EditPostViewModel model)
+      {
+         var post = await GetPostById(model.Id);
+         if (model.Tags == null) model.Tags = "";
+         await _tags.Save(model.Tags.Split(new char[] { ' ', '\t', '\n' }, StringSplitOptions.RemoveEmptyEntries), model.Id);
+         if (model.Cover != null)
+         {
+            byte[] imageData = null;
+            using (var fs1 = model.Cover.OpenReadStream())
+            using (var ms1 = new MemoryStream())
+            {
+               fs1.CopyTo(ms1);
+               imageData = ms1.ToArray();
+            }
+            post.Cover = imageData;
+         }
+
+         post.Title = model.Title;
+         post.Content = Encoding.UTF8.GetBytes(model.Content);
+
+         post.IsNews = model.IsNew;
+
+         var entry = _db.Entry(post);
+         if (entry.State == EntityState.Detached)
+            _db.Posts.Update(post);
+
+         await _db.SaveChangesAsync();
+      }
+
+      public async Task Delete(Guid postId)
+      {
+         var post = await GetPostById(postId);
+         if (post != null)
+         {
+            _db.Remove(post);
+
+            var tagPosts = await _db.TagPosts.Where(t => t.PostId == postId).ToArrayAsync();
+            foreach (var tag in tagPosts)
+               _db.TagPosts.Remove(tag);
+
+               var likes = await _db.LikePosts.Where(l => l.PostId == postId).ToArrayAsync();
+               foreach (var like in likes)
+               _db.LikePosts.Remove(like);
+
+            await _db.SaveChangesAsync();
+         }         
+      }
    }
 
     public interface IPostRepository
     {
       Task<Post[]> GetPosts();
       Task<PostViewModel[]> GetPostViewModels();
+      Task<Post> GetPostById(Guid postId);
+      Task<PostViewModel> GetPostViewModelById(Guid postId);
       Task<Post[]> GetPostsByUserId(Guid userId);
       Task<PostViewModel[]> GetPostViewModelsByUserId(Guid userId);
       Task<PostViewModel[]> GetPostViewModelsNews();
@@ -199,5 +288,7 @@ namespace EduSciencePro.Data.Repos
 
       //Task<Post[]> GetPostsByTags(Tag[] tags);
       Task Save(AddPostViewModel post);
-    }
+      Task Update(EditPostViewModel post);
+      Task Delete(Guid postId);
+   }
 }

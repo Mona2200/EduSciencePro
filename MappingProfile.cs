@@ -23,6 +23,7 @@ namespace EduSciencePro
          //CreateMap<AddPostViewModel, NewsPost>().ForMember(m => m.Content, opt => opt.MapFrom(n => Encoding.UTF8.GetBytes(n.Content))).ForMember(m => m.Cover, opt => opt.Ignore());
          //CreateMap<AddPostViewModel, DiscussionPost>().ForMember(m => m.Content, opt => opt.MapFrom(n => Encoding.UTF8.GetBytes(n.Content)));
          CreateMap<AddPostViewModel, Post>().ForMember(m => m.Content, opt => opt.MapFrom(n => Encoding.UTF8.GetBytes(n.Content))).ForMember(m => m.Cover, opt => opt.Ignore());
+         CreateMap<EditPostViewModel, Post>().ForMember(m => m.Content, opt => opt.MapFrom(n => Encoding.UTF8.GetBytes(n.Content))).ForMember(m => m.Cover, opt => opt.Ignore());
 
          CreateMap<User, UserViewModel>().ForMember(m => m.FullName, opt => opt.MapFrom(u => $"{u.LastName} {u.FirstName} {u.MiddleName}"));
          //CreateMap<UserViewModel, AddUserViewModel>().ForMember(m => m.FirstName, opt => opt.MapFrom(u => u.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToArray()[0]))

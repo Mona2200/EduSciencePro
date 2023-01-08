@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure;
 using EduSciencePro.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,6 +38,13 @@ namespace EduSciencePro.Data.Repos
 
       public async Task Save(string[] tags, Guid postId)
       {
+         var oldTagPosts = await _db.TagPosts.Where(t => t.PostId == postId).ToArrayAsync();
+
+         foreach (var tagPost in oldTagPosts)
+         {
+            _db.TagPosts.Remove(tagPost);
+         }
+
          foreach (var tag in tags)
          {
             var tryTag = await GetTagByName(tag);
@@ -50,10 +58,10 @@ namespace EduSciencePro.Data.Repos
             }
             else
             {
-               var tagPost = new TagPost() { PostId = postId, TagId = tryTag.Id };
+               var newTagPost = new TagPost() { PostId = postId, TagId = tryTag.Id };
+               await _db.TagPosts.AddAsync(newTagPost);
             }
          }
-         //await _db.SaveChangesAsync();
       }
    }
 

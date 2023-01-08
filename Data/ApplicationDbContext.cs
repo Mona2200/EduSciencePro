@@ -28,6 +28,9 @@ namespace EduSciencePro.Data
       public DbSet<Tag> Tags { get; set; }
 
       public DbSet<TagPost> TagPosts { get; set; }
+      public DbSet<LikePost> LikePosts { get; set; }
+
+      public DbSet<Comment> Comments { get; set; }
 
       public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
       {
@@ -55,6 +58,9 @@ namespace EduSciencePro.Data
          builder.Entity<Post>().ToTable("Posts");
          builder.Entity<Tag>().ToTable("Tags");
          builder.Entity<TagPost>().ToTable("TagPosts");
+         builder.Entity<LikePost>().ToTable("LikePosts");
+
+         builder.Entity<Comment>().ToTable("Comments");
       }
    }
 }

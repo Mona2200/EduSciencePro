@@ -203,13 +203,14 @@ input {
         margin: 0;
     }
 
-    .Search > p:hover {
-        background-color: #D3D3D3;
-    }
+        .Search > p:hover {
+            background-color: #D3D3D3;
+        }
 
-    .border_black {
-        border: 1px black solid  !important;
-    }
+.border_black {
+    border: 1px black solid !important;
+}
+
 .color-blue {
     color: #89C4FB;
 }
@@ -235,5 +236,13 @@ input {
 }
 
 .posts_content img {
+    width: 100%;
+}
+
+.div_ability_post > a:hover {
+    background: #D3D3D3;
+}
+
+.posts img {
     width: 100%;
 }
