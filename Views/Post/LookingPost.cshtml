@@ -79,6 +79,10 @@
     </div>
 </div>
 
-@await Html.PartialAsync("~/Views/Comment/AddComment.cshtml", Model.AddComment)
+@if (Context.User.Identity.IsAuthenticated)
+{
+    @await Html.PartialAsync("~/Views/Comment/AddComment.cshtml", Model.AddComment)
+}
+
 
 @await Html.PartialAsync("~/Views/Comment/CommentsByPost.cshtml", Model.Post.Comments)
