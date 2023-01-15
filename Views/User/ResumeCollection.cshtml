@@ -1,0 +1,55 @@
+﻿@using EduSciencePro.ViewModels.Response
+@model List<KeyValuePair<UserViewModel, ResumeViewModel>>;
+
+<div class="border_blue p-4 m-3 bg-white">
+
+    <h3 class="mb-5 mt-2 underline_h3 text-center">Сборник резюме</h3>
+
+    <div class="row justify-content-center">
+        @if (Model != null && Model.Count != 0)
+        {
+            @foreach (var resume in Model)
+            {
+                <div class="col-md-10 mt-4 mb-4 row" style="padding:10px;">
+                    <div class="col-md-4 d-flex justify-content-end">
+                        @if (resume.Key.Image.Length != 0)
+                        {
+                            <div class="d-block" style="height:100px;width:100px;background-image:url(data:image/jpeg;base64,@(Convert.ToBase64String(resume.Key.Image)));background-position:center;background-size:cover;"></div>
+                        }
+                        else
+                        {
+                            <div class="d-block" style="height:100px;width:100px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;"></div>
+                        }
+                    </div>
+                    <div class="col-md-8">
+                        <h4 class="fw-bold text-decoration-underline">@resume.Key.FullName</h4>
+                        @if (@resume.Value.Education != null)
+                        {
+                            <p><span class="fw-bold">Образование: </span>@resume.Value.Education.Name</p>
+                        }
+                        @if (@resume.Value.PlaceWork != null)
+                        {
+                            <p><span class="fw-bold">Место работы: </span>@resume.Value.PlaceWork.Name</p>
+                        }
+                        @if (@resume.Value.Organization != null)
+                        {
+                            <p><span class="fw-bold">Организация: </span>@resume.Value.Organization.Name</p>
+                        }                        
+                    </div>
+                    <p class="d-flex justify-content-center">
+                        @foreach (var skill in resume.Value.Skills)
+                        {
+                            <span class="bg_blue p-2 m-2 d-inline-block">@skill.Name</span>
+                        }
+                    </p>
+                    <p class="text-center"><a asp-controller="User" asp-action="GetUser" asp-route-userId="@resume.Key.Id">Перейти на страницу</a></p>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-center col-md-10">Проектов нет. Возвращайтесь позже.</p>
+        }
+    </div>
+
+</div>

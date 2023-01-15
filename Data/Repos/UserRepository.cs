@@ -68,6 +68,7 @@ namespace EduSciencePro.Data.Repos
                l.Url = l.Url.Replace(" ", "");
             userViewModels[i].Links = links;
 
+            if (user.ResumeId != null)
             userViewModels[i].Resume = await _resumes.GetResumeViewModelById((Guid)user.ResumeId);
             userViewModels[i++].Role = await _db.Roles.FirstOrDefaultAsync(r => r.Id == user.RoleId);
          }
