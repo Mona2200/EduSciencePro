@@ -28,6 +28,8 @@ builder.Services.AddSingleton<IPostRepository, PostRepository>();
 builder.Services.AddSingleton<ILikePostRepository, LikePostRepository>();
 builder.Services.AddSingleton<ICommentRepository, CommentRepository>();
 
+builder.Services.AddSingleton<IProjectRepository, ProjectRepository>();
+
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection), ServiceLifetime.Singleton);
 

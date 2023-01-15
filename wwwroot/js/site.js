@@ -97,7 +97,7 @@
     $("#tag_click").click(function () {
         var str = $(this).prev().val();
         if (str.replace(/\s/g, "") != "") {
-            $("#div_tags").append('<span class="bg_blue p-2 m-2"><span>' + str + '</span><span style="padding-left: 5px;cursor:pointer;" onclick="remove_tag(this)">&#10008</span></span>');
+            $("#div_tags").append('<span class="bg_blue p-2 m-2 d-inline-block"><span>' + str + '</span><span style="padding-left: 5px;cursor:pointer;" onclick="remove_tag(this)">&#10008</span></span>');
             $("#tags_input").val($("#tags_input").val() + " " + str);
             $(this).prev().val('');
         }
@@ -134,6 +134,7 @@
             $(this).parent().next('.div_ability_post').addClass('d-none');
         }
     });
+
 
     //$(".Education").keyup(function (I) {
     //    switch (I.keyCode) {

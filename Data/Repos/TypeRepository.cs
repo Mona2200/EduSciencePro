@@ -36,6 +36,11 @@ namespace EduSciencePro.Data.Repos
          return types;
       }
 
+      public async Task<TypeModel> GetTypeByName(string name)
+      {
+         return await _db.TypeModels.FirstOrDefaultAsync(t => t.Name == name);
+      }
+
       public async Task Save(TypeModel type)
       {
          var entry = _db.Entry(type);
@@ -69,11 +74,12 @@ namespace EduSciencePro.Data.Repos
 
    public interface ITypeRepository
     {
-      public Task<TypeModel[]> GetTypes();
-      public Task<TypeModel> GetTypeById(Guid id);
-      public Task<TypeModel[]> GetTypesByUserId(Guid id);
-      public Task Save(TypeModel type);
-      public Task Update(TypeModel updateType, TypeModel newType);
-      public Task Delete(TypeModel type);
+      Task<TypeModel[]> GetTypes();
+      Task<TypeModel> GetTypeById(Guid id);
+      Task<TypeModel> GetTypeByName(string name);
+      Task<TypeModel[]> GetTypesByUserId(Guid id);
+      Task Save(TypeModel type);
+      Task Update(TypeModel updateType, TypeModel newType);
+      Task Delete(TypeModel type);
     }
 }

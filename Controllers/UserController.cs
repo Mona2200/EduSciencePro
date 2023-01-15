@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using EduSciencePro.ViewModels.Response;
 using EduSciencePro.Data.Services;
+using System.Data;
 
 namespace EduSciencePro.Controllers
 {
@@ -299,6 +300,22 @@ namespace EduSciencePro.Controllers
 
          ident.AddClaim(newClaimEmail);
 
+         var typeClaims = ident.Claims.Where(u => u.Type == ClaimTypes.Upn).ToList();
+         foreach (var typeClaim in typeClaims)
+         {
+            ident.RemoveClaim(typeClaim);
+         }
+         List<TypeModel> types = new List<TypeModel>();
+         Guid[] typeUserIds = model.AddUserViewModel.TypeUsers.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(t => Guid.Parse(t)).ToArray();
+         foreach (var typeUserId in typeUserIds)
+         {
+            types.Add(await _types.GetTypeById(typeUserId));
+         }
+         foreach (var type in types)
+         {
+            ident.AddClaim(new Claim(ClaimTypes.Upn, type.Name));
+         }
+
          var claimsIdentity = new ClaimsIdentity(ident.Claims, "AppCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
          await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
@@ -427,7 +444,7 @@ namespace EduSciencePro.Controllers
          if (user == null)
          {
             ModelState.AddModelError("Email", "Пользователь с такой почтой не найден");
-         return View(model);
+            return View(model);
          }
 
          var code = await _codes.Save(model.Email);

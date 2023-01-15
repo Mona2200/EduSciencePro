@@ -1,0 +1,47 @@
+﻿@using EduSciencePro.ViewModels.Response
+@model LookingProjectViewModel;
+
+<div class="border_blue p-4 m-3 bg-white d-flex justify-content-center">
+    <div class="col-md-10">
+        <h3 class="mb-5 mt-5 underline_h3 text-center">@Model.Project.Title</h3>
+
+        <p>
+            @if (Model.Project.Skills != null)
+            {
+                @foreach (var skill in Model.Project.Skills)
+                {
+                    <span class="bg_blue p-2 m-2">@skill.Name</span>
+                }
+            }
+        </p>
+
+        <p><span class="fw-bold">Дата начала и окончания: </span>@Model.Project.StartDate - @Model.Project.EndDate</p>
+
+        <p><span class="fw-bold">Финансирующая организация: </span>@Model.Project.Organization.Name</p>
+
+        <p><span class="fw-bold">Предлагаемый доход: </span>@Model.Project.Income рублей</p>
+
+        <div>
+            <p class="fw-bold">Описание вакансии:</p>
+            <p>@Model.Project.Description</p>
+        </div>
+
+        <div>
+            <p class="fw-bold">Необходимые компетенции:</p>
+            <p>@Model.Project.Competencies.Replace("\n", "\n•")</p>
+        </div>
+
+        <div>
+            <p class="fw-bold">Условия по выполнению работ:</p>
+            <p>@Model.Project.Conditions.Replace("\n", "\n•")</p>
+        </div>
+
+        <p><span class="fw-bold">Контакты: </span><a href="mailto:@Model.Project.Contacts">@Model.Project.Contacts</a></p>
+
+        @if (!Model.YourProject)
+        {
+            <p><button class="button form-control-plaintext m-auto w-50 mt-4" id="button_addpost">Оставить заявку</button></p>
+        }
+        
+    </div>
+</div>

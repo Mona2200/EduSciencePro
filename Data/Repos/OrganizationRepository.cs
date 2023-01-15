@@ -17,6 +17,20 @@ namespace EduSciencePro.Data.Repos
 
       public async Task<Organization[]> GetOrganizationsSearch(string search) => await _db.Organizations.Where(o => o.Name.ToLower().Contains(search.ToLower())).ToArrayAsync();
 
+      public async Task<Organization?> GetOrganizationByUserId(Guid userId)
+      {
+         var userOrganization = await _db.UserOrganizations.FirstOrDefaultAsync(o => o.IdUser == userId);
+         if (userOrganization == null)
+            return null;
+         else
+            return await _db.Organizations.FirstOrDefaultAsync(o => o.Id == userOrganization.IdOrganization);
+      }
+
+      public async Task<Organization?> GetOrganizationByName(string name)
+      {
+         return await _db.Organizations.FirstOrDefaultAsync(o => o.Name == name);
+      }
+
       public async Task Save(User user, Organization organization)
       {
          var entry = _db.Entry(organization);
@@ -33,6 +47,8 @@ namespace EduSciencePro.Data.Repos
    public interface IOrganizationRepository
    {
       Task<Organization[]> GetOrganizationsSearch(string search);
+      Task<Organization?> GetOrganizationByUserId(Guid userId);
+      Task<Organization?> GetOrganizationByName(string name);
       Task Save(User user, Organization organization);
    }
 }

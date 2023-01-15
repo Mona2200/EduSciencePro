@@ -32,6 +32,9 @@ namespace EduSciencePro.Data
 
       public DbSet<Comment> Comments { get; set; }
 
+      public DbSet<Project> Projects { get; set; }
+      public DbSet<ProjectSkill> ProjectSkills { get; set; }
+
       public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
       {
          Database.EnsureCreated();
@@ -61,6 +64,9 @@ namespace EduSciencePro.Data
          builder.Entity<LikePost>().ToTable("LikePosts");
 
          builder.Entity<Comment>().ToTable("Comments");
+
+         builder.Entity<Project>().ToTable("Projects");
+         builder.Entity<ProjectSkill>().ToTable("ProjectSkills");
       }
    }
 }

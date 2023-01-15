@@ -1,0 +1,35 @@
+﻿@using EduSciencePro.ViewModels.Response
+@model ProjectViewModel[];
+
+<div class="border_blue p-4 m-3 bg-white">
+    <h3 class="mb-5 mt-2 underline_h3 text-center">Ваши проекты</h3>
+
+    <p><a class="button_light form-control-plaintext text-center m-auto w-25 p-2 mt-4" asp-action="AddProject" asp-controller="Project">Создать проект</a></p>
+
+    <div class="row justify-content-center">
+        @if (Model != null && Model.Length != 0)
+        {
+            @foreach (var project in Model)
+            {
+                <div class="col-md-10" style="padding:10px;">
+                    <h5 class="fw-bold">@project.Title</h5>
+                    <p>Дата начала и окончания: @project.StartDate - @project.EndDate</p>
+                    <p>Финансирующая организация: @project.Organization.Name</p>
+                    <p>
+                        @foreach (var skill in project.Skills)
+                        {
+                            <span class="bg_blue p-2 m-2">@skill.Name</span>
+                        }
+                    </p>
+                    <p class="text-center"><a asp-action="LookingProject" asp-controller="Project" asp-route-projectId="@project.Id">Узнать больше</a></p>
+                    <p class="text-center"><a asp-action="DeleteProject" asp-controller="Project" asp-route-projectId="@project.Id">Удалить</a></p>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-center col-md-10 mt-5">Проектов нет.</p>
+        }
+    </div>
+
+</div>

@@ -246,3 +246,11 @@ input {
 .posts img {
     width: 100%;
 }
+
+.pr-3 {
+    padding-right: 3em;
+}
+
+.pl-3 {
+    padding-left: 3em;
+}
