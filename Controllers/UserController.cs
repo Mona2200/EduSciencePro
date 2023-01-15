@@ -517,7 +517,7 @@ namespace EduSciencePro.Controllers
             if (ResumeUser.Id != user.Id)
             {
                var resume = await _resumes.GetResumeViewModelByUserId(ResumeUser.Id);
-               if (resume.Education != null || resume.PlaceWork != null || resume.Organization != null)
+               if (resume.Education != null || resume.PlaceWork != null || resume.Organization != null || resume.Specialization != null)
                   resumes.Add(new KeyValuePair<UserViewModel, ResumeViewModel>(ResumeUser, resume));
             }
          }
