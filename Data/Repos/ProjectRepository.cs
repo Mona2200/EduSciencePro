@@ -192,7 +192,7 @@ namespace EduSciencePro.Data.Repos
          if (organization != null)
          {
             project.OrganizationId = organization.Id;
-            string[] skillNames = model.Skills.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            string[] skillNames = model.Skills.Split('/', StringSplitOptions.RemoveEmptyEntries);
             List<Skill> skills = new List<Skill>();
             foreach (var skillName in skillNames)
             {

@@ -88,7 +88,7 @@
             var skill = inp.val().replace(/\s/g,"");
             if (skill != "") {
                 $("#Skills_List").append('<p class="text-start"><span class="p-1" style="background-color: #e9ecef;">' + skill + '</span><img onclick="Cross_Click_Skills(this)" class="Cross ml-2 position-absolute" style="transform: translateY(40%);" src="src/Cross.svg" /></p>');
-                $("#Skills_Value").val($("#Skills_Value").val() + skill + " ");
+                $("#Skills_Value").val($("#Skills_Value").val() + skill + "/");
                 inp.val("");
             }
         }
@@ -98,7 +98,7 @@
         var str = $(this).prev().val();
         if (str.replace(/\s/g, "") != "") {
             $("#div_tags").append('<span class="bg_blue p-2 m-2 d-inline-block"><span>' + str + '</span><span style="padding-left: 5px;cursor:pointer;" onclick="remove_tag(this)">&#10008</span></span>');
-            $("#tags_input").val($("#tags_input").val() + " " + str);
+            $("#tags_input").val($("#tags_input").val() + "/" + str);
             $(this).prev().val('');
         }
     });

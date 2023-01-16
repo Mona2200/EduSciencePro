@@ -149,7 +149,7 @@ namespace EduSciencePro.Data.Repos
       {
          var user = _mapper.Map<AddUserViewModel, User>(model);
 
-         var typesId = model.TypeUsers.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(t => Guid.Parse(t)).ToArray();
+         var typesId = model.TypeUsers.Split('/', StringSplitOptions.RemoveEmptyEntries).Select(t => Guid.Parse(t)).ToArray();
          foreach (var typeId in typesId)
          {
             var typeUser = new TypeUser() { TypeId = typeId, UserId = user.Id };
@@ -185,7 +185,7 @@ namespace EduSciencePro.Data.Repos
                _db.TypeUsers.Remove(typeUser);
             }
 
-            var typesArray = model.TypeUsers.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToArray();
+            var typesArray = model.TypeUsers.Split('/', StringSplitOptions.RemoveEmptyEntries).ToArray();
             foreach (var type in typesArray)
             {
                var typeUser = new TypeUser() { TypeId = Guid.Parse(type), UserId = editUser.Id };

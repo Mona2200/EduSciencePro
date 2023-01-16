@@ -10,7 +10,7 @@
             {
                 @foreach (var skill in Model.Project.Skills)
                 {
-                    <span class="bg_blue p-2 m-2">@skill.Name</span>
+                    <span class="bg_blue p-2 m-2 d-inline-block">@skill.Name</span>
                 }
             }
         </p>
@@ -40,7 +40,7 @@
 
         @if (!Model.YourProject)
         {
-            <p><button class="button form-control-plaintext m-auto w-50 mt-4" id="button_addpost">Оставить заявку</button></p>
+            <p><button class="button form-control-plaintext m-auto w-50 mt-4">Оставить заявку</button></p>
         }
         
     </div>

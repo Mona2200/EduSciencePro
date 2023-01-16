@@ -208,7 +208,7 @@ namespace EduSciencePro.Data.Repos
 
          post.CreatedDate = DateTime.Now;
 
-         await _tags.Save(model.Tags.Split(new char[] { ' ', '\t', '\n' }, StringSplitOptions.RemoveEmptyEntries), post.Id);
+         await _tags.Save(model.Tags.Split('/', StringSplitOptions.RemoveEmptyEntries), post.Id);
 
          if (model.Cover != null)
          {
@@ -235,7 +235,7 @@ namespace EduSciencePro.Data.Repos
       {
          var post = await GetPostById(model.Id);
          if (model.Tags == null) model.Tags = "";
-         await _tags.Save(model.Tags.Split(new char[] { ' ', '\t', '\n' }, StringSplitOptions.RemoveEmptyEntries), model.Id);
+         await _tags.Save(model.Tags.Split('/', StringSplitOptions.RemoveEmptyEntries), model.Id);
          if (model.Cover != null)
          {
             byte[] imageData = null;

@@ -28,6 +28,8 @@ namespace EduSciencePro
          CreateMap<AddProjectViewModel, Project>()
                                                   .ForMember(m => m.StartDate, opt => opt.MapFrom(p => DateTime.Parse(p.StartDate)))
                                                   .ForMember(m => m.EndDate, opt => opt.MapFrom(p => DateTime.Parse(p.EndDate)));
+         CreateMap<AddConferenceViewModel, Conference>()
+                                                  .ForMember(m => m.EventDate, opt => opt.MapFrom(p => DateTime.Parse(p.EventDate)));
 
          CreateMap<User, UserViewModel>().ForMember(m => m.FullName, opt => opt.MapFrom(u => $"{u.LastName} {u.FirstName} {u.MiddleName}"));
          //CreateMap<UserViewModel, AddUserViewModel>().ForMember(m => m.FirstName, opt => opt.MapFrom(u => u.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToArray()[0]))
@@ -38,6 +40,7 @@ namespace EduSciencePro
          CreateMap<Post, PostViewModel>().ForMember(m => m.Content, opt => opt.MapFrom(p => Encoding.UTF8.GetString(p.Content))).ForMember(m => m.CreatedDate, opt => opt.Ignore());
          CreateMap<Comment, CommentViewModel>().ForMember(m => m.CreatedDate, opt => opt.Ignore());
          CreateMap<Project, ProjectViewModel>().ForMember(m => m.StartDate, opt => opt.Ignore()).ForMember(m => m.EndDate, opt => opt.Ignore());
+         CreateMap<Conference, ConferenceViewModel>().ForMember(m => m.EventDate, opt => opt.Ignore());
       }
    }
 }

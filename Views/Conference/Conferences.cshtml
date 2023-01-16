@@ -1,0 +1,55 @@
+﻿@using EduSciencePro.ViewModels.Response
+@model KeyValuePair<bool, ConferenceViewModel[]>;
+
+<div class="border_blue p-4 m-3 bg-white">
+   @if (Model.Key)
+   {
+        <p class="w-100 text-end"><a class="mr-2" asp-action="YourConferences" asp-controller="Conference">Ваши конференции</a></p>
+   }
+   else
+   {
+        <p class="w-100 text-end"><a class="mr-2" data-bs-toggle="modal" data-bs-target="#isNotOrg" style="cursor:pointer">Ваши конференции</a></p>
+
+        <div class="modal fade" id="isNotOrg" tabindex="-1" role="dialog" aria-bs-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body pb-5 pr-3 pl-3">
+                        <h4 class="mb-3 text-center">Создание конференций недоступно</h4>
+                        <p>Чтобы вам было доступно создание конференций, необходимо заполнить информацию об организации в профиле</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+   }
+    
+    <h3 class="mb-5 mt-2 underline_h3 text-center">Конференции</h3>
+
+    <div class="row justify-content-center">
+        @if (Model.Value != null && Model.Value.Length != 0)
+        {
+            @foreach (var conference in Model.Value)
+            {
+                <div class="col-md-10 mt-4 mb-4" style="padding:10px;">
+                    <h5 class="fw-bold">@conference.Title</h5>
+                    <p>Дата проведения: @conference.EventDate</p>
+                    <p>Организатор: @conference.Organization.Name</p>
+                   <p>
+                        @foreach (var tag in conference.Tags)
+                      {
+                            <span class="bg_blue p-2 m-2 d-inline-block">@tag.Name</span>
+                      }
+                   </p>
+                    <p class="text-center"><a asp-action="LookingConference" asp-controller="Conference" asp-route-conferenceId="@conference.Id">Узнать больше</a></p>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-center col-md-10">Конференций нет. Возвращайтесь позже.</p>
+        }
+    </div>
+
+</div>

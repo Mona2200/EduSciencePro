@@ -171,7 +171,7 @@ namespace EduSciencePro.Data.Repos
          }
          if (!String.IsNullOrEmpty(model.Skills))
          {
-            var nameskills = model.Skills.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var nameskills = model.Skills.Split('/', StringSplitOptions.RemoveEmptyEntries);
             foreach (var name in nameskills)
             {
                var trySkill = await _db.Skills.FirstOrDefaultAsync(s => s.Name == name);
@@ -266,7 +266,7 @@ namespace EduSciencePro.Data.Repos
          }
          if (!String.IsNullOrEmpty(newResume.Skills))
          {
-            var nameskills = newResume.Skills.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var nameskills = newResume.Skills.Split('/', StringSplitOptions.RemoveEmptyEntries);
             foreach (var name in nameskills)
             {
                var trySkill = await _db.Skills.FirstOrDefaultAsync(s => s.Name == name);

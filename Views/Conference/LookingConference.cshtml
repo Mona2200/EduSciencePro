@@ -1,0 +1,53 @@
+﻿@using EduSciencePro.ViewModels.Response
+@model KeyValuePair<bool, ConferenceViewModel>;
+
+<div class="border_blue p-4 m-3 bg-white d-flex justify-content-center">
+    <div class="col-md-10">
+        <h3 class="mb-5 mt-5 underline_h3 text-center">@Model.Value.Title</h3>
+
+        <p>
+            @if (Model.Value.Tags != null)
+            {
+                @foreach (var tag in Model.Value.Tags)
+                {
+                    <span class="bg_blue p-2 m-2 d-inline-block">@tag.Name</span>
+                }
+            }
+        </p>
+
+        <p><span class="fw-bold">Дата проведения: </span>@Model.Value.EventDate</p>
+
+        <p><span class="fw-bold">Организатор: </span>@Model.Value.Organization.Name</p>
+
+        <p><span class="fw-bold">Форма участия: </span>@Model.Value.ParticipationForm</p>
+
+        <div>
+            <p class="fw-bold">Цели и задачи:</p>
+            <p>@Model.Value.Goals</p>
+        </div>
+
+        @if (Model.Value.Information != null)
+        {
+            <div>
+                <p class="fw-bold">Дополнительная информация:</p>
+                <p>@Model.Value.Information</p>
+            </div>
+        }
+
+        @if (Model.Value.Program != null)
+        {
+            <div>
+                <p class="fw-bold">Программа конференции:</p>
+                <p>@Model.Value.Program</p>
+            </div>
+        }
+
+        <p><span class="fw-bold">Контакты: </span><a href="mailto:@Model.Value.Contacts">@Model.Value.Contacts</a></p>
+
+        @if (!Model.Key)
+        {
+            <p><button class="button form-control-plaintext m-auto w-50 mt-4">Оставить заявку</button></p>
+        }
+
+    </div>
+</div>

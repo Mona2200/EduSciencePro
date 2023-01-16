@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using EduSciencePro.Data.Repos;
-using EduSciencePro.Models;
+﻿using EduSciencePro.Data.Repos;
 using EduSciencePro.Models.User;
 using EduSciencePro.ViewModels.Request;
 using EduSciencePro.ViewModels.Response;
@@ -9,43 +7,41 @@ using System.Security.Claims;
 
 namespace EduSciencePro.Controllers
 {
-   public class ProjectController : Controller
+   public class ConferenceController : Controller
    {
-      private readonly IProjectRepository _projects;
+      private readonly IConferenceRepository _conferences;
       private readonly IUserRepository _users;
       private readonly IOrganizationRepository _organizations;
-
-      public ProjectController(IProjectRepository projects, IUserRepository users, IOrganizationRepository organizations)
+      public ConferenceController(IConferenceRepository conferences, IUserRepository users, IOrganizationRepository organizations)
       {
-         _projects = projects;
+         _conferences = conferences;
          _users = users;
          _organizations = organizations;
       }
 
       [HttpGet]
-      [Route("Projects")]
-      public async Task<IActionResult> Projects()
+      [Route("Conferences")]
+      public async Task<IActionResult> Conferences()
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
          var user = await _users.GetUserByEmail(claimEmail);
 
-         var projectViewModels = await _projects.GetProjectViewModels();
+         var conferences = await _conferences.GetConferenceViewModels();
 
          var organization = await _organizations.GetOrganizationByUserId(user.Id);
 
          if (organization != null)
          {
-            return View(new ProjectsAndIsOrgViewModel() { IsOrg = true, Projects = projectViewModels.Where(p => p.Organization.Id != organization.Id).ToArray() });
+            return View(new KeyValuePair<bool, ConferenceViewModel[]>(true, conferences.Where(c => c.Organization.Id != organization.Id).ToArray()));
          }
          else
-            return View(new ProjectsAndIsOrgViewModel() { IsOrg = false, Projects = projectViewModels });
-
+            return View(new KeyValuePair<bool, ConferenceViewModel[]>(false, conferences));
       }
 
       [HttpGet]
-      [Route("YourProjects")]
-      public async Task<IActionResult> YourProjects()
+      [Route("YourConferences")]
+      public async Task<IActionResult> YourConferences()
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
@@ -55,65 +51,61 @@ namespace EduSciencePro.Controllers
          if (organization == null)
             return View(null);
 
-         var projectViewModels = await _projects.GetProjectViewModelsByOrganizationId(organization.Id);
+         var projectViewModels = await _conferences.GetConferenceViewModelsByOrganizationId(organization.Id);
          return View(projectViewModels);
       }
 
       [HttpGet]
-      [Route("AddProject")]
-      public async Task<IActionResult> AddProject()
+      [Route("AddConference")]
+      public async Task<IActionResult> AddConference()
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
          var user = await _users.GetUserByEmail(claimEmail);
 
          var organization = await _organizations.GetOrganizationByUserId(user.Id);
-         var minStartDate = DateTime.Now;
-         var minEndDate = new DateTime(minStartDate.Year, minStartDate.Month, minStartDate.Day + 7);
+         var minEventDate = DateTime.Now;
 
-         var addProjectViewModel = new AddProjectViewModel()
+         var addConferenceViewModel = new AddConferenceViewModel()
          {
             OrganizationName = organization.Name,
-            minStartDate = FromDateToString(minStartDate),
-            minEndDate = FromDateToString(minEndDate)
+            MinEventDate = FromDateToString(minEventDate)
          };
 
-         return View(addProjectViewModel);
+         return View(addConferenceViewModel);
       }
 
       [HttpPost]
-      [Route("AddProject")]
-      public async Task<IActionResult> AddProject(AddProjectViewModel model)
+      [Route("AddConference")]
+      public async Task<IActionResult> AddConference(AddConferenceViewModel model)
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
          var user = await _users.GetUserByEmail(claimEmail);
 
-         if (!ValidProject(model))
+         if (!ValidConference(model))
          {
             var organization = await _organizations.GetOrganizationByUserId(user.Id);
             model.OrganizationName = organization.Name;
 
-            var minStartDate = DateTime.Now;
-            var minEndDate = new DateTime(minStartDate.Year, minStartDate.Month, minStartDate.Day + 7);
-            model.minStartDate = FromDateToString(minStartDate);
-            model.minEndDate = FromDateToString(minEndDate);
+            var minEventDate = DateTime.Now;
+            model.MinEventDate = FromDateToString(minEventDate);
             return View(model);
          }
          try
          {
-            await _projects.Save(model);
+            await _conferences.Save(model);
          }
          catch (Exception ex)
          {
 
          };
-         return RedirectToAction("Projects");
+         return RedirectToAction("Conferences");
       }
 
       [HttpGet]
-      [Route("LookingProject")]
-      public async Task<IActionResult> LookingProject(Guid projectId)
+      [Route("LookingConference")]
+      public async Task<IActionResult> LookingConference(Guid conferenceId)
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
@@ -121,23 +113,23 @@ namespace EduSciencePro.Controllers
 
          var organization = await _organizations.GetOrganizationByUserId(user.Id);
 
-         var projectViewModel = await _projects.GetProjectViewModelById(projectId);
+         var conferenceViewModel = await _conferences.GetConferenceViewModelById(conferenceId);
 
-         var lookingProject = new LookingProjectViewModel() { Project = projectViewModel };
-         lookingProject.YourProject = projectViewModel.Organization.Id == organization.Id;
+         var yourConference = conferenceViewModel.Organization.Id == organization.Id;
+         var lookingConference = new KeyValuePair<bool, ConferenceViewModel>(yourConference, conferenceViewModel);
 
-         return View(lookingProject);
+         return View(lookingConference);
       }
 
       [HttpGet]
-      [Route("DeleteProject")]
-      public async Task<IActionResult> DeleteProject(Guid projectId)
+      [Route("DeleteConference")]
+      public async Task<IActionResult> DeleteConference(Guid conferenceId)
       {
-      await _projects.Delete(projectId);
-         return RedirectToAction("YourProjects");
+         await _conferences.Delete(conferenceId);
+         return RedirectToAction("YourConferences");
       }
 
-      private bool ValidProject(AddProjectViewModel model)
+      private bool ValidConference(AddConferenceViewModel model)
       {
          if (!ModelState.IsValid)
          {

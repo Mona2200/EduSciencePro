@@ -1,0 +1,79 @@
+﻿@using EduSciencePro.ViewModels.Request
+@model AddConferenceViewModel;
+
+<div class="col-md-8">
+    <form class="text-center d-flex justify-content-center row" method="post" asp-action="AddConference" asp-controller="Conference" asp-route-OrganizationName="@Model.OrganizationName">
+
+        <h3 class="mb-5 mt-5">Создание конференции</h3>
+
+        <div class="col-md-7">
+            <label asp-for="Title" class="text-start label_input mt-4 w-100"></label>
+            <p><input class="text-center w-100 p-1" asp-for="Title" placeholder="Название" value="@Model.Title"></p>
+            <p><span asp-validation-for="Title" class="text-danger mb-3 col-md-6 text-center"></span></p>
+        </div>
+
+        <div class="col-md-7 row">
+            <div class="col-md-5">
+                <label asp-for="EventDate" class="text-start label_input mt-4 w-100"></label>
+                <p><input class="text-center w-100 p-1" asp-for="EventDate" value="@Model.EventDate" min="@Model.MinEventDate"></p>
+                <p><span asp-validation-for="EventDate" class="text-danger mb-3 col-md-6 text-start"></span></p>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <label asp-for="OrganizationName" class="text-start label_input mt-4 w-100"></label>
+            <p><input class="text-center w-100 p-1" asp-for="OrganizationName" value="@Model.OrganizationName" disabled></p>
+        </div>
+
+        <div class="col-md-7 row">
+           <div class="col-md-5">
+            <label asp-for="ParticipationForm" class="text-start label_input mt-4 w-100"></label>
+                <select class="text-center w-100 p-1" asp-for="ParticipationForm">
+                <option selected value="Очная">Очная</option>
+                <option value="Заочная">Заочная</option>
+                <option value="Очно-заочная">Очно-заочная</option>
+            </select>
+            <p><span asp-validation-for="ParticipationForm" class="text-danger mb-3 col-md-6 text-start"></span></p>
+        </div>
+        </div>
+
+        <div class="col-md-7">
+            <label asp-for="Goals" class="text-start label_input mt-4 w-100"></label>
+            <p>
+                <textarea rows="5" class="text-start w-100 p-1" asp-for="Goals" value="@Model.Goals"></textarea><span class="position-absolute text-black-50" style="transform: translateY(2em);padding-left: 20px;">Опишите цели и задачи конференции</span>
+            </p>
+            <p><span asp-validation-for="Goals" class="text-danger mb-3 col-md-6 text-start"></span></p>
+        </div>
+
+        <a class="mt-4 mb-3" data-bs-toggle="collapse" data-bs-target="#input_information" style="cursor:pointer">Указать дополнительную информацию</a>
+        <div class="col-md-7 collapse" id="input_information">
+            <label asp-for="Information" class="text-start label_input mt-4 w-100"></label>
+            <p><textarea class="text-start w-100 p-1" asp-for="Information" value="@Model.Information" rows="5"></textarea></p>
+            <p><span asp-validation-for="Information" class="text-danger mb-3 col-md-6 text-start"></span></p>
+        </div>
+
+        <a class="mt-4 mb-3" data-bs-toggle="collapse" data-bs-target="#input_program" style="cursor:pointer">Указать программу конференции</a>
+        <div class="col-md-7 collapse" id="input_program">
+            <label asp-for="Program" class="text-start label_input mt-4 w-100"></label>
+            <p><textarea class="text-start w-100 p-1" asp-for="Program" value="@Model.Program" rows="5"></textarea></p>
+            <p><span asp-validation-for="Program" class="text-danger mb-3 col-md-6 text-start"></span></p>
+        </div>
+
+        <div class="col-md-7">
+            <label asp-for="Contacts" class="text-start label_input mt-4 w-100"></label>
+            <p><input class="text-center w-100 p-1" asp-for="Contacts" value="@Model.Contacts" placeholder="Email"></p>
+            <p><span asp-validation-for="Contacts" class="text-danger mb-3 col-md-6 text-start"></span></p>
+        </div>
+
+        <div class="col-md-7">
+            <label asp-for="Tags" class="text-start label_input mt-3 w-100"></label>
+            <input id="tags_input" class="d-none" asp-for="Tags">
+            <p class="text-start"><input class="TagsInput text-center w-75 p-1" placeholder="Направления"><span id="tag_click" class="span_click">+</span></p>
+            <p class="Search_Tags position-absolute m-0"></p>
+            <div class="text-start mb-4" id="div_tags"></div>
+        </div>
+
+        <p><button class="button form-control-plaintext m-auto w-50 mt-4">Опубликовать</button></p>
+
+    </form>
+</div>

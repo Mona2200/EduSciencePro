@@ -34,6 +34,8 @@ namespace EduSciencePro.Data
 
       public DbSet<Project> Projects { get; set; }
       public DbSet<ProjectSkill> ProjectSkills { get; set; }
+      public DbSet<Conference> Conferences { get; set; }
+      public DbSet<TagConference> TagConferences { get; set; }
 
       public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
       {
@@ -67,6 +69,8 @@ namespace EduSciencePro.Data
 
          builder.Entity<Project>().ToTable("Projects");
          builder.Entity<ProjectSkill>().ToTable("ProjectSkills");
+         builder.Entity<Conference>().ToTable("Conferences");
+         builder.Entity<TagConference>().ToTable("TagConferences");
       }
    }
 }
