@@ -1,0 +1,37 @@
+﻿@using EduSciencePro.ViewModels.Response
+@model InternshipViewModel[];
+
+<div class="border_blue p-4 m-3 bg-white">
+    <h3 class="mb-5 mt-2 underline_h3 text-center">Ваши практики и стажировки</h3>
+
+    <p><a class="button_light form-control-plaintext text-center m-auto w-25 p-2 mt-4" asp-action="AddInternship" asp-controller="Internship">Создать проект</a></p>
+
+    <div class="row justify-content-center">
+        @if (Model != null && Model.Length != 0)
+        {
+            @foreach (var internship in Model)
+            {
+                <div class="col-md-10 mt-4 mb-4" style="padding:10px;">
+                    <h5 class="fw-bold">@internship.Name</h5>
+                    <p>Дата начала и окончания: @internship.StartDate - @internship.EndDate</p>
+                    <p>Организация: @internship.Organization.Name</p>
+                    <p>Тип занятости: @internship.EmploymentType</p>
+                    <p>Зарплата: @internship.Salary</p>
+                    <p>
+                        @foreach (var skill in internship.Skills)
+                        {
+                            <span class="bg_blue p-2 m-2 d-inline-block">@skill.Name</span>
+                        }
+                    </p>
+                    <p class="text-center"><a asp-action="LookingInternship" asp-controller="Internship" asp-route-internshipId="@internship.Id">Узнать больше</a></p>
+                    <p class="text-center"><a asp-action="DeleteInternship" asp-controller="Internship" asp-route-internshipId="@internship.Id">Удалить</a></p>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-center col-md-10 mt-5">Практик и стажировок нет.</p>
+        }
+    </div>
+
+</div>

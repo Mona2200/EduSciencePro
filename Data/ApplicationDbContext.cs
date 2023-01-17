@@ -38,6 +38,8 @@ namespace EduSciencePro.Data
       public DbSet<TagConference> TagConferences { get; set; }
       public DbSet<Cooperation> Cooperations { get; set; }
       public DbSet<SkillCooperation> SkillCooperations { get; set; }
+      public DbSet<Internship> Internships { get; set; }
+      public DbSet<SkillInternship> SkillInternships { get; set; }
 
       public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
       {
@@ -75,6 +77,8 @@ namespace EduSciencePro.Data
          builder.Entity<TagConference>().ToTable("TagConferences");
          builder.Entity<Cooperation>().ToTable("Cooperations");
          builder.Entity<SkillCooperation>().ToTable("SkillCooperations");
+         builder.Entity<Internship>().ToTable("Internships");
+         builder.Entity<SkillInternship>().ToTable("SkillInternships");
       }
    }
 }

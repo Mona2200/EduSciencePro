@@ -115,7 +115,7 @@ namespace EduSciencePro.Controllers
 
          var conferenceViewModel = await _conferences.GetConferenceViewModelById(conferenceId);
 
-         var yourConference = conferenceViewModel.Organization.Id == organization.Id;
+         var yourConference = conferenceViewModel.Organization.Id == organization?.Id;
          var lookingConference = new KeyValuePair<bool, ConferenceViewModel>(yourConference, conferenceViewModel);
 
          return View(lookingConference);

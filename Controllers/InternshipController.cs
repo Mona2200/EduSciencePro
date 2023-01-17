@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using EduSciencePro.Data.Repos;
+﻿using EduSciencePro.Data.Repos;
 using EduSciencePro.Models;
-using EduSciencePro.Models.User;
 using EduSciencePro.ViewModels.Request;
 using EduSciencePro.ViewModels.Response;
 using Microsoft.AspNetCore.Mvc;
@@ -9,43 +7,42 @@ using System.Security.Claims;
 
 namespace EduSciencePro.Controllers
 {
-   public class ProjectController : Controller
-   {
-      private readonly IProjectRepository _projects;
-      private readonly IUserRepository _users;
+    public class InternshipController : Controller
+    {
+      private readonly IInternshipRepository _internships;
       private readonly IOrganizationRepository _organizations;
-
-      public ProjectController(IProjectRepository projects, IUserRepository users, IOrganizationRepository organizations)
+      private readonly IUserRepository _users;
+      public InternshipController(IInternshipRepository internships, IOrganizationRepository organizations, IUserRepository users)
       {
-         _projects = projects;
-         _users = users;
+         _internships = internships;
          _organizations = organizations;
+         _users = users;
       }
 
       [HttpGet]
-      [Route("Projects")]
-      public async Task<IActionResult> Projects()
+      [Route("Internships")]
+      public async Task<IActionResult> Internships()
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
          var user = await _users.GetUserByEmail(claimEmail);
 
-         var projectViewModels = await _projects.GetProjectViewModels();
+         var internshipViewModels = await _internships.GetInternshipViewModels();
 
          var organization = await _organizations.GetOrganizationByUserId(user.Id);
 
          if (organization != null)
          {
-            return View(new ProjectsAndIsOrgViewModel() { IsOrg = true, Projects = projectViewModels.Where(p => p.Organization.Id != organization.Id).ToArray() });
+            return View(new KeyValuePair<bool, InternshipViewModel[]>(true, internshipViewModels.Where(p => p.Organization.Id != organization.Id).ToArray()));
          }
          else
-            return View(new ProjectsAndIsOrgViewModel() { IsOrg = false, Projects = projectViewModels });
+            return View(new KeyValuePair<bool, InternshipViewModel[]>(false, internshipViewModels));
 
       }
 
       [HttpGet]
-      [Route("YourProjects")]
-      public async Task<IActionResult> YourProjects()
+      [Route("YourInternships")]
+      public async Task<IActionResult> YourInternships()
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
@@ -55,13 +52,13 @@ namespace EduSciencePro.Controllers
          if (organization == null)
             return View(null);
 
-         var projectViewModels = await _projects.GetProjectViewModelsByOrganizationId(organization.Id);
-         return View(projectViewModels);
+         var internshipViewModels = await _internships.GetInternshipViewModelsByOrganizationId(organization.Id);
+         return View(internshipViewModels);
       }
 
       [HttpGet]
-      [Route("AddProject")]
-      public async Task<IActionResult> AddProject()
+      [Route("AddInternship")]
+      public async Task<IActionResult> AddInternship()
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
@@ -71,25 +68,25 @@ namespace EduSciencePro.Controllers
          var minStartDate = DateTime.Now;
          var minEndDate = new DateTime(minStartDate.Year, minStartDate.Month, minStartDate.Day + 7);
 
-         var addProjectViewModel = new AddProjectViewModel()
+         var addInternshipViewModel = new AddIntershipViewModel()
          {
             OrganizationName = organization.Name,
             minStartDate = FromDateToString(minStartDate),
             minEndDate = FromDateToString(minEndDate)
          };
 
-         return View(addProjectViewModel);
+         return View(addInternshipViewModel);
       }
 
       [HttpPost]
-      [Route("AddProject")]
-      public async Task<IActionResult> AddProject(AddProjectViewModel model)
+      [Route("AddInternship")]
+      public async Task<IActionResult> AddInternship(AddIntershipViewModel model)
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
          var user = await _users.GetUserByEmail(claimEmail);
 
-         if (!ValidProject(model))
+         if (!ValidInternship(model))
          {
             var organization = await _organizations.GetOrganizationByUserId(user.Id);
             model.OrganizationName = organization.Name;
@@ -102,18 +99,18 @@ namespace EduSciencePro.Controllers
          }
          try
          {
-            await _projects.Save(model);
+            await _internships.Save(model);
          }
          catch (Exception ex)
          {
 
          };
-         return RedirectToAction("Projects");
+         return RedirectToAction("Internships");
       }
 
       [HttpGet]
-      [Route("LookingProject")]
-      public async Task<IActionResult> LookingProject(Guid projectId)
+      [Route("LookingInternship")]
+      public async Task<IActionResult> LookingInternship(Guid internshipId)
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
@@ -121,23 +118,24 @@ namespace EduSciencePro.Controllers
 
          var organization = await _organizations.GetOrganizationByUserId(user.Id);
 
-         var projectViewModel = await _projects.GetProjectViewModelById(projectId);
+         var internshipViewModel = await _internships.GetInternshipViewModelById(internshipId);
 
-         var lookingProject = new LookingProjectViewModel() { Project = projectViewModel };
-         lookingProject.YourProject = projectViewModel.Organization.Id == organization?.Id;
+         var yourProject = internshipViewModel.Organization.Id == organization?.Id;
 
-         return View(lookingProject);
+         var lookingInternship = new KeyValuePair<bool, InternshipViewModel>(yourProject, internshipViewModel);
+
+         return View(lookingInternship);
       }
 
       [HttpGet]
-      [Route("DeleteProject")]
-      public async Task<IActionResult> DeleteProject(Guid projectId)
+      [Route("DeleteInternship")]
+      public async Task<IActionResult> DeleteInternship(Guid internshipId)
       {
-      await _projects.Delete(projectId);
-         return RedirectToAction("YourProjects");
+         await _internships.Delete(internshipId);
+         return RedirectToAction("YourInternships");
       }
 
-      private bool ValidProject(AddProjectViewModel model)
+      private bool ValidInternship(AddIntershipViewModel model)
       {
          if (!ModelState.IsValid)
          {

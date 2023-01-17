@@ -31,6 +31,7 @@ builder.Services.AddSingleton<ICommentRepository, CommentRepository>();
 builder.Services.AddSingleton<IProjectRepository, ProjectRepository>();
 builder.Services.AddSingleton<IConferenceRepository, ConferenceRepository>();
 builder.Services.AddSingleton<ICooperationRepository, CooperationRepository>();
+builder.Services.AddSingleton<IInternshipRepository, InternshipRepository>();
 
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection), ServiceLifetime.Singleton);

@@ -115,7 +115,7 @@ namespace EduSciencePro.Controllers
 
          var cooperationViewModel = await _cooperations.GetCooperationViewModelById(cooperationId);
 
-         var yourCooperation = cooperationViewModel.Organization.Id == organization.Id;
+         var yourCooperation = cooperationViewModel.Organization.Id == organization?.Id;
          var lookingCooperation = new KeyValuePair<bool, CooperationViewModel>(yourCooperation, cooperationViewModel);
 
          return View(lookingCooperation);
