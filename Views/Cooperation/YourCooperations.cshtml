@@ -1,0 +1,37 @@
+﻿@using EduSciencePro.ViewModels.Response
+@model CooperationViewModel[];
+
+<div class="border_blue p-4 m-3 bg-white">
+    <h3 class="mb-5 mt-2 underline_h3 text-center">Ваши проекты для сотрудничества</h3>
+
+    <p><a class="button_light form-control-plaintext text-center m-auto w-25 p-2 mt-4" asp-action="AddCooperation" asp-controller="Cooperation">Создать проект</a></p>
+
+    <div class="row justify-content-center">
+        @if (Model != null && Model.Length != 0)
+        {
+            @foreach (var cooperation in Model)
+            {
+                <div class="col-md-10 mt-4 mb-4" style="padding:10px;">
+                    <h5 class="fw-bold">@cooperation.Name</h5>
+                    <p>Роль: @cooperation.Role</p>
+                    <p>Дата окончания работ: @cooperation.EndDate</p>
+                    <p>Организация: @cooperation.Organization.Name</p>
+                    <p>Стоимость выполнения работ: @cooperation.Cost рублей</p>
+                    <p>
+                        @foreach (var skill in cooperation.Skills)
+                        {
+                            <span class="bg_blue p-2 m-2 d-inline-block">@skill.Name</span>
+                        }
+                    </p>
+                    <p class="text-center"><a asp-action="LookingCooperation" asp-controller="Cooperation" asp-route-cooperationId="@cooperation.Id">Узнать больше</a></p>
+                    <p class="text-center"><a asp-action="DeleteCooperation" asp-controller="Cooperation" asp-route-cooperationId="@cooperation.Id">Удалить</a></p>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-center col-md-10 mt-5">Проектов для сотрудничества нет.</p>
+        }
+    </div>
+
+</div>

@@ -1,5 +1,5 @@
 ﻿using EduSciencePro.Data.Repos;
-using EduSciencePro.Models.User;
+using EduSciencePro.Models;
 using EduSciencePro.ViewModels.Request;
 using EduSciencePro.ViewModels.Response;
 using Microsoft.AspNetCore.Mvc;
@@ -7,41 +7,41 @@ using System.Security.Claims;
 
 namespace EduSciencePro.Controllers
 {
-   public class ConferenceController : Controller
-   {
-      private readonly IConferenceRepository _conferences;
+    public class CooperationController : Controller
+    {
+      private readonly ICooperationRepository _cooperations;
       private readonly IUserRepository _users;
       private readonly IOrganizationRepository _organizations;
-      public ConferenceController(IConferenceRepository conferences, IUserRepository users, IOrganizationRepository organizations)
+      public CooperationController(ICooperationRepository cooperations, IUserRepository users, IOrganizationRepository organizations)
       {
-         _conferences = conferences;
+         _cooperations = cooperations;
          _users = users;
          _organizations = organizations;
       }
 
       [HttpGet]
-      [Route("Conferences")]
-      public async Task<IActionResult> Conferences()
+      [Route("Cooperations")]
+      public async Task<IActionResult> Cooperations()
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
          var user = await _users.GetUserByEmail(claimEmail);
 
-         var conferences = await _conferences.GetConferenceViewModels();
+         var cooperations = await _cooperations.GetCooperationViewModels();
 
          var organization = await _organizations.GetOrganizationByUserId(user.Id);
 
          if (organization != null)
          {
-            return View(new KeyValuePair<bool, ConferenceViewModel[]>(true, conferences.Where(c => c.Organization.Id != organization.Id).ToArray()));
+            return View(new KeyValuePair<bool, CooperationViewModel[]>(true, cooperations.Where(c => c.Organization.Id != organization.Id).ToArray()));
          }
          else
-            return View(new KeyValuePair<bool, ConferenceViewModel[]>(false, conferences));
+            return View(new KeyValuePair<bool, CooperationViewModel[]>(false, cooperations));
       }
 
       [HttpGet]
-      [Route("YourConferences")]
-      public async Task<IActionResult> YourConferences()
+      [Route("YourCooperations")]
+      public async Task<IActionResult> YourCooperations()
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
@@ -51,61 +51,61 @@ namespace EduSciencePro.Controllers
          if (organization == null)
             return View(null);
 
-         var conferenceViewModels = await _conferences.GetConferenceViewModelsByOrganizationId(organization.Id);
-         return View(conferenceViewModels);
+         var cooperationViewModels = await _cooperations.GetCooperationViewModelsByOrganizationId(organization.Id);
+         return View(cooperationViewModels);
       }
 
       [HttpGet]
-      [Route("AddConference")]
-      public async Task<IActionResult> AddConference()
+      [Route("AddCooperation")]
+      public async Task<IActionResult> AddCooperation()
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
          var user = await _users.GetUserByEmail(claimEmail);
 
          var organization = await _organizations.GetOrganizationByUserId(user.Id);
-         var minEventDate = DateTime.Now;
+         var minEndDate = DateTime.Now;
 
-         var addConferenceViewModel = new AddConferenceViewModel()
+         var addCooperationViewModel = new AddCooperationViewModel()
          {
             OrganizationName = organization.Name,
-            MinEventDate = FromDateToString(minEventDate)
+            MinEndDate = FromDateToString(minEndDate)
          };
 
-         return View(addConferenceViewModel);
+         return View(addCooperationViewModel);
       }
 
       [HttpPost]
-      [Route("AddConference")]
-      public async Task<IActionResult> AddConference(AddConferenceViewModel model)
+      [Route("AddCooperation")]
+      public async Task<IActionResult> AddCooperation(AddCooperationViewModel model)
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
          var user = await _users.GetUserByEmail(claimEmail);
 
-         if (!ValidConference(model))
+         if (!ValidCooperation(model))
          {
             var organization = await _organizations.GetOrganizationByUserId(user.Id);
             model.OrganizationName = organization.Name;
 
-            var minEventDate = DateTime.Now;
-            model.MinEventDate = FromDateToString(minEventDate);
+            var minEndDate = DateTime.Now;
+            model.MinEndDate = FromDateToString(minEndDate);
             return View(model);
          }
          try
          {
-            await _conferences.Save(model);
+            await _cooperations.Save(model);
          }
          catch (Exception ex)
          {
 
          };
-         return RedirectToAction("Conferences");
+         return RedirectToAction("Cooperations");
       }
 
       [HttpGet]
-      [Route("LookingConference")]
-      public async Task<IActionResult> LookingConference(Guid conferenceId)
+      [Route("LookingCooperation")]
+      public async Task<IActionResult> LookingCooperation(Guid cooperationId)
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
@@ -113,23 +113,23 @@ namespace EduSciencePro.Controllers
 
          var organization = await _organizations.GetOrganizationByUserId(user.Id);
 
-         var conferenceViewModel = await _conferences.GetConferenceViewModelById(conferenceId);
+         var cooperationViewModel = await _cooperations.GetCooperationViewModelById(cooperationId);
 
-         var yourConference = conferenceViewModel.Organization.Id == organization.Id;
-         var lookingConference = new KeyValuePair<bool, ConferenceViewModel>(yourConference, conferenceViewModel);
+         var yourCooperation = cooperationViewModel.Organization.Id == organization.Id;
+         var lookingCooperation = new KeyValuePair<bool, CooperationViewModel>(yourCooperation, cooperationViewModel);
 
-         return View(lookingConference);
+         return View(lookingCooperation);
       }
 
       [HttpGet]
-      [Route("DeleteConference")]
-      public async Task<IActionResult> DeleteConference(Guid conferenceId)
+      [Route("DeleteCooperation")]
+      public async Task<IActionResult> DeleteCooperation(Guid cooperationId)
       {
-         await _conferences.Delete(conferenceId);
-         return RedirectToAction("YourConferences");
+         await _cooperations.Delete(cooperationId);
+         return RedirectToAction("YourCooperations");
       }
 
-      private bool ValidConference(AddConferenceViewModel model)
+      private bool ValidCooperation(AddCooperationViewModel model)
       {
          if (!ModelState.IsValid)
          {

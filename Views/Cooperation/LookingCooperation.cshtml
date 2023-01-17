@@ -1,0 +1,49 @@
+﻿@using EduSciencePro.ViewModels.Response
+@model KeyValuePair<bool, CooperationViewModel>;
+
+<div class="border_blue p-4 m-3 bg-white d-flex justify-content-center">
+    <div class="col-md-10">
+        <h3 class="mb-5 mt-5 underline_h3 text-center">@Model.Value.Name</h3>
+
+        <p>
+            @if (Model.Value.Skills != null)
+            {
+                @foreach (var skill in Model.Value.Skills)
+                {
+                    <span class="bg_blue p-2 m-2 d-inline-block">@skill.Name</span>
+                }
+            }
+        </p>
+
+        <p><span class="fw-bold">Роль: </span>@Model.Value.Role</p>
+
+        <p><span class="fw-bold">Дата окончания работ: </span>@Model.Value.EndDate</p>
+
+        <p><span class="fw-bold">Организация: </span>@Model.Value.Organization.Name</p>
+
+        <p><span class="fw-bold">Стоимость выполнения работ: </span>@Model.Value.Cost</p>
+
+        <div>
+            <p class="fw-bold">Описание услуги, продукции:</p>
+            <p>@Model.Value.Description</p>
+        </div>
+
+        <div>
+            <p class="fw-bold">Описание необходимых работ:</p>
+            <p>@Model.Value.Requirement</p>
+        </div>
+
+        <div>
+            <p class="fw-bold">Условия выполнения:</p>
+            <p>@Model.Value.Conditions</p>
+        </div>
+
+        <p><span class="fw-bold">Контакты: </span><a href="mailto:@Model.Value.Contacts">@Model.Value.Contacts</a></p>
+
+        @if (!Model.Key)
+        {
+            <p><button class="button form-control-plaintext m-auto w-50 mt-4">Оставить заявку</button></p>
+        }
+
+    </div>
+</div>

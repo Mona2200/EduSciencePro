@@ -21,7 +21,7 @@ namespace EduSciencePro.Data.Repos
          _organizations = organizations;
       }
 
-      public async Task<Project[]> GetProjects() => await _db.Projects.ToArrayAsync();
+      public async Task<Project[]> GetProjects() => await _db.Projects.Where(p => p.EndDate > DateTime.Now).ToArrayAsync();
 
       public async Task<Project[]> GetProjectsByOrganizationId(Guid organizationId) => await _db.Projects.Where(p => p.OrganizationId == organizationId).ToArrayAsync();
 
@@ -192,31 +192,34 @@ namespace EduSciencePro.Data.Repos
          if (organization != null)
          {
             project.OrganizationId = organization.Id;
-            string[] skillNames = model.Skills.Split('/', StringSplitOptions.RemoveEmptyEntries);
-            List<Skill> skills = new List<Skill>();
-            foreach (var skillName in skillNames)
+            if (model.Skills != null)
             {
-               Skill? skill = await _db.Skills.FirstOrDefaultAsync(s => s.Name == skillName);
-               if (skill != null)
+               string[] skillNames = model.Skills.Split('/', StringSplitOptions.RemoveEmptyEntries);
+               List<Skill> skills = new List<Skill>();
+               foreach (var skillName in skillNames)
                {
-                  ProjectSkill projectSkill = new ProjectSkill() { ProjectId = project.Id, SkillId = skill.Id };
-                  var entry = _db.ProjectSkills.Entry(projectSkill);
-                  if (entry.State == EntityState.Detached)
-                     await _db.ProjectSkills.AddAsync(projectSkill);
-               }
-               else
-               {
-                  Skill newSkill = new Skill() { Name = skillName };
-                  var entry = _db.Skills.Entry(newSkill);
-                  if (entry.State == EntityState.Detached)
-                     await _db.Skills.AddAsync(newSkill);
+                  Skill? skill = await _db.Skills.FirstOrDefaultAsync(s => s.Name == skillName);
+                  if (skill != null)
+                  {
+                     ProjectSkill projectSkill = new ProjectSkill() { ProjectId = project.Id, SkillId = skill.Id };
+                     var entry = _db.ProjectSkills.Entry(projectSkill);
+                     if (entry.State == EntityState.Detached)
+                        await _db.ProjectSkills.AddAsync(projectSkill);
+                  }
+                  else
+                  {
+                     Skill newSkill = new Skill() { Name = skillName };
+                     var entry = _db.Skills.Entry(newSkill);
+                     if (entry.State == EntityState.Detached)
+                        await _db.Skills.AddAsync(newSkill);
 
-                  ProjectSkill projectSkill = new ProjectSkill() { ProjectId = project.Id, SkillId = newSkill.Id };
-                  var newEntry = _db.ProjectSkills.Entry(projectSkill);
-                  if (newEntry.State == EntityState.Detached)
-                     await _db.ProjectSkills.AddAsync(projectSkill);
+                     ProjectSkill projectSkill = new ProjectSkill() { ProjectId = project.Id, SkillId = newSkill.Id };
+                     var newEntry = _db.ProjectSkills.Entry(projectSkill);
+                     if (newEntry.State == EntityState.Detached)
+                        await _db.ProjectSkills.AddAsync(projectSkill);
+                  }
                }
-            }
+            }       
             var projectEntry = _db.Projects.Entry(project);
             if (projectEntry.State == EntityState.Detached)
                await _db.Projects.AddAsync(project);

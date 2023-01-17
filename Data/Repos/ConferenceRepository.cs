@@ -20,7 +20,7 @@ namespace EduSciencePro.Data.Repos
          _organizations = organizations;
       }
 
-      public async Task<Conference[]> GetConferences() => await _db.Conferences.ToArrayAsync();
+      public async Task<Conference[]> GetConferences() => await _db.Conferences.Where(p => p.EventDate > DateTime.Now).ToArrayAsync();
       public async Task<ConferenceViewModel[]> GetConferenceViewModels()
       {
          var conferences = await GetConferences();
@@ -104,7 +104,6 @@ namespace EduSciencePro.Data.Repos
       public async Task<ConferenceViewModel> GetConferenceViewModelById(Guid id)
       {
          var conference = await GetConferenceById(id);
-         List<ConferenceViewModel> conferenceViewModels = new List<ConferenceViewModel>();
 
          ConferenceViewModel conferenceViewModel = _mapper.Map<Conference, ConferenceViewModel>(conference);
 
@@ -143,31 +142,34 @@ namespace EduSciencePro.Data.Repos
          if (organization != null)
          {
             conference.OrganizationId = organization.Id;
-            string[] tagNames = model.Tags.Split('/', StringSplitOptions.RemoveEmptyEntries);
-            List<Tag> tags = new List<Tag>();
-            foreach (var tagName in tagNames)
+            if (model.Tags != null)
             {
-               Tag? tag = await _db.Tags.FirstOrDefaultAsync(t => t.Name == tagName);
-               if (tag != null)
+               string[] tagNames = model.Tags.Split('/', StringSplitOptions.RemoveEmptyEntries);
+               List<Tag> tags = new List<Tag>();
+               foreach (var tagName in tagNames)
                {
-                  TagConference tagConference = new TagConference() {  ConferenceId = conference.Id, TagId = tag.Id};
-                  var entry = _db.TagConferences.Entry(tagConference);
-                  if (entry.State == EntityState.Detached)
-                     await _db.TagConferences.AddAsync(tagConference);
-               }
-               else
-               {
-                  Tag newTag = new Tag() { Name = tagName };
-                  var entry = _db.Tags.Entry(newTag);
-                  if (entry.State == EntityState.Detached)
-                     await _db.Tags.AddAsync(newTag);
+                  Tag? tag = await _db.Tags.FirstOrDefaultAsync(t => t.Name == tagName);
+                  if (tag != null)
+                  {
+                     TagConference tagConference = new TagConference() { ConferenceId = conference.Id, TagId = tag.Id };
+                     var entry = _db.TagConferences.Entry(tagConference);
+                     if (entry.State == EntityState.Detached)
+                        await _db.TagConferences.AddAsync(tagConference);
+                  }
+                  else
+                  {
+                     Tag newTag = new Tag() { Name = tagName };
+                     var entry = _db.Tags.Entry(newTag);
+                     if (entry.State == EntityState.Detached)
+                        await _db.Tags.AddAsync(newTag);
 
-                  TagConference tagConference = new TagConference() { ConferenceId = conference.Id, TagId = newTag.Id };
-                  var newentry = _db.TagConferences.Entry(tagConference);
-                  if (newentry.State == EntityState.Detached)
-                     await _db.TagConferences.AddAsync(tagConference);
+                     TagConference tagConference = new TagConference() { ConferenceId = conference.Id, TagId = newTag.Id };
+                     var newentry = _db.TagConferences.Entry(tagConference);
+                     if (newentry.State == EntityState.Detached)
+                        await _db.TagConferences.AddAsync(tagConference);
+                  }
                }
-            }
+            }         
             var conferenceEntry = _db.Conferences.Entry(conference);
             if (conferenceEntry.State == EntityState.Detached)
                await _db.Conferences.AddAsync(conference);
