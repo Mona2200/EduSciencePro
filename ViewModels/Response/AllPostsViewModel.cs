@@ -4,5 +4,6 @@
     {
     public PostViewModel[] News { get; set; }
     public PostViewModel[] Discuss { get; set; }
+    public ConferenceViewModel[] Conferences { get; set; }
     }
 }

@@ -1,0 +1,12 @@
+﻿@model Guid[];
+
+<div class="p-4 m-3 d-flex justify-content-center">
+    <div class="col-md-10">
+            <input class="d-none" value="@Model[0]" name="sender"/>
+
+            <label class="text-start label_input mt-4 w-100">Сообщение</label>
+            <p><textarea class="input_title_post w-100 p-1" rows="5" name="content"></textarea></p>
+
+            <p><button class="button form-control-plaintext m-auto w-25 mt-4" id="button_addmessage">Отправить</button></p>
+    </div>
+</div>

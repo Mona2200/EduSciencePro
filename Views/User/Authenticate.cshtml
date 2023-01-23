@@ -21,7 +21,8 @@
             <p><input class="text-center w-100 p-1" placeholder="Пароль" asp-for="Password"></p>
             <p><span asp-validation-for="Password" class="text-danger mb-3"></span></p>
 
-            <p class="text-start mt-4 p-2"><input class="checkbox" type="checkbox" asp-for="RememberMe" value="true"><span class="before_checkbox">Запомнить меня</span></p>
+            <p class="text-start mt-4 p-2"><input class="checkbox" type="checkbox" asp-for="RememberMe" value="true" checked><span class="before_checkbox checked">Согласие на сбор информации. Политика конфиденциальности.</span></p>
+            <p><span asp-validation-for="RememberMe" class="text-danger mb-3"></span></p>
 
             <p><button class="button form-control-plaintext m-auto w-50 mt-4">Войти</button></p>
 

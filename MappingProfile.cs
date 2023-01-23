@@ -48,6 +48,9 @@ namespace EduSciencePro
          CreateMap<Conference, ConferenceViewModel>().ForMember(m => m.EventDate, opt => opt.Ignore());
          CreateMap<Cooperation, CooperationViewModel>().ForMember(m => m.EndDate, opt => opt.Ignore());
          CreateMap<Internship, InternshipViewModel>().ForMember(m => m.EndDate, opt => opt.Ignore());
+         CreateMap<Message, MessageViewModel>();
+         CreateMap<Dialog, DialogueViewModel>();
+         CreateMap<Course, CourseViewModel>().ForMember(m => m.CompletedCourses, opt => opt.MapFrom(c => c.CompletedCourses.Split('/', StringSplitOptions.RemoveEmptyEntries).ToArray()));
       }
    }
 }

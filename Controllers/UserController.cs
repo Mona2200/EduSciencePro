@@ -359,6 +359,27 @@ namespace EduSciencePro.Controllers
          return View(editViewModel);
       }
 
+      [HttpPost]
+      [Route("EditEmail")]
+      public async Task<IActionResult> EditEmail(string Email, bool Consent)
+      {
+         var user = await _users.GetUserByEmail(Email);
+
+         if (user != null)
+         {
+            ModelState.AddModelError("Email", "Пользователь с такой почтой уже существует");
+            return View();
+         }
+
+         var code = await _codes.Save(Email);
+         EmailService emailService = new EmailService();
+         await emailService.SendEmailAsync(Email, "Код подтверждения для сайта EduSciencePro", $"Ваш код подтверждения: {code}\nНе отвечайте на это письмо");
+
+         var model = new ForgotPasswordViewModel() { ConfirmationCode = code, Email = Email };
+
+         return View("~/Views/User/ConfirmationCodeEmail.cshtml", model);
+      }
+
       [HttpGet]
       [Route("DeleteImage")]
       public async Task<IActionResult> DeleteImage()
@@ -449,7 +470,7 @@ namespace EduSciencePro.Controllers
 
          var code = await _codes.Save(model.Email);
          EmailService emailService = new EmailService();
-         await emailService.SendEmailAsync(model.Email, "Код подтверждения для сайта EduSciencePro", $"Тест письма: Ваш код подтверждения: {code}\nНе отвечайте на это письмо");
+         await emailService.SendEmailAsync(model.Email, "Код подтверждения для сайта EduSciencePro", $"Ваш код подтверждения: {code}\nНе отвечайте на это письмо");
          return View("~/Views/User/ConfirmationCode.cshtml", model);
       }
 
@@ -460,6 +481,20 @@ namespace EduSciencePro.Controllers
          var code = await _codes.GetCodeByEmail(model.Email);
          if (code.Code == model.ConfirmationCode)
             return View("~/Views/User/ChangePassword.cshtml", new ChangePasswordViewModel() { Email = model.Email });
+         else
+         {
+            ModelState.AddModelError("ConfirmationCode", "Неверный код подтверждения");
+            return View(model);
+         }
+      }
+
+      [HttpPost]
+      [Route("ConfirmationCodeEmail")]
+      public async Task<IActionResult> ConfirmationCodeEmail(ForgotPasswordViewModel model)
+      {
+         var code = await _codes.GetCodeByEmail(model.Email);
+         if (code.Code == model.ConfirmationCode)
+            return RedirectToAction("Main");
          else
          {
             ModelState.AddModelError("ConfirmationCode", "Неверный код подтверждения");
@@ -558,7 +593,8 @@ namespace EduSciencePro.Controllers
          if (model.AddUserViewModel != null)
          {
             model.UserViewModel = _mapper.Map<AddUserViewModel, UserViewModel>(model.AddUserViewModel);
-            model.UserViewModel.TypeUsers = model.AddUserViewModel.TypeUsers.Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(s => new TypeModel() { Name = s }).ToArray();
+            if (model.AddUserViewModel.TypeUsers != null)
+               model.UserViewModel.TypeUsers = model.AddUserViewModel.TypeUsers.Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(s => new TypeModel() { Name = s }).ToArray();
 
             List<Link> links = new List<Link>();
             if (model.AddUserViewModel.TelegramLink != null)

@@ -15,6 +15,8 @@ namespace EduSciencePro.Data.Repos
          _mapper = mapper;
       }
 
+      public async Task<PlaceWork> GetPlaceWorkByName(string name) => await _db.PlaceWorks.FirstOrDefaultAsync(p => p.Name == name);
+
       public async Task<PlaceWork[]> GetPlaceWorks() => await _db.PlaceWorks.ToArrayAsync();
 
       public async Task<PlaceWork[]> GetPlaceWorksSearch(string search) => await _db.PlaceWorks.Where(p => p.Name.ToLower().Contains(search.ToLower())).ToArrayAsync();
@@ -22,6 +24,7 @@ namespace EduSciencePro.Data.Repos
 
     public interface IPlaceWorkRepository
     {
+      Task<PlaceWork> GetPlaceWorkByName(string name);
       Task<PlaceWork[]> GetPlaceWorks();
       Task<PlaceWork[]> GetPlaceWorksSearch(string search);
     }

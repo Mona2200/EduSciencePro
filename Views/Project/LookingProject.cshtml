@@ -1,6 +1,11 @@
 ﻿@using EduSciencePro.ViewModels.Response
 @model LookingProjectViewModel;
 
+@{
+    ViewData["Title"] = @Model.Project.Title;
+    Layout = "_Layout";
+}
+
 <div class="border_blue p-4 m-3 bg-white d-flex justify-content-center">
     <div class="col-md-10">
         <h3 class="mb-5 mt-5 underline_h3 text-center">@Model.Project.Title</h3>

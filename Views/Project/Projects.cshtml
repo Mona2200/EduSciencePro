@@ -1,6 +1,11 @@
 ﻿@using EduSciencePro.ViewModels.Response
 @model ProjectsAndIsOrgViewModel;
 
+@{
+    ViewData["Title"] = "Научно-исследовательская деятельность - проекты";
+    Layout = "_Layout";
+}
+
 <div class="border_blue p-4 m-3 bg-white">
    @if (Model.IsOrg)
    {

@@ -20,7 +20,7 @@ namespace EduSciencePro.Data.Repos
          _organizations = organizations;
       }
 
-      public async Task<Internship[]> GetInternships() => await _db.Internships.Where(p => p.EndDate > DateTime.Now).ToArrayAsync();
+      public async Task<Internship[]> GetInternships() => await _db.Internships.OrderByDescending(p => p.StartDate).Where(p => p.EndDate > DateTime.Now).ToArrayAsync();
       public async Task<InternshipViewModel[]> GetInternshipViewModels()
       {
          var internships = await GetInternships();
@@ -64,7 +64,7 @@ namespace EduSciencePro.Data.Repos
                var skill = await _db.Skills.FirstOrDefaultAsync(t => t.Id == skillInternship.SkillId);
                skills.Add(skill);
             }
-            internshipViewModel.Skills = skills.ToArray();
+            internshipViewModel.Skills = skills.Take(4).ToArray();
             internshipViewModel.Organization = await _db.Organizations.FirstOrDefaultAsync(o => o.Id == internship.OrganizationId);
 
             internshipViewModels.Add(internshipViewModel);
@@ -72,7 +72,7 @@ namespace EduSciencePro.Data.Repos
          return internshipViewModels.ToArray();
       }
 
-      public async Task<Internship[]> GetInternshipsByOrganizationId(Guid organizationid) => await _db.Internships.Where(t => t.OrganizationId == organizationid).ToArrayAsync();
+      public async Task<Internship[]> GetInternshipsByOrganizationId(Guid organizationid) => await _db.Internships.OrderByDescending(p => p.StartDate).Where(t => t.OrganizationId == organizationid).ToArrayAsync();
 
       public async Task<InternshipViewModel[]> GetInternshipViewModelsByOrganizationId(Guid organizationid)
       {

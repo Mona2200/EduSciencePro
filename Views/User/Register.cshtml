@@ -2,7 +2,7 @@
 @model RegisterViewModel
 
 @{
-    ViewData["Title"] = "Авторизация";
+    ViewData["Title"] = "Регистрация";
     Layout = "_Layout";
 }
 
@@ -63,7 +63,7 @@
         <p><input class="text-center w-100 p-1" placeholder="Повторите пароль" asp-for="AddUserViewModel.PasswordConfirm"></p>
         <p><span asp-validation-for="AddUserViewModel.PasswordConfirm" class="text-danger mb-3"></span></p>
 
-        <p class="text-start mt-4 p-2"><input class="checkbox" type="checkbox" asp-for="Consent" value="true"><span class="before_checkbox">Согласие на сбор информации. Политика конфиденциальности.</span></p>
+        <p class="text-start mt-4 p-2"><input class="checkbox" type="checkbox" asp-for="Consent" value="true" checked><span class="before_checkbox checked">Согласие на сбор информации. Политика конфиденциальности.</span></p>
         <p><span asp-validation-for="Consent" class="text-danger mb-3"></span></p>
 
         <p><button class="button form-control-plaintext m-auto w-50 mt-4">Зарегистрироваться</button></p>

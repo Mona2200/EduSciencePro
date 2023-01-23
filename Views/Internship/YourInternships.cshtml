@@ -1,10 +1,15 @@
 ﻿@using EduSciencePro.ViewModels.Response
 @model InternshipViewModel[];
 
+@{
+    ViewData["Title"] = "Ваши практики и стажировки";
+    Layout = "_Layout";
+}
+
 <div class="border_blue p-4 m-3 bg-white">
     <h3 class="mb-5 mt-2 underline_h3 text-center">Ваши практики и стажировки</h3>
 
-    <p><a class="button_light form-control-plaintext text-center m-auto w-25 p-2 mt-4" asp-action="AddInternship" asp-controller="Internship">Создать проект</a></p>
+    <p><a class="button_light form-control-plaintext text-center m-auto w-25 p-2 mt-4" asp-action="AddInternship" asp-controller="Internship">Создать практику/стажировку</a></p>
 
     <div class="row justify-content-center">
         @if (Model != null && Model.Length != 0)

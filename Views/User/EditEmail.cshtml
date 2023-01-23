@@ -1,5 +1,5 @@
 ﻿@using EduSciencePro.ViewModels.Request
-@model EditUserViewModel
+@model string;
 @{
     ViewData["Title"] = "Редактирование профиля";
     Layout = "_Layout";
@@ -10,10 +10,9 @@
         <h3 class="mb-5 mt-5">Редактирование email</h3>
 
         <label class="w-100 text-start label_input">Введите новый email</label>
-        <p><input class="text-center w-100 p-1" placeholder="Email"></p>
+        <p><input class="text-center w-100 p-1" placeholder="Email" name="Email"></p>
 
-        <p class="text-start mt-4 p-2"><input class="checkbox" type="checkbox" asp-for="UserConsent" value="true"><span class="before_checkbox">Согласие на сбор информации. Политика конфиденциальности.</span></p>
-        <p><span asp-validation-for="UserConsent" class="text-danger mb-3"></span></p>
+        <p class="text-start mt-4 p-2"><input class="checkbox" type="checkbox" name="Consent" value="true" checked><span class="before_checkbox checked">Согласие на сбор информации. Политика конфиденциальности.</span></p>
 
         <p><button class="button form-control-plaintext m-auto w-50 mt-4">Сохранить</button></p>
 

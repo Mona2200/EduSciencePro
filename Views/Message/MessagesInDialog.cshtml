@@ -1,0 +1,35 @@
+﻿@using EduSciencePro.ViewModels.Response
+@model MessageViewModel[];
+
+@if (Model != null)
+            {
+                @foreach (var message in Model)
+                {
+                    <div class="row">
+
+                        <div class="col-md-2">
+                            @if (message.Sender.Image != null)
+                            {
+                                <div style="height:40px;width:40px;background-image:url(data:image/jpeg;base64,@(Convert.ToBase64String(message.Sender.Image)));background-position:center;background-size:cover;"></div>
+                            }
+                            else
+                            {
+                                <div style="height:40px;width:40px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;"></div>
+                            }
+                        </div>
+
+                        <div class="col-md-10">
+                            @{
+                                var sendername = $"{message.Sender.FirstName} {message.Sender.LastName} {message.Sender.MiddleName}";
+                                var day = message.CreateTime.Day.ToString().Length == 1 ? $"0{message.CreateTime.Day}" : message.CreateTime.Day.ToString();
+                                var month = message.CreateTime.Month.ToString().Length == 1 ? $"0{message.CreateTime.Month}" : message.CreateTime.Month.ToString();
+                                var createDate = $"{day}.{month}.{message.CreateTime.Year}";
+                                var time = $"{message.CreateTime.Hour}:{message.CreateTime.Minute}";
+                            }
+                            <p><span>@sendername</span><span>@time</span></p>
+                            <p>@message.Content</p>
+                        </div>
+
+                    </div>
+                }
+            }

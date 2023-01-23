@@ -2,7 +2,7 @@
 @model AddCommentViewModel;
 
 <div class="border_blue p-4 m-3 bg-white d-flex justify-content-center">
-    <div class="col-md-10">
+    <div class="col-10">
         <form method="post" asp-action="AddComment" asp-controller="Comment">
 
             <input class="d-none" asp-for="PostId" value="@Model.PostId" />

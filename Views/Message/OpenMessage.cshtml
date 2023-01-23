@@ -1,0 +1,49 @@
+﻿@using EduSciencePro.ViewModels
+@using EduSciencePro.ViewModels.Response
+@model OpenDialogueViewModel;
+
+<div class="border_blue p-4 m-3 bg-white d-flex justify-content-center">
+    <div class="col-md-10">
+        @{
+            string fullname;
+            fullname = $"{Model.InterlocutorFirst.FirstName} {Model.InterlocutorFirst.LastName} {Model.InterlocutorFirst.MiddleName}";
+        }
+        <h3 class="mb-5 mt-5 underline_h3 text-center">Диалог с пользователем @fullname</h3>
+
+        <div class="row" id="dialog_messages">
+
+            @await Html.PartialAsync("~/Views/Message/MessagesInDialog.cshtml", Model.Messages)
+
+        </div>
+
+        @await Html.PartialAsync("~/Views/Message/AddMessage.cshtml", new Guid[] {Model.InterlocutorFirst.Id, Model.Id})
+
+    </div>
+</div>
+
+<script src="js/signalr/dist/browser/signalr.min.js"></script>
+<script>
+    //const hubConnection = new signalR.HubConnectionBuilder()
+    //    .withUrl("/OpenMessage?interlocutorId=@Model.InterlocutorFirst.Id/")
+    //    .build();
+
+    //hubConnection.on("Send", function (data) {
+
+    //    let elem = document.createElement("p");
+    //    elem.appendChild(document.createTextNode(data));
+    //    let firstElem = document.getElementById("dialog_messages").lastChild;
+    //    document.getElementById("dialog_messages").insertAfter(elem, firstElem);
+
+    //});
+
+    //let element = document.getElementById("button_addmessage");
+    //if (element) {
+    //    element.addEventListener("click", function (e) {
+    //        let sender = $('input[name="sender"]').val();
+    //        let content = $('textarea[name="content"]').val();
+    //        hubConnection.invoke("Send", sender, content);
+    //    });
+    //};
+
+    //hubConnection.start();
+</script>

@@ -1,0 +1,84 @@
+﻿@using EduSciencePro.ViewModels.Response
+@model DialogueViewModel[];
+
+<div class="p-4 m-3 row">
+
+    <h3 class="mb-5 mt-2 underline_h3 text-center">Диалоги</h3>
+
+    @if (Model != null && Model.Length != 0)
+    {
+        @foreach (var message in Model)
+        {
+            var interlocutor = message.LastMessage.Recipient.Email == Context.User.Identity.Name ? message.LastMessage.Sender.Id : message.LastMessage.Recipient.Id;
+            @if (message.isLooked)
+            {
+                <a asp-action="OpenMessage" asp-controller="Message" asp-route-interlocutorId="@interlocutor">
+                    <div class="border_blue p-2 m-2 bg-white col-md-10 row">
+                        <div class="col-md-2">
+                            @if (message.LastMessage.Sender.Image != null)
+                            {
+                                <div style="height:40px;width:40px;background-image:url(data:image/jpeg;base64,@(Convert.ToBase64String(message.LastMessage.Sender.Image)));background-position:center;background-size:cover;"></div>
+                            }
+                            else
+                            {
+                                <div style="height:40px;width:40px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;"></div>
+                            }
+                        </div>
+
+                        @{
+                            var fullName = $"{message.LastMessage.Sender.FirstName} {message.LastMessage.Sender.LastName} {message.LastMessage.Sender.MiddleName}";
+                            var day = message.LastMessage.CreateTime.Day.ToString().Length == 1 ? $"0{message.LastMessage.CreateTime.Day}" : message.LastMessage.CreateTime.Day.ToString();
+                            var month = message.LastMessage.CreateTime.Month.ToString().Length == 1 ? $"0{message.LastMessage.CreateTime.Month}" : message.LastMessage.CreateTime.Month.ToString();
+                            var createDate = $"{day}.{month}.{message.LastMessage.CreateTime.Year}";
+                            var time = $"{message.LastMessage.CreateTime.Hour}:{message.LastMessage.CreateTime.Minute}";
+                        }
+
+                        <div class="col-md-10">
+                            <p><span>@fullName</span><span>@createDate</span><span>@time</span></p>
+                            <p>@message.LastMessage.Content.Length > 50 ? @message.LastMessage.Content.Substring(0,50)... : @message.LastMessage.Content</p>
+                        </div>
+                    </div>
+                </a>
+
+            }
+            else
+            {
+                <a asp-action="OpenMessage" asp-controller="Message" asp-route-interlocutorId="@interlocutor">
+                    <div class="border_blue p-2 m-2 bg_blue col-md-10 row">
+                        <div class="col-md-2">
+                            @if (message.LastMessage.Sender.Image != null)
+                            {
+                                <div style="height:40px;width:40px;background-image:url(data:image/jpeg;base64,@(Convert.ToBase64String(message.LastMessage.Sender.Image)));background-position:center;background-size:cover;"></div>
+                            }
+                            else
+                            {
+                                <div style="height:40px;width:40px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;"></div>
+                            }
+                        </div>
+
+                        @{
+                            var fullName = $"{message.LastMessage.Sender.FirstName} {message.LastMessage.Sender.LastName} {message.LastMessage.Sender.MiddleName}";
+                            var day = message.LastMessage.CreateTime.Day.ToString().Length == 1 ? $"0{message.LastMessage.CreateTime.Day}" : message.LastMessage.CreateTime.Day.ToString();
+                            var month = message.LastMessage.CreateTime.Month.ToString().Length == 1 ? $"0{message.LastMessage.CreateTime.Month}" : message.LastMessage.CreateTime.Month.ToString();
+                            var createDate = $"{day}.{month}.{message.LastMessage.CreateTime.Year}";
+                            var time = $"{message.LastMessage.CreateTime.Hour}:{message.LastMessage.CreateTime.Minute}";
+                        }
+
+                        <div class="col-md-10">
+                            <p><span>@fullName</span><span>@createDate</span><span>@time</span></p>
+                            @{
+                                var cont = message.LastMessage.Content.Length > 50 ? @message.LastMessage.Content.Substring(0, 50) + "..." : @message.LastMessage.Content;
+                            }
+                            <p>@cont</p>
+                        </div>
+                    </div>
+                </a>
+            }
+        }
+    }
+    else
+    {
+        <p class="text-center">У вас нет диалогов</p>
+    }
+
+</div>

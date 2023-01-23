@@ -1,4 +1,5 @@
 ﻿using EduSciencePro.Data.Repos;
+using EduSciencePro.Models;
 using EduSciencePro.Models.User;
 using EduSciencePro.ViewModels.Request;
 using EduSciencePro.ViewModels.Response;
@@ -24,19 +25,28 @@ namespace EduSciencePro.Controllers
       public async Task<IActionResult> Conferences()
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
-         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
-         var user = await _users.GetUserByEmail(claimEmail);
+         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name)?.Value;
 
-         var conferences = await _conferences.GetConferenceViewModels();
-
-         var organization = await _organizations.GetOrganizationByUserId(user.Id);
-
-         if (organization != null)
+         if (claimEmail != null)
          {
-            return View(new KeyValuePair<bool, ConferenceViewModel[]>(true, conferences.Where(c => c.Organization.Id != organization.Id).ToArray()));
+            var user = await _users.GetUserByEmail(claimEmail);
+
+            var conferences = await _conferences.GetConferenceViewModels();
+
+            var organization = await _organizations.GetOrganizationByUserId(user.Id);
+
+            if (organization != null)
+            {
+               return View(new KeyValuePair<bool, ConferenceViewModel[]>(true, conferences.Where(c => c.Organization.Id != organization.Id).ToArray()));
+            }
+            else
+               return View(new KeyValuePair<bool, ConferenceViewModel[]>(false, conferences));
          }
          else
+         {
+            var conferences = await _conferences.GetConferenceViewModels();
             return View(new KeyValuePair<bool, ConferenceViewModel[]>(false, conferences));
+         }
       }
 
       [HttpGet]
@@ -108,17 +118,29 @@ namespace EduSciencePro.Controllers
       public async Task<IActionResult> LookingConference(Guid conferenceId)
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
-         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
-         var user = await _users.GetUserByEmail(claimEmail);
+         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name)?.Value;
+         if (claimEmail != null)
+         {
+            var user = await _users.GetUserByEmail(claimEmail);
 
-         var organization = await _organizations.GetOrganizationByUserId(user.Id);
+            var organization = await _organizations.GetOrganizationByUserId(user.Id);
 
-         var conferenceViewModel = await _conferences.GetConferenceViewModelById(conferenceId);
+            var conferenceViewModel = await _conferences.GetConferenceViewModelById(conferenceId);
 
-         var yourConference = conferenceViewModel.Organization.Id == organization?.Id;
-         var lookingConference = new KeyValuePair<bool, ConferenceViewModel>(yourConference, conferenceViewModel);
+            var yourConference = conferenceViewModel.Organization.Id == organization?.Id;
+            var lookingConference = new KeyValuePair<bool, ConferenceViewModel>(yourConference, conferenceViewModel);
 
-         return View(lookingConference);
+            return View(lookingConference);
+         }
+         else
+         {
+            var conferenceViewModel = await _conferences.GetConferenceViewModelById(conferenceId);
+
+            var yourConference = true;
+            var lookingConference = new KeyValuePair<bool, ConferenceViewModel>(yourConference, conferenceViewModel);
+
+            return View(lookingConference);
+         }
       }
 
       [HttpGet]

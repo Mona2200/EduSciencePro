@@ -1,6 +1,7 @@
 using EduSciencePro;
 using EduSciencePro.Data;
 using EduSciencePro.Data.Repos;
+using EduSciencePro.Handler;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -8,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
 
 var assembly = Assembly.GetAssembly(typeof(MappingProfile));
 builder.Services.AddAutoMapper(assembly);
@@ -32,6 +34,9 @@ builder.Services.AddSingleton<IProjectRepository, ProjectRepository>();
 builder.Services.AddSingleton<IConferenceRepository, ConferenceRepository>();
 builder.Services.AddSingleton<ICooperationRepository, CooperationRepository>();
 builder.Services.AddSingleton<IInternshipRepository, InternshipRepository>();
+builder.Services.AddSingleton<ICourseRepository, CourseRepository>();
+
+builder.Services.AddSingleton<IMessageRepository, MessageRepository>();
 
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection), ServiceLifetime.Singleton);
@@ -70,5 +75,10 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=User}/{action=Index}/{id?}");
+app.UseEndpoints(endpoints =>
+{
+   app.MapHub<ChatHandler>("/OpenMessage");
+});
+
 
 app.Run();

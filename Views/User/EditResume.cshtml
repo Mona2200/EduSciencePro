@@ -3,6 +3,10 @@
 @model EditResumeViewModel
 
 @{
+    ViewData["Title"] = "Редактирование резюме";
+}
+
+@{
     string skills = "";
     if (Model.Resume != null && Model.Resume.Skills != null)
     {
@@ -66,7 +70,7 @@
     <p><textarea class="text-center w-100 p-1" placeholder="О себе" asp-for="AddResumeViewModel.AboutYourself">@Model.Resume?.AboutYourself</textarea></p>
     <p><span asp-validation-for="AddResumeViewModel.AboutYourself" class="text-danger mb-3"></span></p>
 
-    <p class="text-start mt-4 p-2"><input class="checkbox" type="checkbox" asp-for="ResumeConsent" value="true"><span class="before_checkbox">Согласие на сбор информации. Политика конфиденциальности.</span></p>
+    <p class="text-start mt-4 p-2"><input class="checkbox" type="checkbox" asp-for="ResumeConsent" value="true" checked><span class="before_checkbox checked">Согласие на сбор информации. Политика конфиденциальности.</span></p>
     <p><span asp-validation-for="ResumeConsent" class="text-danger mb-3"></span></p>
 
     <p><button class="button form-control-plaintext m-auto w-50 mt-4">Сохранить</button></p>

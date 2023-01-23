@@ -20,7 +20,7 @@ namespace EduSciencePro.Data.Repos
 
       public async Task<Comment[]> GetCommentsByPostId(Guid postId)
       {
-      return await _db.Comments.Where(c => c.PostId == postId).ToArrayAsync();
+      return await _db.Comments.OrderByDescending(p => p.CreatedDate).Where(c => c.PostId == postId).ToArrayAsync();
       }
 
       public async Task<CommentViewModel[]> GetCommentViewModelsByPostId(Guid postId)

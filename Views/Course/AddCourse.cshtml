@@ -1,0 +1,45 @@
+﻿@using EduSciencePro.ViewModels.Request
+@model AddCourseViewModel;
+
+@{
+    ViewData["Title"] = "Создание курса/программы";
+    Layout = "_Layout";
+}
+
+<div class="col-md-8">
+    <form class="text-center d-flex justify-content-center row" method="post" asp-action="AddCourse" asp-controller="Course">
+
+        <h3 class="mb-5 mt-5">Создание курса/программы</h3>
+
+        <label asp-for="Education" class="w-100 text-start label_input"></label>
+        <p><input class="EducationInput text-center w-100 p-1" placeholder="Образование" asp-for="Education" value="@Model.Education"></p>
+        <p class="Search_Education Search position-absolute m-0"></p>
+        <p><span asp-validation-for="Education" class="text-danger mb-3"></span></p>
+
+        <label asp-for="Specialization" class="w-100 text-start label_input"></label>
+        <p><input class="text-center w-100 p-1" placeholder="Специализация" asp-for="Specialization" value="@Model.Specialization"></p>
+        <p><span asp-validation-for="Specialization" class="text-danger mb-3"></span></p>
+
+        <label asp-for="PlaceWork" class="w-100 text-start label_input"></label>
+        <p><input class="PlaceWorkInput text-center w-100 p-1" placeholder="Место работы" asp-for="PlaceWork" value="@Model.PlaceWork"></p>
+        <p class="Search_PlaceWork Search position-absolute m-0"></p>
+        <p><span asp-validation-for="PlaceWork" class="text-danger mb-3"></span></p>
+
+        <input id="courses_input" asp-for="CompletedCourses" value="@Model.CompletedCourses" />
+
+        <label asp-for="CompletedCourses" class="w-100 text-start label_input"></label>
+        <p><input class="text-center w-100 p-1" placeholder="Пройденный курс"></p>
+        <p><span asp-validation-for="CompletedCourses" class="text-danger mb-3"></span></p>
+
+        <div class="col-md-7">
+            <label asp-for="Skills" class="text-start label_input mt-3 w-100"></label>
+            <input id="tags_input" class="d-none" asp-for="Skills">
+            <p class="text-start"><input class="TagsInput text-center w-75 p-1" placeholder="Навыки"><span id="tag_click" class="span_click">+</span></p>
+            <p class="Search_Tags position-absolute m-0"></p>
+            <div class="text-start mb-4" id="div_tags"></div>
+        </div>
+
+        <p><button class="button form-control-plaintext m-auto w-50 mt-4">Опубликовать</button></p>
+
+    </form>
+</div>

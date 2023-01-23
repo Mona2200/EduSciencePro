@@ -21,9 +21,9 @@ namespace EduSciencePro.Data.Repos
          _organizations = organizations;
       }
 
-      public async Task<Project[]> GetProjects() => await _db.Projects.Where(p => p.EndDate > DateTime.Now).ToArrayAsync();
+      public async Task<Project[]> GetProjects() => await _db.Projects.OrderByDescending(p => p.StartDate).Where(p => p.EndDate > DateTime.Now).ToArrayAsync();
 
-      public async Task<Project[]> GetProjectsByOrganizationId(Guid organizationId) => await _db.Projects.Where(p => p.OrganizationId == organizationId).ToArrayAsync();
+      public async Task<Project[]> GetProjectsByOrganizationId(Guid organizationId) => await _db.Projects.OrderByDescending(p => p.StartDate).Where(p => p.OrganizationId == organizationId).ToArrayAsync();
 
       public async Task<ProjectViewModel[]> GetProjectViewModels()
       {
@@ -72,7 +72,7 @@ namespace EduSciencePro.Data.Repos
             foreach (var projectSkill in projectSkills)
                skills.Add(await _db.Skills.FirstOrDefaultAsync(s => s.Id == projectSkill.SkillId));
 
-            projectViewModel.Skills = skills.ToArray();
+            projectViewModel.Skills = skills.Take(4).ToArray();
 
             projectViewModels.Add(projectViewModel);
          }

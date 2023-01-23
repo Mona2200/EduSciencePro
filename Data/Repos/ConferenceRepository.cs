@@ -20,7 +20,7 @@ namespace EduSciencePro.Data.Repos
          _organizations = organizations;
       }
 
-      public async Task<Conference[]> GetConferences() => await _db.Conferences.Where(p => p.EventDate > DateTime.Now).ToArrayAsync();
+      public async Task<Conference[]> GetConferences() => await _db.Conferences.OrderByDescending(p => p.EventDate).Where(p => p.EventDate > DateTime.Now).ToArrayAsync();
       public async Task<ConferenceViewModel[]> GetConferenceViewModels()
       {
          var conferences = await GetConferences();
@@ -51,7 +51,7 @@ namespace EduSciencePro.Data.Repos
                var tag = await _db.Tags.FirstOrDefaultAsync(t => t.Id == tagConference.TagId);
                tags.Add(tag);
             }
-            conferenceViewModel.Tags = tags.ToArray();
+            conferenceViewModel.Tags = tags.Take(4).ToArray();
             conferenceViewModel.Organization = await _db.Organizations.FirstOrDefaultAsync(o => o.Id == conference.OrganizationId);
 
             conferenceViewModels.Add(conferenceViewModel);
@@ -59,7 +59,7 @@ namespace EduSciencePro.Data.Repos
          return conferenceViewModels.ToArray();
       }
 
-      public async Task<Conference[]> GetConferencesByOrganizationId(Guid organizationid) => await _db.Conferences.Where(t => t.OrganizationId == organizationid).ToArrayAsync();
+      public async Task<Conference[]> GetConferencesByOrganizationId(Guid organizationid) => await _db.Conferences.OrderByDescending(p => p.EventDate).Where(t => t.OrganizationId == organizationid).ToArrayAsync();
 
       public async Task<ConferenceViewModel[]> GetConferenceViewModelsByOrganizationId(Guid organizationid)
       {

@@ -29,7 +29,7 @@ namespace EduSciencePro.ViewModels.Request
 
       [Required(ErrorMessage = "Данное поле обязательно для заполнения")]
       [Display(Name = "Зарплата")]
-      [DataType(DataType.Duration)]
+      [DataType(DataType.Duration, ErrorMessage = "Введите число")]
       public int Salary { get; set; }
 
       [Display(Name = "Подразделение проведения стажировки/практики")]

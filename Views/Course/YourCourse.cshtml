@@ -1,0 +1,53 @@
+﻿@using EduSciencePro.ViewModels.Response
+@model CourseViewModel;
+
+@{
+    ViewData["Title"] = "Ваши курсы и программы";
+    Layout = "_Layout";
+}
+
+<div class="border_blue p-4 m-3 bg-white">
+    <h3 class="mb-5 mt-2 underline_h3 text-center">Ваши курсы и программы</h3>
+
+    <p><a class="button_light form-control-plaintext text-center m-auto w-25 p-2 mt-4" asp-action="AddCourse" asp-controller="Course">Создать курс или программу</a></p>
+
+    <div class="row justify-content-center">
+        @if (Model != null)
+        {
+
+            <div class="col-md-10 mt-4 mb-4" style="padding:10px;">
+                @{
+                    var fullname = $"{Model.User.FirstName} {Model.User.LastName} {Model.User.MiddleName}";
+                }
+                <h5 class="fw-bold">@fullname</h5>
+                <p>Образование: @Model.Education.Name</p>
+                <p>Место работы: @Model.PlaceWork.Name</p>
+                <p>Специализация: @Model.Specialization</p>
+                <p>Пройденные курсы/программы повышения квалификации и переподготовки:</p>
+                <div>
+                    @foreach (var programm in Model.CompletedCourses)
+                    {
+                        <p>@programm</p>
+                    }
+                </div>
+                <p>Необходимость в получении дополнительных навыков:</p>
+                <div class="progress" role="progressbar" aria-valuenow="@Model.NeedSkills" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar w-75"></div>
+                </div>
+                <p>
+                    @foreach (var skill in Model.Skills)
+                    {
+                        <span class="bg_blue p-2 m-2 d-inline-block">@skill.Name</span>
+                    }
+                </p>
+            </div>
+            <p class="text-center"><a asp-action="EditCourse" asp-controller="Course">Редактировать</a></p>
+            <p class="text-center"><a asp-action="DeleteCourse" asp-controller="Course">Удалить</a></p>
+        }
+        else
+        {
+            <p class="text-center col-md-10 mt-5">Курсов и программ нет.</p>
+        }
+    </div>
+
+</div>

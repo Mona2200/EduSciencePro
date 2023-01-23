@@ -1,6 +1,11 @@
 ﻿@using EduSciencePro.ViewModels.Request
 @model AddIntershipViewModel;
 
+@{
+    ViewData["Title"] = "Создание стажировки/практики";
+    Layout = "_Layout";
+}
+
 <div class="col-md-8">
     <form class="text-center d-flex justify-content-center row" method="post" asp-action="AddInternship" asp-controller="Internship" asp-route-OrganizationName="@Model.OrganizationName">
 

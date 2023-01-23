@@ -1,5 +1,11 @@
 ﻿@using EduSciencePro.ViewModels.Request
 @model AddOrganizationViewModel
+
+@{
+    ViewData["Title"] = "Добавление организации";
+    Layout = "_Layout";
+}
+
 <div class="col-md-3 text-center">
     <form class="m-3" method="post" asp-controller="User" asp-action="AddOrganization">
 

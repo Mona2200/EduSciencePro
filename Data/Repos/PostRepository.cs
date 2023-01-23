@@ -26,7 +26,7 @@ namespace EduSciencePro.Data.Repos
          _comments = comments;
       }
 
-      public async Task<Post[]> GetPosts() => await _db.Posts.ToArrayAsync();
+      public async Task<Post[]> GetPosts() => await _db.Posts.OrderByDescending(p => p.CreatedDate).ToArrayAsync();
 
       public async Task<PostViewModel[]> GetPostViewModels()
       {
@@ -94,7 +94,7 @@ namespace EduSciencePro.Data.Repos
          return postViewModel;
       }
 
-      public async Task<Post[]> GetPostsByUserId(Guid userId) => await _db.Posts.Where(p => p.UserId == userId).ToArrayAsync();
+      public async Task<Post[]> GetPostsByUserId(Guid userId) => await _db.Posts.OrderByDescending(p => p.CreatedDate).Where(p => p.UserId == userId).ToArrayAsync();
 
       public async Task<PostViewModel[]> GetPostViewModelsByUserId(Guid userId)
       {
@@ -133,7 +133,7 @@ namespace EduSciencePro.Data.Repos
 
       public async Task<PostViewModel[]> GetPostViewModelsNews()
       {
-         var news = await _db.Posts.Where(p => p.IsNews == true).Take(4).ToArrayAsync();
+         var news = await _db.Posts.OrderByDescending(p => p.CreatedDate).Where(p => p.IsNews == true).Take(4).ToArrayAsync();
          var postViewModels = new PostViewModel[news.Length];
          int i = 0;
          foreach (var post in news)
@@ -161,14 +161,14 @@ namespace EduSciencePro.Data.Repos
             postViewModels[i].Likes = likePosts;
             postViewModels[i].Comments = await _comments.GetCommentViewModelsByPostId(post.Id);
 
-            postViewModels[i++].Tags = await _tags.GetTagsByPostId(post.Id);
+            postViewModels[i++].Tags = (await _tags.GetTagsByPostId(post.Id)).Take(4).ToArray();
          }
          return postViewModels;
       }
 
       public async Task<PostViewModel[]> GetPostViewModelsDiscussions()
       {
-         var discus = await _db.Posts.Where(p => p.IsNews == false).Take(4).ToArrayAsync();
+         var discus = await _db.Posts.OrderByDescending(p => p.CreatedDate).Where(p => p.IsNews == false).Take(4).ToArrayAsync();
          var postViewModels = new PostViewModel[discus.Length];
          int i = 0;
          foreach (var post in discus)
@@ -196,7 +196,7 @@ namespace EduSciencePro.Data.Repos
             postViewModels[i].Likes = likePosts;
             postViewModels[i].Comments = await _comments.GetCommentViewModelsByPostId(post.Id);
 
-            postViewModels[i++].Tags = await _tags.GetTagsByPostId(post.Id);
+            postViewModels[i++].Tags = (await _tags.GetTagsByPostId(post.Id)).Take(4).ToArray();
          }
          return postViewModels;
       }

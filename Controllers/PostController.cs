@@ -16,13 +16,15 @@ namespace EduSciencePro.Controllers
       private readonly IUserRepository _users;
       private readonly IPostRepository _posts;
       private readonly ILikePostRepository _likePosts;
+      private readonly IConferenceRepository _conferences;
 
-      public PostController(ITagRepository tags, IUserRepository users, IPostRepository posts, ILikePostRepository likePosts)
+      public PostController(ITagRepository tags, IUserRepository users, IPostRepository posts, ILikePostRepository likePosts, IConferenceRepository conferences)
       {
          _tags = tags;
          _users = users;
          _posts = posts;
          _likePosts = likePosts;
+         _conferences = conferences;
       }
 
       [HttpGet]
@@ -65,8 +67,9 @@ namespace EduSciencePro.Controllers
       {
          var posts = new AllPostsViewModel()
          {
-            News = await _posts.GetPostViewModelsNews(),
-            Discuss = await _posts.GetPostViewModelsDiscussions()
+            News = (await _posts.GetPostViewModelsNews()).Take(4).ToArray(),
+            Discuss = (await _posts.GetPostViewModelsDiscussions()).Take(6).ToArray(),
+            Conferences = (await _conferences.GetConferenceViewModels()).Take(4).ToArray()
          };
          return View(posts);
       }
@@ -76,13 +79,23 @@ namespace EduSciencePro.Controllers
       public async Task<IActionResult> NewsPosts()
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
-         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
-         var user = await _users.GetUserByEmail(claimEmail);
+         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name)?.Value;
+         if (claimEmail != null)
+         {
+            var user = await _users.GetUserByEmail(claimEmail);
 
-         var news = await _posts.GetPostViewModelsNews();
+            var news = await _posts.GetPostViewModelsNews();
 
-         var posts = new PostsAndUserIdViewModel() { Posts = news, UserId = user.Id };
-         return View(posts);
+            var posts = new PostsAndUserIdViewModel() { Posts = news, UserId = user.Id };
+            return View(posts);
+         }
+         else
+         {
+            var news = await _posts.GetPostViewModelsNews();
+
+            var posts = new PostsAndUserIdViewModel() { Posts = news, UserId = null };
+            return View(posts);
+         }
       }
 
       [HttpGet]
@@ -90,12 +103,22 @@ namespace EduSciencePro.Controllers
       public async Task<IActionResult> DiscussionPosts()
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
-         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
-         var user = await _users.GetUserByEmail(claimEmail);
+         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name)?.Value;
+         if (claimEmail != null)
+         {
+            var user = await _users.GetUserByEmail(claimEmail);
 
-         var discuss = await _posts.GetPostViewModelsDiscussions();
-         var posts = new PostsAndUserIdViewModel() { Posts = discuss, UserId = user.Id };
-         return View(posts);
+            var discuss = await _posts.GetPostViewModelsDiscussions();
+            var posts = new PostsAndUserIdViewModel() { Posts = discuss, UserId = user.Id };
+            return View(posts);
+         }
+         else
+         {
+            var discuss = await _posts.GetPostViewModelsDiscussions();
+            var posts = new PostsAndUserIdViewModel() { Posts = discuss, UserId = null };
+            return View(posts);
+         }
+
       }
 
       [HttpGet]

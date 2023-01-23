@@ -20,7 +20,7 @@ namespace EduSciencePro.Data.Repos
          _organizations = organizations;
       }
 
-      public async Task<Cooperation[]> GetCooperations() => await _db.Cooperations.Where(p => p.EndDate > DateTime.Now).ToArrayAsync();
+      public async Task<Cooperation[]> GetCooperations() => await _db.Cooperations.OrderByDescending(p => p.EndDate).Where(p => p.EndDate > DateTime.Now).ToArrayAsync();
       public async Task<CooperationViewModel[]> GetCooperationViewModels()
       {
          var cooperations = await GetCooperations();
@@ -51,7 +51,7 @@ namespace EduSciencePro.Data.Repos
                var skill = await _db.Skills.FirstOrDefaultAsync(t => t.Id == skillCooperation.SkillId);
                skills.Add(skill);
             }
-            cooperationViewModel.Skills = skills.ToArray();
+            cooperationViewModel.Skills = skills.Take(4).ToArray();
             cooperationViewModel.Organization = await _db.Organizations.FirstOrDefaultAsync(o => o.Id == cooperation.OrganizationId);
 
             cooperationViewModels.Add(cooperationViewModel);
@@ -59,7 +59,7 @@ namespace EduSciencePro.Data.Repos
          return cooperationViewModels.ToArray();
       }
 
-      public async Task<Cooperation[]> GetCooperationsByOrganizationId(Guid organizationid) => await _db.Cooperations.Where(t => t.OrganizationId == organizationid).ToArrayAsync();
+      public async Task<Cooperation[]> GetCooperationsByOrganizationId(Guid organizationid) => await _db.Cooperations.OrderByDescending(p => p.EndDate).Where(t => t.OrganizationId == organizationid).ToArrayAsync();
 
       public async Task<CooperationViewModel[]> GetCooperationViewModelsByOrganizationId(Guid organizationid)
       {

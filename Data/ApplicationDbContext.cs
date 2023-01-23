@@ -40,6 +40,11 @@ namespace EduSciencePro.Data
       public DbSet<SkillCooperation> SkillCooperations { get; set; }
       public DbSet<Internship> Internships { get; set; }
       public DbSet<SkillInternship> SkillInternships { get; set; }
+      public DbSet<Course> Courses { get; set; }
+      public DbSet<CourseSkill> CourseSkills { get; set; }
+
+      public DbSet<Message> Messages { get; set; }
+      public DbSet<Dialog> Dialogs { get; set; }
 
       public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
       {
@@ -79,6 +84,11 @@ namespace EduSciencePro.Data
          builder.Entity<SkillCooperation>().ToTable("SkillCooperations");
          builder.Entity<Internship>().ToTable("Internships");
          builder.Entity<SkillInternship>().ToTable("SkillInternships");
+         builder.Entity<Course>().ToTable("Courses");
+         builder.Entity<CourseSkill>().ToTable("CourseSkills");
+
+         builder.Entity<Message>().ToTable("Messages");
+         builder.Entity<Dialog>().ToTable("Dialogs");
       }
    }
 }

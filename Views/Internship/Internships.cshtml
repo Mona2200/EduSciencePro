@@ -1,6 +1,11 @@
 ﻿@using EduSciencePro.ViewModels.Response
 @model KeyValuePair<bool, InternshipViewModel[]>;
 
+@{
+    ViewData["Title"] = "Стажировки и практики";
+    Layout = "_Layout";
+}
+
 <div class="border_blue p-4 m-3 bg-white">
     @if (Model.Key)
     {

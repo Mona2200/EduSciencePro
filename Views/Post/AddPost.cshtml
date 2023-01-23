@@ -1,6 +1,11 @@
 ﻿@using EduSciencePro.ViewModels.Request
 @model AddPostViewModel;
 
+@{
+    ViewData["Title"] = "Создание публикации";
+    Layout = "_Layout";
+}
+
 <div class="col-md-8">
     <form class="text-center d-flex flex-column" method='post' enctype="multipart/form-data">
         @Html.AntiForgeryToken()
