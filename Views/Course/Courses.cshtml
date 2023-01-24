@@ -21,22 +21,25 @@
                     @{
                         var fullname = $"{course.User.FirstName} {course.User.LastName} {course.User.MiddleName}";
                     }
-                    <a asp-controller="User" asp-action="GetUser" asp-route-userId="@course.User.Id"><h5 class="fw-bold">@fullname</h5></a>
+                    <a asp-controller="User" asp-action="GetUser" asp-route-userId="@course.User.Id" class="form-control-plaintext text-decoration-none"><h5 class="fw-bold">@fullname</h5></a>
                     <p>Образование: @course.Education.Name</p>
                     <p>Место работы: @course.PlaceWork.Name</p>
                     <p>Специализация: @course.Specialization</p>
                     <p>Пройденные курсы/программы повышения квалификации и переподготовки:</p>
-                    <div>
-                        @foreach(var programm in course.CompletedCourses)
+                    <ul class="courses list-group list-group-flush">
+                        @if (course.CompletedCourses != null)
                         {
-                           <p>@programm</p>
+                            @foreach (var programm in course.CompletedCourses)
+                            {
+                                <li class="list-group-item">&bull; @programm</li>
+                            }
                         }
-                       </div>
-                    <p>Необходимость в получении дополнительных навыков:</p>
+                    </ul>
+                    <p class="mt-3">Необходимость в получении дополнительных навыков:</p>
                     <div class="progress" role="progressbar" aria-valuenow="@course.NeedSkills" aria-valuemin="0" aria-valuemax="100">
-                        <div class="progress-bar w-75"></div>
+                        <div class="progress-bar bg_blue text-black" style="width:@course.NeedSkills%">@course.NeedSkills%</div>
                     </div>
-                    <p>
+                    <p class="mt-3">
                         @foreach (var skill in course.Skills)
                         {
                             <span class="bg_blue p-2 m-2 d-inline-block">@skill.Name</span>

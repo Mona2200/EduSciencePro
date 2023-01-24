@@ -67,7 +67,7 @@ namespace EduSciencePro.ViewModels.Request
       [RegularExpression(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$", ErrorMessage = "Используйте формат example@email.ru")]
       public string? EmailLink { get; set; } = "";
 
-      [RegularExpression(@"^(http|https|ftp|)\://|[a-zA-Z0-9\-\.]+\.[a-zA-Z](:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*[^\.\,\)\(\s]$", ErrorMessage = "Используйте формат https://example.ru")]    
+      [DataType(DataType.Url)]
       public string? AnotherLink { get; set; } = "";
 
       [Display(Name = "Фото профиля")]

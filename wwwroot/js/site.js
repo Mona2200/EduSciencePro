@@ -85,12 +85,21 @@
     $("#Add_Skills").click(function () {
         var inp = $(".Skills_Input");
         if (inp.val() != "") {
-            var skill = inp.val().replace(/\s/g,"");
+            var skill = inp.val().replace(/\s/g, "");
             if (skill != "") {
                 $("#Skills_List").append('<p class="text-start"><span class="p-1" style="background-color: #e9ecef;">' + skill + '</span><img onclick="Cross_Click_Skills(this)" class="Cross ml-2 position-absolute" style="transform: translateY(40%);" src="src/Cross.svg" /></p>');
                 $("#Skills_Value").val($("#Skills_Value").val() + skill + "/");
                 inp.val("");
             }
+        }
+    });
+
+    $("#course_click").click(function () {
+        var str = $(this).prev().val();
+        if (str.replace(/\s/g, "") != "") {
+            $(".courses").append('<li class="list-group-item">' + str + '</li>');
+            $("#courses_input").val($("#courses_input").val() + "/" + str);
+            $(this).prev().val('');
         }
     });
 

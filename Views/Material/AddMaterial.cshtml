@@ -1,0 +1,71 @@
+﻿@using EduSciencePro.ViewModels.Request
+@model AddMaterialViewModel;
+
+@{
+    ViewData["Title"] = "Добавление учебного материала";
+    Layout = "_Layout";
+}
+
+<div class="col-md-8">
+    <form class="text-center d-flex justify-content-center row" method="post" asp-action="AddMaterial" asp-controller="Material">
+
+        <h3 class="mb-5 mt-5">Добавление учебного материала</h3>
+
+        <div class="col-md-7">
+            <label asp-for="Title" class="w-100 text-start label_input"></label>
+            <p><input class="EducationInput text-center w-100 p-1" placeholder="Название" asp-for="Title"></p>
+            <p class="Search_Education Search position-absolute m-0"></p>
+            <p><span asp-validation-for="Title" class="text-danger mb-3"></span></p>
+        </div>
+
+        <div class="col-md-7">
+            <label asp-for="Specialization" class="w-100 text-start label_input"></label>
+            <p><input class="text-center w-100 p-1" placeholder="Специализация" asp-for="Specialization" value="@Model.Specialization"></p>
+            <p><span asp-validation-for="Specialization" class="text-danger mb-3"></span></p>
+        </div>
+
+        <div class="col-md-7 row">
+            <div class="col-md-7">
+                <label asp-for="Type" class="text-start label_input mt-4 w-100"></label>
+                <select class="text-center w-100 p-1" asp-for="Type">
+                    <option selected value="Учебник">Учебник</option>
+                    <option value="Лекции">Лекции</option>
+                    <option value="Статья">Статья</option>
+                    <option value="Монография">Монография</option>
+                    <option value="Пособие">Пособие</option>
+                    <option value="Словарь">Словарь</option>
+                </select>
+                <p><span asp-validation-for="Type" class="text-danger mb-3 col-md-6 text-start"></span></p>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <label asp-for="Url" class="w-100 text-start label_input"></label>
+            <p><input class="text-center w-100 p-1" placeholder="Адрес" asp-for="Url"></p>
+            <p><span asp-validation-for="Url" class="text-danger mb-3"></span></p>
+        </div>
+
+        <div class="col-md-7">
+            <label asp-for="Annotation" class="text-start label_input mt-4 w-100"></label>
+            <p><textarea rows="5" class="text-start w-100 p-1" asp-for="Annotation"></textarea></p>
+            <p><span asp-validation-for="Annotation" class="text-danger mb-3 col-md-6 text-start"></span></p>
+        </div>
+
+        <div class="col-md-7">
+            <label asp-for="Publication" class="w-100 text-start label_input"></label>
+            <p><input class="text-center w-100 p-1" placeholder="Место издания" asp-for="Publication"></p>
+            <p><span asp-validation-for="Publication" class="text-danger mb-3"></span></p>
+        </div>
+
+        <div class="col-md-7">
+            <label asp-for="Tags" class="text-start label_input mt-3 w-100"></label>
+            <input id="tags_input" class="d-none" asp-for="Tags">
+            <p class="text-start"><input class="TagsInput text-center w-75 p-1" placeholder="Навыки"><span id="tag_click" class="span_click">+</span></p>
+            <p class="Search_Tags position-absolute m-0"></p>
+            <div class="text-start mb-4" id="div_tags"></div>
+        </div>
+
+        <p><button class="button form-control-plaintext m-auto w-50 mt-4">Опубликовать</button></p>
+
+    </form>
+</div>

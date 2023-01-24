@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EduSciencePro.Data.Repos;
+using EduSciencePro.Data.Services;
 using EduSciencePro.Handler;
 using EduSciencePro.Models;
 using EduSciencePro.Models.User;
@@ -16,6 +17,8 @@ namespace EduSciencePro.Controllers
       private readonly IMessageRepository _messages;
       private readonly IUserRepository _users;
       private readonly IMapper _mapper;
+
+
 
       private readonly IHubContext<ChatHandler> _hubContext;
 
@@ -61,33 +64,42 @@ namespace EduSciencePro.Controllers
          return View(dialog);
       }
 
+      //[HttpPost]
+      //[Route("AddMessage")]
+      //public async Task<MessageViewModel> AddMessage(Guid recipientId, string content)
+      //{
+      //   ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+      //   var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+      //   var user = await _users.GetUserByEmail(claimEmail);
+
+      //   var dialog = await _messages.GetDialogByInterlocutordId(recipientId);
+      //   if (dialog != null)
+      //   {
+      //      var message = new Message() { Content = content, CreateTime = DateTime.Now, RecipientId = recipientId, SenderId = user.Id, DialogId = dialog.Id };
+      //      await _messages.Save(message, dialog);
+
+      //      await _hubContext.Clients.All.SendAsync("ReceiveOne", user, content);
+      //      return _mapper.Map<Message, MessageViewModel>(message);
+      //   }
+      //   else
+      //   {
+      //      var message = new Message() { Content = content, CreateTime = DateTime.Now, RecipientId = recipientId, SenderId = user.Id };
+      //      dialog = new Dialog() { InterlocutorFirstId = recipientId, InterlocutorSecondId = user.Id, isLooked = false, LastMessageId = message.Id };
+      //      message.DialogId = dialog.Id;
+      //      await _messages.Save(message, dialog);
+
+      //      await _hubContext.Clients.All.SendAsync("ReceiveOne", user, content);
+      //      return _mapper.Map<Message, MessageViewModel>(message);
+      //   }
+      //}
+
       [HttpPost]
       [Route("AddMessage")]
-      public async Task<MessageViewModel> AddMessage(Guid recipientId, string content)
+      public async Task<MessageViewModel> AddMessage(Guid userId, string message)
       {
-         ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
-         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
-         var user = await _users.GetUserByEmail(claimEmail);
-
-         var dialog = await _messages.GetDialogByInterlocutordId(recipientId);
-         if (dialog != null)
-         {
-            var message = new Message() { Content = content, CreateTime = DateTime.Now, RecipientId = recipientId, SenderId = user.Id, DialogId = dialog.Id };
-            await _messages.Save(message, dialog);
-
-            await _hubContext.Clients.All.SendAsync("ReceiveOne", user, content);
-            return _mapper.Map<Message, MessageViewModel>(message);
-         }
-         else
-         {
-            var message = new Message() { Content = content, CreateTime = DateTime.Now, RecipientId = recipientId, SenderId = user.Id };
-            dialog = new Dialog() { InterlocutorFirstId = recipientId, InterlocutorSecondId = user.Id, isLooked = false, LastMessageId = message.Id };
-            message.DialogId = dialog.Id;
-            await _messages.Save(message, dialog);
-
-            await _hubContext.Clients.All.SendAsync("ReceiveOne", user, content);
-            return _mapper.Map<Message, MessageViewModel>(message);
-         }
+         var user = await _users.GetUserById(userId);
+         EmailService emailService = new EmailService();
+         await emailService.SendEmailAsync(user.Email, "Код подтверждения для сайта EduSciencePro", $"Ваш код подтверждения: {code}\nНе отвечайте на это письмо");
       }
    }
 }

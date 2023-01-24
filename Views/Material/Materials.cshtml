@@ -1,0 +1,42 @@
+﻿@using EduSciencePro.ViewModels.Response
+@model MaterialViewModel[];
+
+@{
+    ViewData["Title"] = "Учебные материалы";
+    Layout = "_Layout";
+}
+
+<div class="border_blue p-4 m-3 bg-white">
+
+    <h3 class="mb-5 mt-2 underline_h3 text-center">Учебные материалы</h3>
+
+    <p><a class="button_light form-control-plaintext text-center m-auto w-25 p-2 mt-4" asp-action="AddMaterial" asp-controller="Material">Добавить учебный материал</a></p>
+
+    <div class="row justify-content-center">
+        @if (Model != null && Model.Length != 0)
+        {
+            @foreach (var material in Model)
+            {
+                <div class="col-md-10 mt-4 mb-4" style="padding:10px;">
+                    <h5 class="fw-bold">@material.Title</h5>
+                    <p>Специализация: @material.Specialization</p>
+                    <p>Тип учебного материала: @material.Type</p>
+                    <p>Адрес электронного ресурса: <a href="@material.Url">@material.Url</a></p>
+                    <p>Аннотация: @material.Annotation</p>
+                    <p>Место издания (организация): @material.Publication</p>
+                    <p>
+                        @foreach (var skill in material.Tags)
+                        {
+                            <span class="bg_blue p-2 m-2 d-inline-block">@skill.Name</span>
+                        }
+                    </p>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-center col-md-10">Учебных материалов нет. Возвращайтесь позже.</p>
+        }
+    </div>
+
+</div>

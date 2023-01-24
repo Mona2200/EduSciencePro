@@ -1,5 +1,84 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using EduSciencePro.ViewModels.Request
+@using EduSciencePro.ViewModels.Response
+@model EditCourseViewModel;
+
 @{
+    ViewData["Title"] = "Редактирование курса/программы";
+    Layout = "_Layout";
 }
+
+<div class="col-md-8">
+    <form class="text-center d-flex justify-content-center row" method="post" asp-action="EditCourse" asp-controller="Course" enctype="multipart/form-data">
+
+        <h3 class="mb-5 mt-5">Редактирование курса/программы</h3>
+
+        <div class="col-md-7">
+            <label asp-for="AddCourseViewModel.Education" class="w-100 text-start label_input"></label>
+            <p><input class="EducationInput text-center w-100 p-1" placeholder="Образование" asp-for="@Model.AddCourseViewModel.Education" value="@Model.CourseViewModel.Education.Name"></p>
+            <p class="Search_Education Search position-absolute m-0"></p>
+            <p><span asp-validation-for="AddCourseViewModel.Education" class="text-danger mb-3"></span></p>
+        </div>
+
+        <div class="col-md-7">
+            <label asp-for="AddCourseViewModel.Specialization" class="w-100 text-start label_input"></label>
+            <p><input class="text-center w-100 p-1" placeholder="Специализация" asp-for="@Model.AddCourseViewModel.Specialization" value="@Model.CourseViewModel.Specialization"></p>
+            <p><span asp-validation-for="AddCourseViewModel.Specialization" class="text-danger mb-3"></span></p>
+        </div>
+
+        <div class="col-md-7">
+            <label asp-for="AddCourseViewModel.PlaceWork" class="w-100 text-start label_input"></label>
+            <p><input class="PlaceWorkInput text-center w-100 p-1" placeholder="Место работы" asp-for="@Model.AddCourseViewModel.PlaceWork" value="@Model.CourseViewModel.PlaceWork.Name"></p>
+            <p class="Search_PlaceWork Search position-absolute m-0"></p>
+            <p><span asp-validation-for="AddCourseViewModel.PlaceWork" class="text-danger mb-3"></span></p>
+        </div>
+
+        @{
+            string CompletedCourses = "";
+            if (Model.CourseViewModel.CompletedCourses != null)
+                foreach (var CompletedCourse in Model.CourseViewModel.CompletedCourses)
+                {
+                    CompletedCourses += CompletedCourse + "/";
+                }
+        }
+        <div class="col-md-7">
+            <input id="courses_input" class="d-none" asp-for="@Model.AddCourseViewModel.CompletedCourses" value="@CompletedCourses" />
+            <label asp-for="AddCourseViewModel.CompletedCourses" class="w-100 text-start label_input"></label>
+            <p class="text-start"><input class="text-center p-1" placeholder="Полное название курса" id="add_course" style="width:80%;"><span id="course_click" class="span_click">+</span></p>
+            <p><span asp-validation-for="AddCourseViewModel.CompletedCourses" class="text-danger mb-3"></span></p>
+            <ul class="courses list-group list-group-flush">
+                @foreach (var completedCourse in Model.CourseViewModel.CompletedCourses)
+                {
+                    <li class="list-group-item">@completedCourse</li>
+                }
+            </ul>
+        </div>
+
+        <div class="col-md-7 mt-3">
+            <label asp-for="@Model.AddCourseViewModel.NeedSkills" class="w-100 text-start label_input"></label>
+            <input type="range" class="border-0 form-range" asp-for="@Model.AddCourseViewModel.NeedSkills" value="@Model.CourseViewModel.NeedSkills">
+        </div>
+
+        @{
+            string skills = "";
+            foreach (var skill in Model.CourseViewModel.Skills)
+            {
+                skills += skill.Name + "/";
+            }
+        }
+        <div class="col-md-7">
+            <label asp-for="@Model.AddCourseViewModel.Skills" class="text-start label_input mt-3 w-100"></label>
+            <input id="tags_input" class="d-none" asp-for="AddCourseViewModel.Skills" value="@skills">
+            <p class="text-start"><input class="TagsInput text-center w-75 p-1" placeholder="Навыки"><span id="tag_click" class="span_click">+</span></p>
+            <p class="Search_Tags position-absolute m-0"></p>
+            <div class="text-start mb-4" id="div_tags">
+                @foreach (var skill in Model.CourseViewModel.Skills)
+                {
+                    <span class="bg_blue p-2 m-2 d-inline-block"><span>@skill.Name</span><span style="padding-left: 5px;cursor:pointer;" onclick="remove_tag(this)">&#10008</span></span>
+                }
+            </div>
+        </div>
+
+        <p><button class="button form-control-plaintext m-auto w-50 mt-4">Опубликовать</button></p>
+
+    </form>
+</div>

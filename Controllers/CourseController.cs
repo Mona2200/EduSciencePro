@@ -76,13 +76,14 @@ namespace EduSciencePro.Controllers
 
          var courseViewModel = await _courses.GetCourseViewModelByUserId(user.Id);
          var addCourseViewModel = new AddCourseViewModel();
-         return View(new KeyValuePair<CourseViewModel, AddCourseViewModel>(courseViewModel, addCourseViewModel));
+         return View(new EditCourseViewModel() { CourseViewModel = courseViewModel, AddCourseViewModel = addCourseViewModel });
       }
 
       [HttpPost]
       [Route("EditCourse")]
-      public async Task<IActionResult> EditCourse(AddCourseViewModel model)
+      public async Task<IActionResult> EditCourse(EditCourseViewModel edit)
       {
+         var model = edit.AddCourseViewModel;
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
          var user = await _users.GetUserByEmail(claimEmail);
@@ -90,7 +91,7 @@ namespace EduSciencePro.Controllers
          if (!ValidCourse(model))
          {
             var courseViewModel = await _courses.GetCourseViewModelByUserId(user.Id);
-            return View(new KeyValuePair<CourseViewModel, AddCourseViewModel>(courseViewModel, model));
+            return View(new EditCourseViewModel() { CourseViewModel = courseViewModel, AddCourseViewModel = model });
          }
 
          await _courses.Update(model, user.Id);

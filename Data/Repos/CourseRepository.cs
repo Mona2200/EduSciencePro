@@ -89,30 +89,34 @@ namespace EduSciencePro.Data.Repos
          var placeWork = await _db.PlaceWorks.FirstOrDefaultAsync(p => p.Name == model.PlaceWork);
          var course = new Course() { EducationId = education.Id, PlaceWorkId = placeWork.Id, Specialization = model.Specialization, CompletedCourses = model.CompletedCourses, NeedSkills = model.NeedSkills, UserId = userId };
 
-         var skills = model.Skills.Split('/', StringSplitOptions.RemoveEmptyEntries);
-         foreach (var skill in skills)
+         if (model.Skills != null)
          {
-            var trySkill = await _db.Skills.FirstOrDefaultAsync(s => s.Name == skill);
-            if (trySkill != null)
+            var skills = model.Skills.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            foreach (var skill in skills)
             {
-               var courseSkill = new CourseSkill() { CourseId = course.Id, SkillId = trySkill.Id };
-               var skillentry = _db.Entry(courseSkill);
-               if (skillentry.State == EntityState.Detached)
-                  await _db.CourseSkills.AddAsync(courseSkill);
-            }
-            else
-            {
-               var newSkill = new Skill() { Name = skill };
-               var newskillentry = _db.Entry(newSkill);
-               if (newskillentry.State == EntityState.Detached)
-                  await _db.Skills.AddAsync(newSkill);
+               var trySkill = await _db.Skills.FirstOrDefaultAsync(s => s.Name == skill);
+               if (trySkill != null)
+               {
+                  var courseSkill = new CourseSkill() { CourseId = course.Id, SkillId = trySkill.Id };
+                  var skillentry = _db.Entry(courseSkill);
+                  if (skillentry.State == EntityState.Detached)
+                     await _db.CourseSkills.AddAsync(courseSkill);
+               }
+               else
+               {
+                  var newSkill = new Skill() { Name = skill };
+                  var newskillentry = _db.Entry(newSkill);
+                  if (newskillentry.State == EntityState.Detached)
+                     await _db.Skills.AddAsync(newSkill);
 
-               var courseSkill = new CourseSkill() { CourseId = course.Id, SkillId = newSkill.Id };
-               var skillentry = _db.Entry(courseSkill);
-               if (skillentry.State == EntityState.Detached)
-                  await _db.CourseSkills.AddAsync(courseSkill);
+                  var courseSkill = new CourseSkill() { CourseId = course.Id, SkillId = newSkill.Id };
+                  var skillentry = _db.Entry(courseSkill);
+                  if (skillentry.State == EntityState.Detached)
+                     await _db.CourseSkills.AddAsync(courseSkill);
+               }
             }
          }
+         
 
          var entry = _db.Entry(course);
          if (entry.State == EntityState.Detached)
@@ -141,6 +145,39 @@ namespace EduSciencePro.Data.Repos
          }
          course.NeedSkills = model.NeedSkills;
 
+         var courseSkills = await _db.CourseSkills.Where(c => c.CourseId == course.Id).ToListAsync();
+         foreach (var courseSkill in courseSkills)
+         {
+         _db.CourseSkills.Remove(courseSkill);
+         }
+         if (model.Skills != null)
+         {
+            var skills = model.Skills.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            foreach (var skill in skills)
+            {
+               var trySkill = await _db.Skills.FirstOrDefaultAsync(s => s.Name == skill);
+               if (trySkill != null)
+               {
+                  var courseSkill = new CourseSkill() { CourseId = course.Id, SkillId = trySkill.Id };
+                  var skillentry = _db.Entry(courseSkill);
+                  if (skillentry.State == EntityState.Detached)
+                     await _db.CourseSkills.AddAsync(courseSkill);
+               }
+               else
+               {
+                  var newSkill = new Skill() { Name = skill };
+                  var newskillentry = _db.Entry(newSkill);
+                  if (newskillentry.State == EntityState.Detached)
+                     await _db.Skills.AddAsync(newSkill);
+
+                  var courseSkill = new CourseSkill() { CourseId = course.Id, SkillId = newSkill.Id };
+                  var skillentry = _db.Entry(courseSkill);
+                  if (skillentry.State == EntityState.Detached)
+                     await _db.CourseSkills.AddAsync(courseSkill);
+               }
+            }
+         }
+
          var entry = _db.Entry(course);
          if (entry.State == EntityState.Detached)
             _db.Courses.Update(course);
@@ -151,8 +188,15 @@ namespace EduSciencePro.Data.Repos
       public async Task Delete(Guid id)
       {
          var course = await GetCourseById(id);
+
          if (course != null)
          {
+            var courseSkills = await _db.CourseSkills.Where(c => c.CourseId == course.Id).ToListAsync();
+            foreach (var courseSkill in courseSkills)
+            {
+               _db.CourseSkills.Remove(courseSkill);
+            }
+
             _db.Courses.Remove(course);
             await _db.SaveChangesAsync();
          }

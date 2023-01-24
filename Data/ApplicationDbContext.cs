@@ -42,6 +42,8 @@ namespace EduSciencePro.Data
       public DbSet<SkillInternship> SkillInternships { get; set; }
       public DbSet<Course> Courses { get; set; }
       public DbSet<CourseSkill> CourseSkills { get; set; }
+      public DbSet<Material> Materials { get; set; }
+      public DbSet<TagMaterial> TagMaterials { get; set; }
 
       public DbSet<Message> Messages { get; set; }
       public DbSet<Dialog> Dialogs { get; set; }
@@ -86,6 +88,8 @@ namespace EduSciencePro.Data
          builder.Entity<SkillInternship>().ToTable("SkillInternships");
          builder.Entity<Course>().ToTable("Courses");
          builder.Entity<CourseSkill>().ToTable("CourseSkills");
+         builder.Entity<Material>().ToTable("Materials");
+         builder.Entity<TagMaterial>().ToTable("TagMaterials");
 
          builder.Entity<Message>().ToTable("Messages");
          builder.Entity<Dialog>().ToTable("Dialogs");

@@ -35,6 +35,7 @@ builder.Services.AddSingleton<IConferenceRepository, ConferenceRepository>();
 builder.Services.AddSingleton<ICooperationRepository, CooperationRepository>();
 builder.Services.AddSingleton<IInternshipRepository, InternshipRepository>();
 builder.Services.AddSingleton<ICourseRepository, CourseRepository>();
+builder.Services.AddSingleton<IMaterialRepository, MaterialRepository>();
 
 builder.Services.AddSingleton<IMessageRepository, MessageRepository>();
 

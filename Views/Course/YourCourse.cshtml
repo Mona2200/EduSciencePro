@@ -8,8 +8,10 @@
 
 <div class="border_blue p-4 m-3 bg-white">
     <h3 class="mb-5 mt-2 underline_h3 text-center">Ваши курсы и программы</h3>
-
-    <p><a class="button_light form-control-plaintext text-center m-auto w-25 p-2 mt-4" asp-action="AddCourse" asp-controller="Course">Создать курс или программу</a></p>
+    @if (Model == null)
+    {
+        <p><a class="button_light form-control-plaintext text-center m-auto w-25 p-2 mt-4" asp-action="AddCourse" asp-controller="Course">Создать курс или программу</a></p>
+    }
 
     <div class="row justify-content-center">
         @if (Model != null)
@@ -24,17 +26,20 @@
                 <p>Место работы: @Model.PlaceWork.Name</p>
                 <p>Специализация: @Model.Specialization</p>
                 <p>Пройденные курсы/программы повышения квалификации и переподготовки:</p>
-                <div>
-                    @foreach (var programm in Model.CompletedCourses)
+                <ul class="courses list-group list-group-flush">
+                    @if (Model.CompletedCourses != null)
                     {
-                        <p>@programm</p>
+                        @foreach (var programm in Model.CompletedCourses)
+                        {
+                            <li class="list-group-item">&bull; @programm</li>
+                        }
                     }
-                </div>
-                <p>Необходимость в получении дополнительных навыков:</p>
+                </ul>
+                <p class="mt-3">Необходимость в получении дополнительных навыков:</p>
                 <div class="progress" role="progressbar" aria-valuenow="@Model.NeedSkills" aria-valuemin="0" aria-valuemax="100">
-                    <div class="progress-bar w-75"></div>
+                    <div class="progress-bar bg_blue text-black" style="width:@Model.NeedSkills%">@Model.NeedSkills%</div>
                 </div>
-                <p>
+                <p class="mt-3">
                     @foreach (var skill in Model.Skills)
                     {
                         <span class="bg_blue p-2 m-2 d-inline-block">@skill.Name</span>
@@ -42,7 +47,7 @@
                 </p>
             </div>
             <p class="text-center"><a asp-action="EditCourse" asp-controller="Course">Редактировать</a></p>
-            <p class="text-center"><a asp-action="DeleteCourse" asp-controller="Course">Удалить</a></p>
+            <p class="text-center"><a asp-action="DeleteCourse" asp-controller="Course" asp-route-id="@Model.Id">Удалить</a></p>
         }
         else
         {

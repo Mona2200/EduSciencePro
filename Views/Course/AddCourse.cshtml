@@ -11,25 +11,39 @@
 
         <h3 class="mb-5 mt-5">Создание курса/программы</h3>
 
-        <label asp-for="Education" class="w-100 text-start label_input"></label>
-        <p><input class="EducationInput text-center w-100 p-1" placeholder="Образование" asp-for="Education" value="@Model.Education"></p>
-        <p class="Search_Education Search position-absolute m-0"></p>
-        <p><span asp-validation-for="Education" class="text-danger mb-3"></span></p>
+        <div class="col-md-7">
+            <label asp-for="Education" class="w-100 text-start label_input"></label>
+            <p><input class="EducationInput text-center w-100 p-1" placeholder="Образование" asp-for="Education" value="@Model.Education"></p>
+            <p class="Search_Education Search position-absolute m-0"></p>
+            <p><span asp-validation-for="Education" class="text-danger mb-3"></span></p>
+        </div>
 
-        <label asp-for="Specialization" class="w-100 text-start label_input"></label>
-        <p><input class="text-center w-100 p-1" placeholder="Специализация" asp-for="Specialization" value="@Model.Specialization"></p>
-        <p><span asp-validation-for="Specialization" class="text-danger mb-3"></span></p>
+        <div class="col-md-7">
+            <label asp-for="Specialization" class="w-100 text-start label_input"></label>
+            <p><input class="text-center w-100 p-1" placeholder="Специализация" asp-for="Specialization" value="@Model.Specialization"></p>
+            <p><span asp-validation-for="Specialization" class="text-danger mb-3"></span></p>
+        </div>
 
-        <label asp-for="PlaceWork" class="w-100 text-start label_input"></label>
-        <p><input class="PlaceWorkInput text-center w-100 p-1" placeholder="Место работы" asp-for="PlaceWork" value="@Model.PlaceWork"></p>
-        <p class="Search_PlaceWork Search position-absolute m-0"></p>
-        <p><span asp-validation-for="PlaceWork" class="text-danger mb-3"></span></p>
+        <div class="col-md-7">
+            <label asp-for="PlaceWork" class="w-100 text-start label_input"></label>
+            <p><input class="PlaceWorkInput text-center w-100 p-1" placeholder="Место работы" asp-for="PlaceWork" value="@Model.PlaceWork"></p>
+            <p class="Search_PlaceWork Search position-absolute m-0"></p>
+            <p><span asp-validation-for="PlaceWork" class="text-danger mb-3"></span></p>
+        </div>
 
-        <input id="courses_input" asp-for="CompletedCourses" value="@Model.CompletedCourses" />
+        <div class="col-md-7">
+            <input id="courses_input" class="d-none" asp-for="CompletedCourses" value="@Model.CompletedCourses" />
+            <label asp-for="CompletedCourses" class="w-100 text-start label_input"></label>
+            <p class="text-start"><input class="text-center p-1" placeholder="Полное название курса" id="add_course" style="width:80%;"><span id="course_click" class="span_click">+</span></p>
+            <p><span asp-validation-for="CompletedCourses" class="text-danger mb-3"></span></p>
+            <ul class="courses list-group list-group-flush">
+            </ul>
+        </div>
 
-        <label asp-for="CompletedCourses" class="w-100 text-start label_input"></label>
-        <p><input class="text-center w-100 p-1" placeholder="Пройденный курс"></p>
-        <p><span asp-validation-for="CompletedCourses" class="text-danger mb-3"></span></p>
+        <div class="col-md-7">
+            <label asp-for="NeedSkills" class="w-100 text-start label_input"></label>
+            <input type="range" class="border-0 form-range" min="0" max="100">
+        </div>
 
         <div class="col-md-7">
             <label asp-for="Skills" class="text-start label_input mt-3 w-100"></label>

@@ -418,6 +418,26 @@
             });
         };
 
+        function send_message(sender, theme, title) {
+            $.ajax({
+                url: '@Url.Action("AddMessage", "Message")',
+                type: 'POST',
+                data: { 'postId': e },
+                success: function (data) {
+                    if (data > $(sr).prev().text()) {
+                        $(sr).find('path').css({ fill: "#F8312F" });
+                    }
+                    else {
+                        $(sr).find('path').css({ fill: "#CDE7FF" });
+                    }
+                    $(sr).prev().text(data);
+                },
+                error: function () {
+
+                }
+            });
+        };
+
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)
