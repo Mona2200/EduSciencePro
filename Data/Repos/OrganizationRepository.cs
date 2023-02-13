@@ -15,6 +15,8 @@ namespace EduSciencePro.Data.Repos
          _mapper = mapper;
       }
 
+      public async Task<Organization> GetOrganizationById(Guid id) => await _db.Organizations.FirstOrDefaultAsync(o => o.Id == id);
+
       public async Task<Organization[]> GetOrganizationsSearch(string search) => await _db.Organizations.Where(o => o.Name.ToLower().Contains(search.ToLower())).ToArrayAsync();
 
       public async Task<Organization?> GetOrganizationByUserId(Guid userId)
@@ -46,6 +48,7 @@ namespace EduSciencePro.Data.Repos
 
    public interface IOrganizationRepository
    {
+      Task<Organization> GetOrganizationById(Guid id);
       Task<Organization[]> GetOrganizationsSearch(string search);
       Task<Organization?> GetOrganizationByUserId(Guid userId);
       Task<Organization?> GetOrganizationByName(string name);

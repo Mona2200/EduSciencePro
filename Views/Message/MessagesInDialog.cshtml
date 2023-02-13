@@ -1,35 +1,41 @@
 ﻿@using EduSciencePro.ViewModels.Response
 @model MessageViewModel[];
 
-@if (Model != null)
-            {
-                @foreach (var message in Model)
-                {
-                    <div class="row">
+<p><button class="button form-control-plaintext m-auto w-25 mt-4 text-decoration-none border-0" id="button_moremessage">Загрузить больше</button></p>
 
-                        <div class="col-md-2">
-                            @if (message.Sender.Image != null)
-                            {
-                                <div style="height:40px;width:40px;background-image:url(data:image/jpeg;base64,@(Convert.ToBase64String(message.Sender.Image)));background-position:center;background-size:cover;"></div>
-                            }
-                            else
-                            {
-                                <div style="height:40px;width:40px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;"></div>
-                            }
-                        </div>
+<div id="messanges_div">
+    @if (Model != null)
+    {
+        @foreach (var message in Model)
+        {
+            <div class="row mt-5">
 
-                        <div class="col-md-10">
-                            @{
-                                var sendername = $"{message.Sender.FirstName} {message.Sender.LastName} {message.Sender.MiddleName}";
-                                var day = message.CreateTime.Day.ToString().Length == 1 ? $"0{message.CreateTime.Day}" : message.CreateTime.Day.ToString();
-                                var month = message.CreateTime.Month.ToString().Length == 1 ? $"0{message.CreateTime.Month}" : message.CreateTime.Month.ToString();
-                                var createDate = $"{day}.{month}.{message.CreateTime.Year}";
-                                var time = $"{message.CreateTime.Hour}:{message.CreateTime.Minute}";
-                            }
-                            <p><span>@sendername</span><span>@time</span></p>
-                            <p>@message.Content</p>
-                        </div>
+                <div class="col-2 align-self-start d-flex justify-content-end">
+                    @if (message.Sender.Image != null)
+                    {
+                        <div style="height:60px;width:60px;background-image:url(data:image/jpeg;base64,@(Convert.ToBase64String(message.Sender.Image)));background-position:center;background-size:cover;"></div>
+                    }
+                    else
+                    {
+                        <div style="height:60px;width:60px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;"></div>
+                    }
+                </div>
 
-                    </div>
-                }
-            }
+                <div class="col-10">
+                    @{
+                        var sendername = $"{message.Sender.FirstName} {message.Sender.LastName} {message.Sender.MiddleName}";
+                        var day = message.CreateTime.Day.ToString().Length == 1 ? $"0{message.CreateTime.Day}" : message.CreateTime.Day.ToString();
+                        var month = message.CreateTime.Month.ToString().Length == 1 ? $"0{message.CreateTime.Month}" : message.CreateTime.Month.ToString();
+                        var createDate = $"{day}.{month}.{message.CreateTime.Year}";
+                        var hours = message.CreateTime.Hour.ToString().Length == 1 ? $"0{message.CreateTime.Hour}" : $"{message.CreateTime.Hour}";
+                        var minutes = message.CreateTime.Minute.ToString().Length == 1 ? $"0{message.CreateTime.Minute}" : $"{message.CreateTime.Minute}";
+                        var time = $"{hours}:{minutes}";
+                    }
+                    <p><a asp-controller="User" asp-action="GetUser" asp-route-userId="@message.Sender.Id" class="text-black text-decoration-none">@sendername</a><span class="color-blue ml-2">@time</span><span class="color-blue ml-2">@createDate</span></p>
+                    <p class="mt-3">@message.Content</p>
+                </div>
+
+            </div>
+        }
+    }
+</div>

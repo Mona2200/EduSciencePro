@@ -16,34 +16,142 @@
 
         </div>
 
-        @await Html.PartialAsync("~/Views/Message/AddMessage.cshtml", new Guid[] {Model.InterlocutorFirst.Id, Model.Id})
+        <div class="p-4 m-3 d-flex justify-content-center">
+            <div class="col-12">
+                <input class="d-none" value="@Model.InterlocutorFirst.Id" id="message_sender" />
+
+                <label class="text-start label_input mt-4 w-100">Сообщение</label>
+                <p><textarea class="input_title_post w-100 p-1" rows="5" id="message_content"></textarea></p>
+
+                <p><button class="button form-control-plaintext m-auto w-25 mt-4" id="button_addmessage">Отправить</button></p>
+            </div>
+        </div>
 
     </div>
 </div>
 
-<script src="js/signalr/dist/browser/signalr.min.js"></script>
-<script>
-    //const hubConnection = new signalR.HubConnectionBuilder()
-    //    .withUrl("/OpenMessage?interlocutorId=@Model.InterlocutorFirst.Id/")
-    //    .build();
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        const hubConnection = new signalR.HubConnectionBuilder()
+            .withUrl('/ChatHub')
+            .build();
 
-    //hubConnection.on("Send", function (data) {
+        let connectionId = "";
+        var take = 20;
+        var skip = 10;
 
-    //    let elem = document.createElement("p");
-    //    elem.appendChild(document.createTextNode(data));
-    //    let firstElem = document.getElementById("dialog_messages").lastChild;
-    //    document.getElementById("dialog_messages").insertAfter(elem, firstElem);
+        hubConnection.on("ReceiveMessage", function (message, user) {
+            var sendername = user.firstName + " " + user.lastName + " " + user.middleName;
+            var date = new Date(message.createTime);
+            var day = "";
+            if (date.getDate() < 10) {
+               day += "0";
+            }
+            day += date.getDate();
 
-    //});
+            var month = "";
+            if (date.getMonth() < 10) {
+                month += "0";
+            }
+            month += date.getMonth() + 1;
 
-    //let element = document.getElementById("button_addmessage");
-    //if (element) {
-    //    element.addEventListener("click", function (e) {
-    //        let sender = $('input[name="sender"]').val();
-    //        let content = $('textarea[name="content"]').val();
-    //        hubConnection.invoke("Send", sender, content);
-    //    });
-    //};
+            var createDate = day + "." + month + "." + date.getFullYear();
 
-    //hubConnection.start();
+            var hours = "";
+            if (date.getHours() < 10) {
+                hours += "0";
+            }
+            hours += date.getHours();
+
+            var minutes = "";
+            if (date.getMinutes() < 10) {
+                minutes += "0";
+            }
+            minutes += date.getMinutes();
+
+            var time = hours + ":" + minutes;
+
+            if (user.image != null) {
+                $("#messanges_div").append(`<div class="row mt-5"><div class="col-2 align-self-start d-flex justify-content-end"><div style="height:60px;width:60px;background-image:url(data:image/jpeg;base64,` + user.image + `);background-position:center;background-size:cover;"></div></div><div class="col-10"><p><a href="/GetUser?userId=939c6ab6-be98-4ed9-beab-0557b46ff941" class="text-black text-decoration-none">` + sendername + ` </a><span class="color-blue ml-2">` + time + `</span><span class="color-blue ml-2">` + createDate + `</span></p><p class="mt-3">` + message.content + `</p></div></div>`);
+            }
+            else {
+                $("#messanges_div").append(`<div class="row mt-5"><div class="col-2 align-self-start d-flex justify-content-end"><div style="height:60px;width:60px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;"></div></div><div class="col-10"><p><a href="/GetUser?userId=939c6ab6-be98-4ed9-beab-0557b46ff941" class="text-black text-decoration-none">` + sendername + ` </a><span class="color-blue ml-2">` + time + `</span><span class="color-blue ml-2">` + createDate + `</span></p><p class="mt-3">` + message.content + `</p></div></div>`);
+            }
+        });
+        hubConnection.start().then(() => {
+            connectionId = hubConnection.connectionId;
+
+            $.ajax({
+                url: '/Message/Connect/' + connectionId,
+                type: 'POST',
+                success: function (data) {
+                },
+                error: function () {
+                }
+            });
+        });
+
+        $("#button_addmessage").click(function () {
+
+            var recipientId = $("#message_sender").val();
+            var content = $("#message_content").val();
+            $("#message_content").val("");
+
+            fetch('/Message/AddMessage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 'recipientId': recipientId, 'content': content })
+            });
+        });
+
+        $("#button_moremessage").click(function () {
+
+            var recipientId = $("#message_sender").val();
+
+            $.ajax({
+                url: '/Message/MoreMessage/' + recipientId + '/' + take + '/' + skip,
+                type: 'POST',
+                success: function (data) {
+
+                    if (data.length == 0) {
+                        $("#button_moremessage").remove();
+                    }
+                    else {
+                        for (var i = data.length - 1; i >= 0; i--) {
+                            var sendername = data[i].sender.firstName + " " + data[i].sender.lastName + " " + data[i].sender.middleName;
+                            var date = new Date(data[i].createTime);
+                            var day = "";
+                            if (date.getDate() < 10) {
+                                day += "0";
+                            }
+                            day += date.getDate();
+
+                            var month = "";
+                            if (date.getMonth() < 10) {
+                                month += "0";
+                            }
+                            month += date.getMonth();
+
+                            var createDate = day + "." + month + "." + date.getFullYear();
+                            var time = date.getHours() + ":" + date.getMinutes();
+
+                            if (data[i].sender.image != null) {
+                                $("#messanges_div").prepend(`<div class="row"><div class="col-md-2"><div style="height:40px;width:40px;background-image:url(data:image/jpeg;base64,` + data[i].sender.image + `);background-position:center;background-size:cover;"></div></div><div class="col-md-10"><p><span>` + sendername + ` </span><span>` + time + `</span></p><p>` + data[i].content + `</p></div></div>`);
+                            }
+                            else {
+                                $("#messanges_div").prepend(`<div class="row"><div class="col-md-2"><div style="height:40px;width:40px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;"></div></div><div class="col-md-10"><p><span>` + sendername + ` </span><span>` + time + `</span></p><p>` + data[i].content + `</p></div></div>`);
+                            }
+                        }
+                    }
+                },
+                error: function () {
+                }
+            });
+
+            take += 10;
+            skip += 10;
+        });
+
+    });
 </script>

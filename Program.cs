@@ -1,15 +1,19 @@
 using EduSciencePro;
 using EduSciencePro.Data;
 using EduSciencePro.Data.Repos;
-using EduSciencePro.Handler;
+using EduSciencePro.Hubs;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using Swashbuckle.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
+//builder.Services.AddSwaggerGen();
+
 
 var assembly = Assembly.GetAssembly(typeof(MappingProfile));
 builder.Services.AddAutoMapper(assembly);
@@ -68,18 +72,29 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+app.MapHub<ChatHub>("/ChatHub");
+
 app.UseRouting();
+
+//app.UseWebSockets();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
+
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=User}/{action=Index}/{id?}");
-app.UseEndpoints(endpoints =>
-{
-   app.MapHub<ChatHandler>("/OpenMessage");
-});
+
+//app.MapHub<ChatHandler>("OpenMessage");
+
+//app.UseSwagger();
+//app.UseSwaggerUI(options =>
+//{
+//    options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+//    options.RoutePrefix = string.Empty;
+//});
 
 
 app.Run();

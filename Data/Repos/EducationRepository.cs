@@ -16,6 +16,8 @@ namespace EduSciencePro.Data.Repos
       }
       public async Task<Education[]> GetEducations() => await _db.Educations.ToArrayAsync();
 
+      public async Task<Education> GetEducationById(Guid id) => await _db.Educations.FirstOrDefaultAsync(e => e.Id == id);
+
       public async Task<Education> GetEducationByName(string name) => await _db.Educations.FirstOrDefaultAsync(e => e.Name == name);
 
       public async Task<Education[]> GetEducationsSearch(string search) => await _db.Educations.Where(e => e.Name.ToLower().Contains(search.ToLower())).ToArrayAsync();
@@ -33,7 +35,7 @@ namespace EduSciencePro.Data.Repos
    public interface IEducationRepository
    {
       Task<Education[]> GetEducations();
-      //Task<Education> GetEducationById(int id);
+      Task<Education> GetEducationById(Guid id);
       Task<Education> GetEducationByName(string name);
       Task<Education[]> GetEducationsSearch(string search);
       Task Save(Education education);

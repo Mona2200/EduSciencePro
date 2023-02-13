@@ -47,7 +47,7 @@
 
         @if (!Model.Key)
         {
-            <p><button class="button form-control-plaintext m-auto w-50 mt-4">Оставить заявку</button></p>
+            <p><a class="button form-control-plaintext m-auto w-50 mt-4" onclick="send_message(@Model.Value.Organization.Id, 'Сотрудничество(проекты)', @Model.Value.Name )" id="button_send_message">Оставить заявку</a></p>
         }
 
     </div>

@@ -87,6 +87,7 @@ namespace EduSciencePro.Controllers
          var claims = new List<Claim>
             {
             new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
+            //new Claim(ClaimTypes.NameIdentifier, user.Email),
             new Claim(ClaimsIdentity.DefaultRoleClaimType, role.Name),
             };
 

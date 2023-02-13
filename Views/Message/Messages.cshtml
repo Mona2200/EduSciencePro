@@ -9,33 +9,38 @@
     {
         @foreach (var message in Model)
         {
-            var interlocutor = message.LastMessage.Recipient.Email == Context.User.Identity.Name ? message.LastMessage.Sender.Id : message.LastMessage.Recipient.Id;
-            @if (message.isLooked)
+            var interlocutor = message.LastMessage.Recipient.Email == Context.User.Identity.Name ? message.LastMessage.Sender : message.LastMessage.Recipient;
+            @if (message.isLooked || message.LastMessage.Sender.Email == Context.User.Identity.Name)
             {
-                <a asp-action="OpenMessage" asp-controller="Message" asp-route-interlocutorId="@interlocutor">
-                    <div class="border_blue p-2 m-2 bg-white col-md-10 row">
-                        <div class="col-md-2">
-                            @if (message.LastMessage.Sender.Image != null)
+                <a asp-action="OpenMessage" asp-controller="Message" asp-route-interlocutorId="@interlocutor.Id" class="form-control-plaintext text-decoration-none text-black">
+                    <div class="border_blue p-2 m-auto bg-white col-md-10 row" id="dialog_div">
+                        <div class="col-2 align-self-start d-flex justify-content-end">
+                            @if (interlocutor.Image != null)
                             {
-                                <div style="height:40px;width:40px;background-image:url(data:image/jpeg;base64,@(Convert.ToBase64String(message.LastMessage.Sender.Image)));background-position:center;background-size:cover;"></div>
+                                <div style="height:60px;width:60px;background-image:url(data:image/jpeg;base64,@(Convert.ToBase64String(interlocutor.Image)));background-position:center;background-size:cover;"></div>
                             }
                             else
                             {
-                                <div style="height:40px;width:40px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;"></div>
+                                <div style="height:60px;width:60px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;"></div>
                             }
                         </div>
 
                         @{
-                            var fullName = $"{message.LastMessage.Sender.FirstName} {message.LastMessage.Sender.LastName} {message.LastMessage.Sender.MiddleName}";
+                            var fullName = $"{interlocutor.FirstName} {interlocutor.LastName} {interlocutor.MiddleName}";
                             var day = message.LastMessage.CreateTime.Day.ToString().Length == 1 ? $"0{message.LastMessage.CreateTime.Day}" : message.LastMessage.CreateTime.Day.ToString();
                             var month = message.LastMessage.CreateTime.Month.ToString().Length == 1 ? $"0{message.LastMessage.CreateTime.Month}" : message.LastMessage.CreateTime.Month.ToString();
                             var createDate = $"{day}.{month}.{message.LastMessage.CreateTime.Year}";
-                            var time = $"{message.LastMessage.CreateTime.Hour}:{message.LastMessage.CreateTime.Minute}";
+                            var hours = message.LastMessage.CreateTime.Hour.ToString().Length == 1 ? $"0{message.LastMessage.CreateTime.Hour}" : $"{message.LastMessage.CreateTime.Hour}";
+                            var minutes = message.LastMessage.CreateTime.Minute.ToString().Length == 1 ? $"0{message.LastMessage.CreateTime.Minute}" : $"{message.LastMessage.CreateTime.Minute}";
+                            var time = $"{hours}:{minutes}";
                         }
 
-                        <div class="col-md-10">
-                            <p><span>@fullName</span><span>@createDate</span><span>@time</span></p>
-                            <p>@message.LastMessage.Content.Length > 50 ? @message.LastMessage.Content.Substring(0,50)... : @message.LastMessage.Content</p>
+                        <div class="col-10" id="@interlocutor.Id">
+                            <p><span class="d-block d-md-inline">@fullName</span><span class="m-md-2 d-block d-md-inline">@createDate</span><span class="m-md-2 d-block d-md-inline">@time</span></p>
+                            @{
+                                var cont = message.LastMessage.Content.Length > 50 ? @message.LastMessage.Content.Substring(0, 50) + "..." : @message.LastMessage.Content;
+                            }
+                            <p>@cont</p>
                         </div>
                     </div>
                 </a>
@@ -43,29 +48,31 @@
             }
             else
             {
-                <a asp-action="OpenMessage" asp-controller="Message" asp-route-interlocutorId="@interlocutor">
-                    <div class="border_blue p-2 m-2 bg_blue col-md-10 row">
-                        <div class="col-md-2">
-                            @if (message.LastMessage.Sender.Image != null)
+                <a asp-action="OpenMessage" asp-controller="Message" asp-route-interlocutorId="@interlocutor.Id" class="form-control-plaintext text-decoration-none text-black">
+                    <div class="border_blue p-2 m-auto bg_blue col-md-10 row" id="dialog_div">
+                        <div class="col-2 align-self-start d-flex justify-content-end">
+                            @if (interlocutor.Image != null)
                             {
-                                <div style="height:40px;width:40px;background-image:url(data:image/jpeg;base64,@(Convert.ToBase64String(message.LastMessage.Sender.Image)));background-position:center;background-size:cover;"></div>
+                                <div style="height:60px;width:60px;background-image:url(data:image/jpeg;base64,@(Convert.ToBase64String(interlocutor.Image)));background-position:center;background-size:cover;"></div>
                             }
                             else
                             {
-                                <div style="height:40px;width:40px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;"></div>
+                                <div style="height:60px;width:60px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;"></div>
                             }
                         </div>
 
                         @{
-                            var fullName = $"{message.LastMessage.Sender.FirstName} {message.LastMessage.Sender.LastName} {message.LastMessage.Sender.MiddleName}";
+                            var fullName = $"{interlocutor.FirstName} {interlocutor.LastName} {interlocutor.MiddleName}";
                             var day = message.LastMessage.CreateTime.Day.ToString().Length == 1 ? $"0{message.LastMessage.CreateTime.Day}" : message.LastMessage.CreateTime.Day.ToString();
                             var month = message.LastMessage.CreateTime.Month.ToString().Length == 1 ? $"0{message.LastMessage.CreateTime.Month}" : message.LastMessage.CreateTime.Month.ToString();
                             var createDate = $"{day}.{month}.{message.LastMessage.CreateTime.Year}";
-                            var time = $"{message.LastMessage.CreateTime.Hour}:{message.LastMessage.CreateTime.Minute}";
+                            var hours = message.LastMessage.CreateTime.Hour.ToString().Length == 1 ? $"0{message.LastMessage.CreateTime.Hour}" : $"{message.LastMessage.CreateTime.Hour}";
+                            var minutes = message.LastMessage.CreateTime.Minute.ToString().Length == 1 ? $"0{message.LastMessage.CreateTime.Minute}" : $"{message.LastMessage.CreateTime.Minute}";
+                            var time = $"{hours}:{minutes}";
                         }
 
-                        <div class="col-md-10">
-                            <p><span>@fullName</span><span>@createDate</span><span>@time</span></p>
+                        <div class="col-10" id="@interlocutor.Id">
+                            <p><span class="d-block d-md-inline">@fullName</span><span class="ml-2 d-block d-md-inline">@createDate</span><span class="ml-2 d-block d-md-inline">@time</span></p>
                             @{
                                 var cont = message.LastMessage.Content.Length > 50 ? @message.LastMessage.Content.Substring(0, 50) + "..." : @message.LastMessage.Content;
                             }
@@ -82,3 +89,76 @@
     }
 
 </div>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var connection = new signalR.HubConnectionBuilder().withUrl("/ChatHub").build();
+
+        let connectionId = "";
+
+        connection.on("ReceiveMessage", function (message, user) {
+            var date = new Date(message.createTime);
+            var day = "";
+            if (date.getDate() < 10) {
+                day += "0";
+            }
+            day += date.getDate();
+
+            var month = "";
+            if (date.getMonth() < 10) {
+                month += "0";
+            }
+            month += date.getMonth() + 1;
+
+            var createDate = day + "." + month + "." + date.getFullYear();
+
+            var hours = "";
+            if (date.getHours() < 10) {
+                hours += "0";
+            }
+            hours += date.getHours();
+
+            var minutes = "";
+            if (date.getMinutes() < 10) {
+                minutes += "0";
+            }
+            minutes += date.getMinutes();
+
+            var time = hours + ":" + minutes;
+
+            var cont = "";
+            if (message.content.length > 50) {
+                cont += message.content.substring(0, 50) + "...";
+            }
+            else {
+               cont += message.content;
+            }
+
+            $("#" + user.id).children().last().empty();
+            $("#" + user.id).children().last().append(cont);
+
+            $("#" + user.id).children().first().children().first().next().empty();
+            $("#" + user.id).children().first().children().first().next().append(createDate);
+
+            $("#" + user.id).children().first().children().last().empty();
+            $("#" + user.id).children().first().children().last().append(time);
+
+            if ($("#" + user.id).parent("#dialog_div").hasClass("bg-white")) {
+               $("#" + user.id).parent("#dialog_div").removeClass("bg-white").addClass("bg_blue");
+            }          
+        });
+
+        connection.start().then(() => {
+            connectionId = connection.connectionId;
+            $.ajax({
+                url: '/Message/Connect/' + connectionId,
+                type: 'POST',
+                success: function (data) {
+                },
+                error: function () {
+                }
+            });
+        });
+    })
+</script>
