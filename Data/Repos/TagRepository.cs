@@ -68,6 +68,7 @@ namespace EduSciencePro.Data.Repos
    public interface ITagRepository
    {
       Task<Tag[]> GetTags();
+        Task<Tag> GetTagByName(string name);
       Task<Tag[]> GetTagsByPostId(Guid postId);
       Task<Tag> GetTagById(Guid id);
       Task<Tag[]> GetTagsSearch(string search);

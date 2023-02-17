@@ -24,7 +24,7 @@
         @{
             var tags = "";
             foreach (var tag in Model.Tags)
-                tags += tag.Name + " ";
+                tags += tag.Name + "/";
         }
 
         <label asp-for="Tags" class="text-start label_input mt-3"></label>
