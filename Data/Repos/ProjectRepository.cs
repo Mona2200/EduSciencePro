@@ -4,6 +4,7 @@ using EduSciencePro.Models.User;
 using EduSciencePro.ViewModels.Request;
 using EduSciencePro.ViewModels.Response;
 using Microsoft.EntityFrameworkCore;
+using ServiceStack;
 
 namespace EduSciencePro.Data.Repos
 {
@@ -25,12 +26,33 @@ namespace EduSciencePro.Data.Repos
 
       public async Task<Project[]> GetProjectsByOrganizationId(Guid organizationId) => await _db.Projects.OrderByDescending(p => p.StartDate).Where(p => p.OrganizationId == organizationId).ToArrayAsync();
 
-      public async Task<ProjectViewModel[]> GetProjectViewModels()
+      public async Task<ProjectViewModel[]> GetProjectViewModels(string[] tagNames = null, int take = 10, int skip = 0)
       {
-         var projects = await GetProjects();
+            List<Project> projectList = new();
+            if (tagNames != null && tagNames.Length != 0)
+            {
+                foreach (var tagName in tagNames)
+                {
+                    var tag = await _db.Skills.FirstOrDefaultAsync(t => t.Name == tagName);
+                    if (tag != null)
+                    {
+                        var tagPosts = await _db.ProjectSkills.Where(t => t.SkillId == tag.Id).ToListAsync();
+                        foreach (var tagPost in tagPosts)
+                        {
+                            var tagNew = await _db.Projects.FirstOrDefaultAsync(p => p.Id == tagPost.ProjectId);
+                            if (tagNew != null && projectList.FirstOrDefault(n => n.Id == tagNew.Id) == null)
+                                projectList.Add(tagNew);
+                        }
+                    }
+                }
+            }
+            else
+                projectList = await _db.Projects.ToListAsync();
+            projectList = projectList.OrderByDescending(n => n.StartDate).Take(take).Skip(skip).ToList();
+
          var projectViewModels = new List<ProjectViewModel>();
 
-         foreach (var project in projects)
+         foreach (var project in projectList)
          {
             var projectViewModel = _mapper.Map<Project, ProjectViewModel>(project);
 
@@ -79,9 +101,12 @@ namespace EduSciencePro.Data.Repos
          return projectViewModels.ToArray();
       }
 
-      public async Task<ProjectViewModel[]> GetProjectViewModelsByOrganizationId(Guid organizationId)
+      public async Task<ProjectViewModel[]> GetProjectViewModelsByOrganizationId(Guid organizationId, int take = 10, int skip = 0)
       {
-         var projects = await GetProjectsByOrganizationId(organizationId);
+            List<Project> projects = new();
+            projects = await _db.Projects.OrderByDescending(p => p.StartDate).Where(p => p.OrganizationId == organizationId).ToListAsync();
+            projects = projects.Take(take).Skip(skip).ToList();
+
          var projectViewModels = new List<ProjectViewModel>();
 
          foreach (var project in projects)
@@ -249,8 +274,8 @@ namespace EduSciencePro.Data.Repos
       Task<Project> GetProjectById(Guid id);
       Task<ProjectViewModel> GetProjectViewModelById(Guid id);
       Task<Project[]> GetProjectsByOrganizationId(Guid organizationId);
-      Task<ProjectViewModel[]> GetProjectViewModels();
-      Task<ProjectViewModel[]> GetProjectViewModelsByOrganizationId(Guid organizationId);
+      Task<ProjectViewModel[]> GetProjectViewModels(string[] tagNames = null, int take = 10, int skip = 0);
+      Task<ProjectViewModel[]> GetProjectViewModelsByOrganizationId(Guid organizationId, int take = 10, int skip = 0);
       Task Save(AddProjectViewModel model);
       Task Delete(Guid id);
    }

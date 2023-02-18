@@ -7,12 +7,12 @@
 }
 
 <div class="border_blue p-4 m-3 bg-white">
-   @if (Model.IsOrg)
-   {
+    @if (Model.IsOrg)
+    {
         <p class="w-100 text-end"><a class="mr-2" asp-action="YourProjects" asp-controller="Project">Ваши проекты</a></p>
-   }
-   else
-   {
+    }
+    else
+    {
         <p class="w-100 text-end"><a class="mr-2" data-bs-toggle="modal" data-bs-target="#isNotOrg" style="cursor:pointer">Ваши проекты</a></p>
 
         <div class="modal fade" id="isNotOrg" tabindex="-1" role="dialog" aria-bs-hidden="true">
@@ -22,31 +22,64 @@
                         <button type="button" class="close btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body pb-5 pr-3 pl-3">
-                       <h4 class="mb-3 text-center">Создание проекта недоступно</h4>
-                       <p>Чтобы вам было доступно создание проектов, необходимо заполнить информацию об организации в профиле</p>                       
+                        <h4 class="mb-3 text-center">Создание проекта недоступно</h4>
+                        <p>Чтобы вам было доступно создание проектов, необходимо заполнить информацию об организации в профиле</p>
                     </div>
                 </div>
             </div>
         </div>
-   }
-    
+    }
+
     <h3 class="mb-5 mt-2 underline_h3 text-center">Научно-исследовательская деятельность - проекты</h3>
 
-    <div class="row justify-content-center">
+    <div class="row justify-content-center" id="projects">
+
+        <div class="col-10 m-auto d-flex justify-content-between mb-3 row">
+
+            <div class="col-9" id="tags_div">
+                @{
+                    if (Model.Tags == null || Model.Tags.Count() == 0)
+                    {
+                        <span class="p-1 border_blue all_tags">Все теги</span>
+                    }
+                    else
+                    {
+                        foreach (var tag in Model.Tags)
+                        {
+                            <span class="p-1 border_blue">@tag</span>
+                        }
+                    }
+                }
+            </div>
+            <div class="col-3">
+                <button class="button form-control-plaintext p-1" data-bs-toggle="collapse" data-bs-target="#tags_form" aria-expanded="false" aria-controls="tags_form">Добавить свой фильтр</button>
+            </div>
+        </div>
+
+        <div class="col-10 collapse m-auto mt-2 mb-3" id="tags_form">
+
+            <label class="text-start label_input w-100 mt-4">Направления</label>
+            <input class="text-center w-75 p-1" placeholder="Направление" id="input_tag" />
+            <p><button class="button form-control-plaintext w-25 mt-4 mr-2 d-inline-block" id="button_addtag">Добавить</button><button class="button form-control-plaintext w-25 mt-4 d-inline-block" id="button_removetag">Очистить</button></p>
+        </div>
+
         @if (Model.Projects != null && Model.Projects.Length != 0)
         {
             @foreach (var project in Model.Projects)
             {
                 <div class="col-md-10 mt-4 mb-4" style="padding:10px;">
-                   <h5 class="fw-bold">@project.Title</h5>
-                   <p>Дата начала и окончания: @project.StartDate - @project.EndDate</p>
-                   <p>Финансирующая организация: @project.Organization.Name</p>
-                   <p>
-                      @foreach (var skill in project.Skills)
-                      {
-                            <span class="bg_blue p-2 m-2">@skill.Name</span>
-                      }
-                   </p>
+                    <h5 class="fw-bold">@project.Title</h5>
+                    <p>Дата начала и окончания: @project.StartDate - @project.EndDate</p>
+                    <p>Финансирующая организация: @project.Organization.Name</p>
+                    <p>
+                        @if (project.Skills != null)
+                        {
+                            @foreach (var skill in project.Skills)
+                            {
+                                <span class="bg_blue p-2 m-2">@skill.Name</span>
+                            }
+                        }
+                    </p>
                     <p class="text-center"><a asp-action="LookingProject" asp-controller="Project" asp-route-projectId="@project.Id">Узнать больше</a></p>
                 </div>
             }
@@ -56,5 +89,53 @@
             <p class="text-center col-md-10">Проектов нет. Возвращайтесь позже.</p>
         }
     </div>
-
+    @if (Model.Projects != null && Model.Projects.Length == 5)
+    {
+        <p><button class="button form-control-plaintext w-25 m-auto mt-4" id="button_addnewstag">Загрузить ещё</button></p>
+    }
 </div>
+
+<script>
+    $(document).ready(function () {
+        let take = 5;
+        let skip = 0;
+        var tags = "";
+        $("#tags_div").children().each(function () {
+            if (!$(this).hasClass("all_tags")) {
+                tags += $(this).text() + "_";
+            }
+        });
+        $("#button_addtag").click(function () {
+            tags += $("#input_tag").val() + "_";
+            window.location.href = '/ProjectsTag/' + tags;
+        });
+        $("#button_removetag").click(function () {
+            window.location.href = '/Projects';
+        });
+        $("#button_addnewstag").click(function () {
+            take += 5;
+            skip += 5;
+
+            $.ajax({
+                url: '/ProjectsMore/' + take + '/' + skip + '/' + tags,
+                type: 'POST',
+                success: function (data) {
+                   var skills = "";
+
+                    for (var i = 0; i < data.length; i++) {
+
+                       if (data[i].skills != null) {
+                          for (var j = 0; j < data[i].skills.length; j++) {
+                                skills += `<span class="bg_blue p-2 m-2">` + data[i].skills[j].name + `</span>`;
+                          }
+                       }
+                        $("#projects").append(`<div class="col-md-10 mt-4 mb-4" style="padding:10px;"><h5 class="fw-bold">` + data[i].title + `</h5><p>Дата начала и окончания: ` + data[i].startDate + ` - ` + data[i].endDate + `</p><p>Финансирующая организация: ` + data[i].organization.name + `</p><p>` + skills + `</p><p class="text-center"><a href="/LookingProject?projectId=` + data[i].id + `">Узнать больше</a></p></div>`);
+                    }
+                    if (data.length < 5) {
+                        $("#button_addnewstag").addClass('d-none');
+                    }
+                }
+            });
+        });
+    });
+</script>
