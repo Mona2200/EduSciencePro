@@ -6,7 +6,7 @@ namespace EduSciencePro.ViewModels.Response
     {
     public Guid? UserId { get; set; }
     public PostViewModel[] Posts { get; set; }
-    public Tag[] Tags { get; set; }
+        public List<string> Tags { get; set; } = new();
     public string? AddTag { get; set; }
     }
 }

@@ -68,7 +68,7 @@ namespace EduSciencePro.Controllers
             var posts = new AllPostsViewModel()
             {
                 News = (await _posts.GetPostViewModelsNews(null, 4, 0)).ToArray(),
-                Discuss = (await _posts.GetPostViewModelsDiscussions()).Take(6).ToArray(),
+                Discuss = (await _posts.GetPostViewModelsDiscussions(null, 6, 0)).ToArray(),
                 Conferences = (await _conferences.GetConferenceViewModels()).Take(4).ToArray()
             };
             return View(posts);
@@ -81,7 +81,7 @@ namespace EduSciencePro.Controllers
             ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
             var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name)?.Value;
 
-            List<Tag> tags = new();
+            List<string> tags = new();
             string[] tagNames = null;
             if (tagNamesString != null)
             {
@@ -90,9 +90,7 @@ namespace EduSciencePro.Controllers
               
                 foreach (var tagName in tagNames)
                 {
-                    var tag = await _tags.GetTagByName(tagName);
-                    if (tag != null && tags.FirstOrDefault(t => t.Id == tag.Id) == null)
-                        tags.Add(tag);
+                        tags.Add(tagName);
                 }
             }
 
@@ -102,14 +100,14 @@ namespace EduSciencePro.Controllers
 
                 var news = await _posts.GetPostViewModelsNews(tagNames, 5, 0);
 
-                var posts = new PostsAndUserIdViewModel() { Posts = news, UserId = user.Id, Tags = tags.ToArray() };
+                var posts = new PostsAndUserIdViewModel() { Posts = news, UserId = user.Id, Tags = tags };
                 return View(posts);
             }
             else
             {
                 var news = await _posts.GetPostViewModelsNews(tagNames, 5, 0);
 
-                var posts = new PostsAndUserIdViewModel() { Posts = news, UserId = null, Tags = tags.ToArray() };
+                var posts = new PostsAndUserIdViewModel() { Posts = news, UserId = null, Tags = tags };
                 return View(posts);
             }
         }
@@ -138,25 +136,73 @@ namespace EduSciencePro.Controllers
 
         [HttpGet]
         [Route("DiscussionPosts")]
-        public async Task<IActionResult> DiscussionPosts()
+        public async Task<IActionResult> DiscussionPosts(string? tagNamesString)
         {
             ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
             var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name)?.Value;
+
+            List<string> tags = new();
+            string[] tagNames = null;
+            if (tagNamesString != null)
+            {
+                tagNamesString = tagNamesString.Replace('_', '/');
+                tagNames = tagNamesString.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var tagName in tagNames)
+                {
+                    tags.Add(tagName);
+                }
+            }
+
             if (claimEmail != null)
             {
                 var user = await _users.GetUserByEmail(claimEmail);
 
-                var discuss = await _posts.GetPostViewModelsDiscussions();
-                var posts = new PostsAndUserIdViewModel() { Posts = discuss, UserId = user.Id };
+                var discuss = await _posts.GetPostViewModelsDiscussions(tagNames, 5, 0);
+                var posts = new PostsAndUserIdViewModel() { Posts = discuss, UserId = user.Id, Tags = tags };
                 return View(posts);
             }
             else
             {
-                var discuss = await _posts.GetPostViewModelsDiscussions();
-                var posts = new PostsAndUserIdViewModel() { Posts = discuss, UserId = null };
+                var discuss = await _posts.GetPostViewModelsDiscussions(tagNames, 5, 0);
+                var posts = new PostsAndUserIdViewModel() { Posts = discuss, UserId = null, Tags = tags };
                 return View(posts);
             }
 
+        }
+
+        [HttpGet]
+        [Route("DiscussionsPostsTag/{tags}")]
+        public async Task<IActionResult> DiscussionsPostsTag([FromRoute] string? tags)
+        {
+            return RedirectToAction("DiscussionPosts", "Post", new { tagNamesString = tags });
+        }
+
+        [HttpPost]
+        [Route("DiscussionsPostsMore/{take}/{skip}/{tags?}")]
+        public async Task<PostViewModel[]> DiscussionsPostsMore([FromRoute] int take, [FromRoute] int skip, [FromRoute] string? tags = null)
+        {
+            string[] tagNames = null;
+            if (tags != null)
+            {
+                tags = tags.Replace('_', '/');
+                tagNames = tags.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            }
+
+            var news = await _posts.GetPostViewModelsDiscussions(tagNames, take, skip);
+            return news;
+        }
+
+        [HttpPost]
+        [Route("PostsMore/{take}/{skip}")]
+        public async Task<PostViewModel[]> PostsMore([FromRoute] int take, [FromRoute] int skip)
+        {
+            ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+            var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+            var user = await _users.GetUserByEmail(claimEmail);
+
+            var news = await _posts.GetPostViewModelsByUserId(user.Id, take, skip);
+            return news;
         }
 
         [HttpGet]

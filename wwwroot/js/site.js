@@ -231,6 +231,20 @@ function Edu_KeyUp(NameEducations, inp) {
     //};
 };
 
+function abilityPost(e) {
+    if ($(e).next('.div_ability_post').hasClass('d-none')) {
+        $(e).next('.div_ability_post').removeClass('d-none');
+    } else {
+        $(e).next('.div_ability_post').addClass('d-none');
+    }
+
+    if ($(e).parent().next('.div_ability_post').hasClass('d-none')) {
+        $(e).parent().next('.div_ability_post').removeClass('d-none');
+    } else {
+        $(e).parent().next('.div_ability_post').addClass('d-none');
+    }
+};
+
 function Button_Add_Post(e) {
     var html = $("#editor").find(".ProseMirror.toastui-editor-contents").html();
     var encoded = new TextEncoder().encode(html);

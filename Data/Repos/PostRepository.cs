@@ -28,10 +28,11 @@ namespace EduSciencePro.Data.Repos
 
         public async Task<Post[]> GetPosts() => await _db.Posts.OrderByDescending(p => p.CreatedDate).ToArrayAsync();
 
-        public async Task<PostViewModel[]> GetPostViewModels()
+        public async Task<PostViewModel[]> GetPostViewModels(int take = 5, int skip = 0)
         {
-            var posts = await GetPosts();
-            var postViewModels = new PostViewModel[posts.Length];
+            var posts = await _db.Posts.OrderByDescending(p => p.CreatedDate).ToListAsync();
+            posts = posts.TakeLast(take).Skip(skip).ToList();
+            var postViewModels = new PostViewModel[posts.Count()];
             int i = 0;
             foreach (var post in posts)
             {
@@ -96,10 +97,11 @@ namespace EduSciencePro.Data.Repos
 
         public async Task<Post[]> GetPostsByUserId(Guid userId) => await _db.Posts.OrderByDescending(p => p.CreatedDate).Where(p => p.UserId == userId).ToArrayAsync();
 
-        public async Task<PostViewModel[]> GetPostViewModelsByUserId(Guid userId)
+        public async Task<PostViewModel[]> GetPostViewModelsByUserId(Guid userId, int take = 5, int skip = 0)
         {
-            var posts = await GetPostsByUserId(userId);
-            var postViewModels = new PostViewModel[posts.Length];
+            var posts = await _db.Posts.OrderByDescending(p => p.CreatedDate).Where(p => p.UserId == userId).ToListAsync();
+            posts = posts.Take(take).Skip(skip).ToList();
+            var postViewModels = new PostViewModel[posts.Count()];
             int i = 0;
             foreach (var post in posts)
             {
@@ -145,7 +147,7 @@ namespace EduSciencePro.Data.Repos
                         foreach (var tagPost in tagPosts)
                         {
                             var tagNew = await _db.Posts.FirstOrDefaultAsync(p => p.IsNews && p.Id == tagPost.PostId);
-                            if (tagNew != null)
+                            if (tagNew != null && news.FirstOrDefault(n => n.Id == tagNew.Id) == null)
                                 news.Add(tagNew);
                         }
                     }
@@ -186,10 +188,30 @@ namespace EduSciencePro.Data.Repos
             return postViewModels;
         }
 
-        public async Task<PostViewModel[]> GetPostViewModelsDiscussions()
+        public async Task<PostViewModel[]> GetPostViewModelsDiscussions(string[] tagNames = null, int take = 10, int skip = 0)
         {
-            var discus = await _db.Posts.OrderByDescending(p => p.CreatedDate).Where(p => p.IsNews == false).Take(4).ToArrayAsync();
-            var postViewModels = new PostViewModel[discus.Length];
+            List<Post> discus = new();
+            if (tagNames != null && tagNames.Length != 0)
+            {
+                foreach (var tagName in tagNames)
+                {
+                    var tag = await _db.Tags.FirstOrDefaultAsync(t => t.Name == tagName);
+                    if (tag != null)
+                    {
+                        var tagPosts = await _db.TagPosts.Where(t => t.TagId == tag.Id).ToListAsync();
+                        foreach (var tagPost in tagPosts)
+                        {
+                            var tagNew = await _db.Posts.FirstOrDefaultAsync(p => !p.IsNews && p.Id == tagPost.PostId);
+                            if (tagNew != null && discus.FirstOrDefault(n => n.Id == tagNew.Id) == null)
+                                discus.Add(tagNew);
+                        }
+                    }
+                }
+            }
+            else
+                discus = await _db.Posts.Where(p => p.IsNews == false).ToListAsync();
+            discus = discus.OrderByDescending(n => n.CreatedDate).TakeLast(take).Skip(skip).ToList();
+            var postViewModels = new PostViewModel[discus.Count];
             int i = 0;
             foreach (var post in discus)
             {
@@ -228,7 +250,8 @@ namespace EduSciencePro.Data.Repos
 
             post.CreatedDate = DateTime.Now;
 
-            await _tags.Save(model.Tags.Split('/', StringSplitOptions.RemoveEmptyEntries), post.Id);
+            if (model.Tags != null)
+                await _tags.Save(model.Tags.Split('/', StringSplitOptions.RemoveEmptyEntries), post.Id);
 
             if (model.Cover != null)
             {
@@ -307,13 +330,13 @@ namespace EduSciencePro.Data.Repos
     public interface IPostRepository
     {
         Task<Post[]> GetPosts();
-        Task<PostViewModel[]> GetPostViewModels();
+        Task<PostViewModel[]> GetPostViewModels(int take = 5, int skip = 0);
         Task<Post> GetPostById(Guid postId);
         Task<PostViewModel> GetPostViewModelById(Guid postId);
         Task<Post[]> GetPostsByUserId(Guid userId);
-        Task<PostViewModel[]> GetPostViewModelsByUserId(Guid userId);
+        Task<PostViewModel[]> GetPostViewModelsByUserId(Guid userId, int take = 5, int skip = 0);
         Task<PostViewModel[]> GetPostViewModelsNews(string[] tagNames, int take, int skip);
-        Task<PostViewModel[]> GetPostViewModelsDiscussions();
+        Task<PostViewModel[]> GetPostViewModelsDiscussions(string[] tagNames, int take, int skip);
         //Task<Post> GetPostById(int id);
         //Task<Post[]> GetPostsByUserId(Guid userId);
 

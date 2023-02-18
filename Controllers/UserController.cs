@@ -539,6 +539,15 @@ namespace EduSciencePro.Controllers
       }
 
       [HttpGet]
+      [Route("GetCookieEmail")]
+      public async Task<string> GetCookieEmail()
+      {
+            ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+            var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+            return claimEmail;
+        }
+
+      [HttpGet]
       [Route("ResumeCollection")]
       public async Task<IActionResult> ResumeCollection()
       {

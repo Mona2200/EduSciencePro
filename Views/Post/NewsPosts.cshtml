@@ -23,7 +23,7 @@
                     {
                         foreach (var tag in Model.Tags)
                         {
-                            <span class="p-1 border_blue">@tag.Name</span>
+                            <span class="p-1 border_blue">@tag</span>
                         }
                     }
                 }
@@ -37,8 +37,7 @@
 
             <label class="text-start label_input w-100 mt-4">Направления</label>
             <input class="text-center w-75 p-1" placeholder="Направление" id="input_tag" />
-            <p><button class="button form-control-plaintext w-25 mt-4" id="button_addtag">Добавить</button></p>
-            <p><button class="button form-control-plaintext w-25 mt-4" id="button_removetag">Очистить</button></p>
+            <p><button class="button form-control-plaintext w-25 mt-4 mr-2 d-inline-block" id="button_addtag">Добавить</button><button class="button form-control-plaintext w-25 mt-4 d-inline-block" id="button_removetag">Очистить</button></p>
         </div>
 
         @{
@@ -269,7 +268,6 @@
                     if (data.length < 5) {
                         $("#button_addnewstag").addClass('d-none');
                     }
-                    console.log(data);
                 }
             });
         });
