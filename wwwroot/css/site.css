@@ -175,10 +175,6 @@ input {
     cursor: pointer;
 }
 
-.underline {
-    font-size: 16px;
-}
-
     .underline::after {
         margin-top: 2px;
         display: block;
@@ -187,6 +183,17 @@ input {
         background-color: black;
         width: 30px;
     }
+
+.underline_end::after {
+    margin-top: 2px;
+    display: block;
+    content: ' ';
+    height: 1px;
+    background-color: black;
+    width: 30px;
+    margin-left: 100%;
+    transform: translateX(-100%);
+}
 
 .Search {
     background: white;

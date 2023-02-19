@@ -550,6 +550,13 @@ namespace EduSciencePro.Controllers
         }
 
         [HttpGet]
+        [Route("ForSchoolchildren")]
+        public async Task<IActionResult> ForSchoolchildren()
+        {
+        return View("~/Views/Shared/ForSchoolchildren.cshtml");
+        }
+
+        [HttpGet]
         [Route("GetCookieEmail")]
         public async Task<string> GetCookieEmail()
         {
