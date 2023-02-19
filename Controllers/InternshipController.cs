@@ -21,26 +21,61 @@ namespace EduSciencePro.Controllers
 
       [HttpGet]
       [Route("Internships")]
-      public async Task<IActionResult> Internships()
+      public async Task<IActionResult> Internships(string? tagNamesString)
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
          var user = await _users.GetUserByEmail(claimEmail);
 
-         var internshipViewModels = await _internships.GetInternshipViewModels();
+            List<string> tags = new();
+            string[] tagNames = null;
+            if (tagNamesString != null)
+            {
+                tagNamesString = tagNamesString.Replace('_', '/');
+                tagNames = tagNamesString.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var tagName in tagNames)
+                {
+                    tags.Add(tagName);
+                }
+            }
+
+            var internshipViewModels = await _internships.GetInternshipViewModels(tagNames, 5, 0);
 
          var organization = await _organizations.GetOrganizationByUserId(user.Id);
 
          if (organization != null)
          {
-            return View(new KeyValuePair<bool, InternshipViewModel[]>(true, internshipViewModels.Where(p => p.Organization.Id != organization.Id).ToArray()));
+            return View(new IntershipsAndIsOrgViewModel() { IsOrg = true, Internships = internshipViewModels.Where(p => p.Organization.Id != organization.Id).ToArray(), Tags = tags });
          }
          else
-            return View(new KeyValuePair<bool, InternshipViewModel[]>(false, internshipViewModels));
+            return View(new IntershipsAndIsOrgViewModel() { IsOrg = false, Internships = internshipViewModels, Tags = tags });
 
       }
 
-      [HttpGet]
+        [HttpGet]
+        [Route("InternshipsTag/{tags}")]
+        public async Task<IActionResult> InternshipsTag([FromRoute] string? tags)
+        {
+            return RedirectToAction("Internships", "Internship", new { tagNamesString = tags });
+        }
+
+        [HttpPost]
+        [Route("InternshipsMore/{take}/{skip}/{tags?}")]
+        public async Task<InternshipViewModel[]> InternshipsMore([FromRoute] int take, [FromRoute] int skip, [FromRoute] string? tags = null)
+        {
+            string[] tagNames = null;
+            if (tags != null)
+            {
+                tags = tags.Replace('_', '/');
+                tagNames = tags.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            }
+
+            var news = await _internships.GetInternshipViewModels(tagNames, take, skip);
+            return news;
+        }
+
+        [HttpGet]
       [Route("YourInternships")]
       public async Task<IActionResult> YourInternships()
       {
@@ -52,7 +87,7 @@ namespace EduSciencePro.Controllers
          if (organization == null)
             return View(null);
 
-         var internshipViewModels = await _internships.GetInternshipViewModelsByOrganizationId(organization.Id);
+         var internshipViewModels = await _internships.GetInternshipViewModelsByOrganizationId(organization.Id, 5, 0);
          return View(internshipViewModels);
       }
 

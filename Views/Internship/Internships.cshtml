@@ -1,5 +1,5 @@
 ﻿@using EduSciencePro.ViewModels.Response
-@model KeyValuePair<bool, InternshipViewModel[]>;
+@model IntershipsAndIsOrgViewModel;
 
 @{
     ViewData["Title"] = "Стажировки и практики";
@@ -7,7 +7,7 @@
 }
 
 <div class="border_blue p-4 m-3 bg-white">
-    @if (Model.Key)
+    @if (Model.IsOrg)
     {
         <p class="w-100 text-end"><a class="mr-2" asp-action="YourInternships" asp-controller="Internship">Ваши стажировки/практики</a></p>
     }
@@ -32,10 +32,40 @@
 
     <h3 class="mb-5 mt-2 underline_h3 text-center">Стажировки и практики</h3>
 
-    <div class="row justify-content-center">
-        @if (Model.Value != null && Model.Value.Length != 0)
+    <div class="row justify-content-center" id="projects">
+
+        <div class="col-10 m-auto d-flex justify-content-between mb-3 row">
+
+            <div class="col-9" id="tags_div">
+                @{
+                    if (Model.Tags == null || Model.Tags.Count() == 0)
+                    {
+                        <span class="p-1 border_blue all_tags">Все теги</span>
+                    }
+                    else
+                    {
+                        foreach (var tag in Model.Tags)
+                        {
+                            <span class="p-1 border_blue">@tag</span>
+                        }
+                    }
+                }
+            </div>
+            <div class="col-3">
+                <button class="button form-control-plaintext p-1" data-bs-toggle="collapse" data-bs-target="#tags_form" aria-expanded="false" aria-controls="tags_form">Добавить свой фильтр</button>
+            </div>
+        </div>
+
+        <div class="col-10 collapse m-auto mt-2 mb-3" id="tags_form">
+
+            <label class="text-start label_input w-100 mt-4">Направления</label>
+            <input class="text-center w-75 p-1" placeholder="Направление" id="input_tag" />
+            <p><button class="button form-control-plaintext w-25 mt-4 mr-2 d-inline-block" id="button_addtag">Добавить</button><button class="button form-control-plaintext w-25 mt-4 d-inline-block" id="button_removetag">Очистить</button></p>
+        </div>
+
+        @if (Model.Internships != null && Model.Internships.Length != 0)
         {
-            @foreach (var internship in Model.Value)
+            @foreach (var internship in Model.Internships)
             {
                 <div class="col-md-10 mt-4 mb-4" style="padding:10px;">
                     <h5 class="fw-bold">@internship.Name</h5>
@@ -58,5 +88,53 @@
             <p class="text-center col-md-10">Стажировок и практик нет. Возвращайтесь позже.</p>
         }
     </div>
-
+    @if (Model.Internships != null && Model.Internships.Length == 5)
+    {
+        <p><button class="button form-control-plaintext w-25 m-auto mt-4" id="button_addnewstag">Загрузить ещё</button></p>
+    }
 </div>
+
+<script>
+    $(document).ready(function () {
+        let take = 5;
+        let skip = 0;
+        var tags = "";
+        $("#tags_div").children().each(function () {
+            if (!$(this).hasClass("all_tags")) {
+                tags += $(this).text() + "_";
+            }
+        });
+        $("#button_addtag").click(function () {
+            tags += $("#input_tag").val() + "_";
+            window.location.href = '/InternshipsTag/' + tags;
+        });
+        $("#button_removetag").click(function () {
+            window.location.href = '/Internships';
+        });
+        $("#button_addnewstag").click(function () {
+            take += 5;
+            skip += 5;
+
+            $.ajax({
+                url: '/InternshipsMore/' + take + '/' + skip + '/' + tags,
+                type: 'POST',
+                success: function (data) {
+                    var skills = "";
+
+                    for (var i = 0; i < data.length; i++) {
+
+                        if (data[i].skills != null) {
+                            for (var j = 0; j < data[i].skills.length; j++) {
+                                skills += `<span class="bg_blue p-2 m-2">` + data[i].skills[j].name + `</span>`;
+                            }
+                        }
+                        $("#projects").append(`<div class="col-md-10 mt-4 mb-4" style="padding:10px;"><h5 class="fw-bold">` + data[i].name + `</h5><p>Дата начала и окончания: ` + data[i].startDate + ` - ` + data[i].endDate + `</p><p>Организация: ` + data[i].organization.name + `</p><p>Тип занятости: ` + data[i].employmentType + `</p><p>Зарплата: ` + data[i].salary + `</p><p>` + skills + `</p><p class="text-center"><a href="/LookingInternship?internshipId=` + data[i].id + `">Узнать больше</a></p></div>`);
+                    }
+                    if (data.length < 5) {
+                        $("#button_addnewstag").addClass('d-none');
+                    }
+                }
+            });
+        });
+    });
+</script>
