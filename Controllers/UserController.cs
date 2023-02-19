@@ -578,6 +578,13 @@ namespace EduSciencePro.Controllers
         }
 
         [HttpGet]
+        [Route("ForSciencer")]
+        public async Task<IActionResult> ForSciencer()
+        {
+            return View("~/Views/Shared/ForSciencer.cshtml");
+        }
+
+        [HttpGet]
         [Route("GetCookieEmail")]
         public async Task<string> GetCookieEmail()
         {
