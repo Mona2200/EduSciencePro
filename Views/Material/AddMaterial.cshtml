@@ -13,8 +13,7 @@
 
         <div class="col-md-7">
             <label asp-for="Title" class="w-100 text-start label_input"></label>
-            <p><input class="EducationInput text-center w-100 p-1" placeholder="Название" asp-for="Title"></p>
-            <p class="Search_Education Search position-absolute m-0"></p>
+            <p><input class="text-center w-100 p-1" placeholder="Название" asp-for="Title"></p>
             <p><span asp-validation-for="Title" class="text-danger mb-3"></span></p>
         </div>
 
@@ -62,7 +61,16 @@
             <input id="tags_input" class="d-none" asp-for="Tags">
             <p class="text-start"><input class="TagsInput text-center w-75 p-1" placeholder="Навыки"><span id="tag_click" class="span_click">+</span></p>
             <p class="Search_Tags position-absolute m-0"></p>
-            <div class="text-start mb-4" id="div_tags"></div>
+            <div class="text-start mb-4" id="div_tags">
+                @if (Model.Tags != null)
+                {
+                    List<string> tags = Model.Tags.Split("/", StringSplitOptions.RemoveEmptyEntries).ToList();
+                    foreach (var tag in tags)
+                    {
+                        <span class="bg_blue p-2 m-2 d-inline-block"><span>@tag</span><span style="padding-left: 5px;cursor:pointer;" onclick="remove_tag(this)">&#10008</span></span>
+                    }
+                }
+            </div>
         </div>
 
         <p><button class="button form-control-plaintext m-auto w-50 mt-4">Опубликовать</button></p>

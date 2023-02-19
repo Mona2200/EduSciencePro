@@ -1,6 +1,7 @@
 ﻿using EduSciencePro.Data.Repos;
 using EduSciencePro.Models;
 using EduSciencePro.ViewModels.Request;
+using EduSciencePro.ViewModels.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduSciencePro.Controllers
@@ -15,13 +16,48 @@ namespace EduSciencePro.Controllers
 
       [HttpGet]
       [Route("Materials")]
-      public async Task<IActionResult> Materials()
+      public async Task<IActionResult> Materials(string? tagNamesString)
       {
-         var materials = await _materials.GetMaterialViewModels();
-         return View(materials);
+            List<string> tags = new();
+            string[] tagNames = null;
+            if (tagNamesString != null)
+            {
+                tagNamesString = tagNamesString.Replace('_', '/');
+                tagNames = tagNamesString.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var tagName in tagNames)
+                {
+                    tags.Add(tagName);
+                }
+            }
+
+            var materials = await _materials.GetMaterialViewModels(tagNames, 5, 0);
+         return View(new MaterialsAndTagsViewModel() { Tags = tags, Materials = materials});
       }
 
-      [HttpGet]
+        [HttpGet]
+        [Route("MaterialsTag/{tags}")]
+        public async Task<IActionResult> MaterialsTag([FromRoute] string? tags)
+        {
+            return RedirectToAction("Materials", "Material", new { tagNamesString = tags });
+        }
+
+        [HttpPost]
+        [Route("MaterialsMore/{take}/{skip}/{tags?}")]
+        public async Task<MaterialViewModel[]> MaterialsMore([FromRoute] int take, [FromRoute] int skip, [FromRoute] string? tags = null)
+        {
+            string[] tagNames = null;
+            if (tags != null)
+            {
+                tags = tags.Replace('_', '/');
+                tagNames = tags.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            }
+
+            var news = await _materials.GetMaterialViewModels(tagNames, take, skip);
+            return news;
+        }
+
+        [HttpGet]
       [Route("AddMaterial")]
       public async Task<IActionResult> AddMaterial()
       {

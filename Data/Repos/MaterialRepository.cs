@@ -18,9 +18,30 @@ namespace EduSciencePro.Data.Repos
 
       public async Task<Material[]> GetMaterials() => await _db.Materials.ToArrayAsync();
 
-      public async Task<MaterialViewModel[]> GetMaterialViewModels()
+      public async Task<MaterialViewModel[]> GetMaterialViewModels(string[] tagNames = null, int take = 5, int skip = 0)
       {
-         var materials = await _db.Materials.ToListAsync();
+            List<Material> materials = new();
+            if (tagNames != null && tagNames.Length != 0)
+            {
+                foreach (var tagName in tagNames)
+                {
+                    var tag = await _db.Tags.FirstOrDefaultAsync(t => t.Name == tagName);
+                    if (tag != null)
+                    {
+                        var tagPosts = await _db.TagMaterials.Where(t => t.TagId == tag.Id).ToListAsync();
+                        foreach (var tagPost in tagPosts)
+                        {
+                            var tagNew = await _db.Materials.FirstOrDefaultAsync(p => p.Id == tagPost.MaterialId);
+                            if (tagNew != null && materials.FirstOrDefault(n => n.Id == tagNew.Id) == null)
+                                materials.Add(tagNew);
+                        }
+                    }
+                }
+            }
+            else
+                materials = await _db.Materials.ToListAsync();
+            materials = materials.Take(take).Skip(skip).ToList();
+
          var materialViewModels = new List<MaterialViewModel>();
          foreach (var material in materials)
          {
@@ -72,7 +93,7 @@ namespace EduSciencePro.Data.Repos
    public interface IMaterialRepository
    {
       Task<Material[]> GetMaterials();
-      Task<MaterialViewModel[]> GetMaterialViewModels();
+      Task<MaterialViewModel[]> GetMaterialViewModels(string[] tagNames = null, int take = 5, int skip = 0);
       Task Save(AddMaterialViewModel model);
    }
 }
