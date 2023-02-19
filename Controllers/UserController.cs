@@ -553,7 +553,14 @@ namespace EduSciencePro.Controllers
         [Route("ForSchoolchildren")]
         public async Task<IActionResult> ForSchoolchildren()
         {
-        return View("~/Views/Shared/ForSchoolchildren.cshtml");
+            return View("~/Views/Shared/ForSchoolchildren.cshtml");
+        }
+
+        [HttpGet]
+        [Route("ForStudents")]
+        public async Task<IActionResult> ForStudents()
+        {
+            return View("~/Views/Shared/ForStudents.cshtml");
         }
 
         [HttpGet]
