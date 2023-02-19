@@ -564,6 +564,13 @@ namespace EduSciencePro.Controllers
         }
 
         [HttpGet]
+        [Route("ForMiddleEdu")]
+        public async Task<IActionResult> ForMiddleEdu()
+        {
+            return View("~/Views/Shared/ForMiddleEducate.cshtml");
+        }
+
+        [HttpGet]
         [Route("ForProfessors")]
         public async Task<IActionResult> ForProfessors()
         {
