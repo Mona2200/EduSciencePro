@@ -19,9 +19,30 @@ namespace EduSciencePro.Data.Repos
 
       public async Task<Course[]> GetCourses() => await _db.Courses.ToArrayAsync();
 
-      public async Task<CourseViewModel[]> GetCourseViewModels()
+      public async Task<CourseViewModel[]> GetCourseViewModels(string[] tagNames = null, int take = 5, int skip = 0)
       {
-         var courses = await _db.Courses.ToListAsync();
+            List<Course> courses = new();
+            if (tagNames != null && tagNames.Length != 0)
+            {
+                foreach (var tagName in tagNames)
+                {
+                    var tag = await _db.Skills.FirstOrDefaultAsync(t => t.Name == tagName);
+                    if (tag != null)
+                    {
+                        var tagPosts = await _db.CourseSkills.Where(t => t.SkillId == tag.Id).ToListAsync();
+                        foreach (var tagPost in tagPosts)
+                        {
+                            var tagNew = await _db.Courses.FirstOrDefaultAsync(p => p.Id == tagPost.CourseId);
+                            if (tagNew != null && courses.FirstOrDefault(n => n.Id == tagNew.Id) == null)
+                                courses.Add(tagNew);
+                        }
+                    }
+                }
+            }
+            else
+                courses = await _db.Courses.ToListAsync();
+            courses = courses.Take(take).Skip(skip).ToList();
+
          var courseViewModels = new List<CourseViewModel>();
          foreach (var course in courses)
          {
@@ -206,7 +227,7 @@ namespace EduSciencePro.Data.Repos
    public interface ICourseRepository
    {
       Task<Course[]> GetCourses();
-      Task<CourseViewModel[]> GetCourseViewModels();
+      Task<CourseViewModel[]> GetCourseViewModels(string[] tagNames = null, int take = 5, int skip = 0);
       Task<Course> GetCourseById(Guid id);
       Task<CourseViewModel> GetCourseViewModelById(Guid id);
       Task<Course> GetCourseByUserId(Guid userId);
