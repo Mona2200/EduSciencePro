@@ -1,6 +1,7 @@
 ﻿using EduSciencePro.Data.Repos;
 using EduSciencePro.Models.User;
 using EduSciencePro.ViewModels.Request;
+using EduSciencePro.ViewModels.Response;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -46,7 +47,15 @@ namespace EduSciencePro.Controllers
          return RedirectToAction("LookingPost", "Post", new { postId = model.PostId });
       }
 
-      [HttpGet]
+        [HttpPost]
+        [Route("CommentsMore/{postId}/{take}/{skip}")]
+        public async Task<CommentViewModel[]> CommentsMore([FromRoute] Guid postId, [FromRoute] int take, [FromRoute] int skip)
+        {
+            var comments = await _comments.GetCommentViewModelsByPostId(postId);
+            return comments.TakeLast(take).Skip(skip).ToArray();
+        }
+
+        [HttpGet]
       [Route("DeleteComment")]
       public async Task<IActionResult> DeleteComment(Guid commentId, Guid postId)
       {

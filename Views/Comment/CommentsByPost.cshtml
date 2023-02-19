@@ -1,38 +1,95 @@
 ﻿@using EduSciencePro.ViewModels.Response
-@model CommentViewModel[];
+@model KeyValuePair<Guid, CommentViewModel[]>;
 
-@foreach (var comm in Model)
-{
-   <div class="border_blue p-4 m-3 bg-white d-flex justify-content-center">
-    <div class="col-md-10">
-            <div class="d-flex flex-row align-items-center">
-                @if (comm.User.Image != null)
-                {
-                    <div style="height:40px;width:40px;background-image:url(data:image/jpeg;base64,@(Convert.ToBase64String(comm.User.Image)));background-position:center;background-size:cover;"></div>
-                }
-                else
-                {
-                    <div style="height:40px;width:40px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;"></div>
-                }
-                @{
-                    var fullName = $"{comm.User.FirstName} {comm.User.LastName} {comm.User.MiddleName}";
-                }
-                <p style="margin:0 10px;">@fullName</p>
-                <p class="color-blue" style="margin:0 10px;">@comm.CreatedDate</p>
-            </div>
-            <p class="mt-4">@comm.Content</p>
-            <div class="d-flex justify-content-end">
-                @if (comm.User.Email == Context.User.Identity.Name)
-                {
-                    <span style="cursor:pointer;font-size: 25px;" class="ability_post col-md-2 color-blue text-end">…</span>
-                    <div class="div_ability_post d-none position-absolute border_blue menu_width" style="background-color: white;right: 0;transform: translate(-50%, -20px);padding:0;">
-                        @*<a asp-action="EditPost" asp-controller="Post" asp-route-postId="@post.Id" class="p-2 border_bottom_dark m-0 d-block">Редактировать</a>*@
-                        <a asp-action="DeleteComment" asp-controller="Comment" asp-route-commentId="@comm.Id" asp-route-postId="@comm.PostId" class="p-2 border_bottom_dark m-0 d-block">Удалить</a>
-                    </div>
+<div id="comments">
+    @foreach (var comm in Model.Value)
+    {
+        <div class="border_blue p-4 m-3 bg-white d-flex justify-content-center">
+            <div class="col-md-10">
+                <div class="d-flex flex-row align-items-center">
+                    @if (comm.User.Image != null)
+                    {
+                        <div style="height:40px;width:40px;background-image:url(data:image/jpeg;base64,@(Convert.ToBase64String(comm.User.Image)));background-position:center;background-size:cover;"></div>
+                    }
+                    else
+                    {
+                        <div style="height:40px;width:40px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;"></div>
+                    }
+                    @{
+                        var fullName = $"{comm.User.FirstName} {comm.User.LastName} {comm.User.MiddleName}";
+                    }
+                    <p style="margin:0 10px;">@fullName</p>
+                    <p class="color-blue" style="margin:0 10px;">@comm.CreatedDate</p>
+                </div>
+                <p class="mt-4">@comm.Content</p>
+                <div class="d-flex justify-content-end">
+                    @if (comm.User.Email == Context.User.Identity.Name)
+                    {
+                        <span style="cursor:pointer;font-size: 25px;" class="ability_post col-md-2 color-blue text-end">…</span>
+                        <div class="div_ability_post d-none position-absolute border_blue menu_width" style="background-color: white;right: 0;transform: translate(-50%, -20px);padding:0;">
+                            @*<a asp-action="EditPost" asp-controller="Post" asp-route-postId="@post.Id" class="p-2 border_bottom_dark m-0 d-block">Редактировать</a>*@
+                            <a asp-action="DeleteComment" asp-controller="Comment" asp-route-commentId="@comm.Id" asp-route-postId="@comm.PostId" class="p-2 border_bottom_dark m-0 d-block">Удалить</a>
+                        </div>
 
-                }
+                    }
+                </div>
             </div>
-    </div>
+        </div>
+    }
 </div>
+@if (Model.Value != null && Model.Value.Length == 5)
+{
+    <p><button class="button form-control-plaintext w-25 m-auto mt-4" id="button_addnewstag">Загрузить ещё</button></p>
 }
+
+<script>
+    $(document).ready(function () {
+
+        let postId = "@Model.Key";
+        let take = 5;
+        let skip = 0;
+        let email = "";
+        $("#button_addnewstag").click(function () {
+            take += 5;
+            skip += 5;
+
+            $.ajax({
+                url: '/CommentsMore/' + postId + '/' + take + '/' + skip,
+                type: 'POST',
+                success: function (data) {
+
+                    $.ajax({
+                        url: '/GetCookieEmail/',
+                        type: 'GET',
+                        success: function (data) {
+                            email += data;
+                        }
+                    })
+
+                    console.log(data);
+                    for (var i = 0; i < data.length; i++) {
+                        var name = data[i].user.firstName + " " + data[i].user.lastName + " " + data[i].user.middleName;
+                        var opt = "";
+                        var img = "";
+
+                        if (data[i].user.email == email) {
+                            opt += `<span style="cursor:pointer;font-size: 25px;" class="ability_post col-md-2 color-blue text-end">…</span><div class="div_ability_post d-none position-absolute border_blue menu_width" style="background-color: white;right: 0;transform: translate(-50%, -20px);padding:0;"><a href="/DeleteComment?commentId=` + data[i].id + `&postId=` + data[i].зostId + `" class="p-2 border_bottom_dark m-0 d-block">Удалить</a></div>`;
+                        }
+
+                        if (data[i].user.image != null) {
+                            img += `<div style="height:40px;width:40px;background-image:url(data:image/jpeg;base64,` + data[i].user.image + `);background-position:center;background-size:cover;"></div>`;
+                        }
+                        else {
+                            img += `<div style="height:40px;width:40px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;"></div>`;
+                        }
+                        $("#comments").append(`<div class="border_blue p-4 m-3 bg-white d-flex justify-content-center"><div class="col-md-10"><div class="d-flex flex-row align-items-center">` + img + `<p style="margin:0 10px;">` + name + `</p><p class="color-blue" style="margin:0 10px;">` + data[i].createdDate + `</p></div><p class="mt-4">` + data[i].content + `</p><div class="d-flex justify-content-end">` + opt + `</div></div></div>`);
+                    }
+                    if (data.length < 5) {
+                        $("#button_addnewstag").addClass('d-none');
+                    }
+                }
+            });
+        });
+    });
+</script>
 

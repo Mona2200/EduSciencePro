@@ -90,4 +90,4 @@
 }
 
 
-@await Html.PartialAsync("~/Views/Comment/CommentsByPost.cshtml", Model.Post.Comments)
+@await Html.PartialAsync("~/Views/Comment/CommentsByPost.cshtml", new KeyValuePair<Guid, CommentViewModel[]>(Model.Post.Id, Model.Post.Comments))

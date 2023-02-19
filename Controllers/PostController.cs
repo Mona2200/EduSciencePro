@@ -252,6 +252,8 @@ namespace EduSciencePro.Controllers
         {
             var postViewModel = await _posts.GetPostViewModelById(postId);
 
+            postViewModel.Comments = postViewModel.Comments.Take(5).ToArray();
+
             ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
             var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name)?.Value;
             User user;
