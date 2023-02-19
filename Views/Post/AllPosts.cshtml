@@ -83,7 +83,7 @@
             <p class="underline mt-3 mb-3" style="margin-left:10px;">Проходящие конференции</p>
             @foreach (var conference in Model.Conferences)
             {
-                <div class="col-xxl-3 col-xl-12" style="margin:10px;">
+                <div class="col-xxl-3 col-xl-12">
                     <a class="form-control-plaintext text-decoration-none text-black" asp-action="LookingConference" asp-controller="Conference" asp-route-conferenceId="@conference.Id">
                         <div style="height:160px;background-image:url(/src/conference_bg.png);background-position:center;background-size:cover;padding:10px">
                             <div class="d-flex flex-column justify-content-between h-100 conferences_modile">

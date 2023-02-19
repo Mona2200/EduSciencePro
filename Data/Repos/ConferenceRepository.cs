@@ -21,9 +21,30 @@ namespace EduSciencePro.Data.Repos
       }
 
       public async Task<Conference[]> GetConferences() => await _db.Conferences.OrderByDescending(p => p.EventDate).Where(p => p.EventDate > DateTime.Now).ToArrayAsync();
-      public async Task<ConferenceViewModel[]> GetConferenceViewModels()
+      public async Task<ConferenceViewModel[]> GetConferenceViewModels(string[] tagNames = null, int take = 5, int skip = 0)
       {
-         var conferences = await GetConferences();
+            List<Conference> conferences = new();
+            if (tagNames != null && tagNames.Length != 0)
+            {
+                foreach (var tagName in tagNames)
+                {
+                    var tag = await _db.Tags.FirstOrDefaultAsync(t => t.Name == tagName);
+                    if (tag != null)
+                    {
+                        var tagPosts = await _db.TagConferences.Where(t => t.TagId == tag.Id).ToListAsync();
+                        foreach (var tagPost in tagPosts)
+                        {
+                            var tagNew = await _db.Conferences.FirstOrDefaultAsync(p => p.Id == tagPost.ConferenceId);
+                            if (tagNew != null && conferences.FirstOrDefault(n => n.Id == tagNew.Id) == null)
+                                conferences.Add(tagNew);
+                        }
+                    }
+                }
+            }
+            else
+                conferences = await _db.Conferences.ToListAsync();
+            conferences = conferences.OrderByDescending(n => n.EventDate).Where(p => p.EventDate > DateTime.Now).Take(take).Skip(skip).ToList();
+
          List<ConferenceViewModel> conferenceViewModels = new List<ConferenceViewModel>();
          foreach (var conference in conferences)
          {
@@ -61,9 +82,12 @@ namespace EduSciencePro.Data.Repos
 
       public async Task<Conference[]> GetConferencesByOrganizationId(Guid organizationid) => await _db.Conferences.OrderByDescending(p => p.EventDate).Where(t => t.OrganizationId == organizationid).ToArrayAsync();
 
-      public async Task<ConferenceViewModel[]> GetConferenceViewModelsByOrganizationId(Guid organizationid)
+      public async Task<ConferenceViewModel[]> GetConferenceViewModelsByOrganizationId(Guid organizationid, int take = 5, int skip = 0)
       {
-         var conferences = await GetConferencesByOrganizationId(organizationid);
+            List<Conference> conferences = new();
+            conferences = await _db.Conferences.OrderByDescending(p => p.EventDate).Where(p => p.OrganizationId == organizationid).ToListAsync();
+            conferences = conferences.Take(take).Skip(skip).ToList();
+
          List<ConferenceViewModel> conferenceViewModels = new List<ConferenceViewModel>();
          foreach (var conference in conferences)
          {
@@ -196,9 +220,9 @@ namespace EduSciencePro.Data.Repos
    public interface IConferenceRepository
    {
       Task<Conference[]> GetConferences();
-      Task<ConferenceViewModel[]> GetConferenceViewModels();
+      Task<ConferenceViewModel[]> GetConferenceViewModels(string[] tagNames = null, int take = 5, int skip = 0);
       Task<Conference[]> GetConferencesByOrganizationId(Guid organizationid);
-      Task<ConferenceViewModel[]> GetConferenceViewModelsByOrganizationId(Guid organizationid);
+      Task<ConferenceViewModel[]> GetConferenceViewModelsByOrganizationId(Guid organizationid, int take = 5, int skip = 0);
       Task<Conference> GetConferenceById(Guid id);
       Task<ConferenceViewModel> GetConferenceViewModelById(Guid id);
       Task Save(AddConferenceViewModel model);

@@ -22,34 +22,69 @@ namespace EduSciencePro.Controllers
 
       [HttpGet]
       [Route("Conferences")]
-      public async Task<IActionResult> Conferences()
+      public async Task<IActionResult> Conferences(string? tagNamesString)
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name)?.Value;
 
-         if (claimEmail != null)
+            List<string> tags = new();
+            string[] tagNames = null;
+            if (tagNamesString != null)
+            {
+                tagNamesString = tagNamesString.Replace('_', '/');
+                tagNames = tagNamesString.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var tagName in tagNames)
+                {
+                    tags.Add(tagName);
+                }
+            }
+
+            if (claimEmail != null)
          {
             var user = await _users.GetUserByEmail(claimEmail);
 
-            var conferences = await _conferences.GetConferenceViewModels();
+            var conferences = await _conferences.GetConferenceViewModels(tagNames, 5, 0);
 
             var organization = await _organizations.GetOrganizationByUserId(user.Id);
 
             if (organization != null)
             {
-               return View(new KeyValuePair<bool, ConferenceViewModel[]>(true, conferences.Where(c => c.Organization.Id != organization.Id).ToArray()));
+               return View(new ConferencesAndIsOrgViewModel() { IsOrg = true, Conferences = conferences.Where(c => c.Organization.Id != organization.Id).ToArray(), Tags = tags });
             }
             else
-               return View(new KeyValuePair<bool, ConferenceViewModel[]>(false, conferences));
+               return View(new ConferencesAndIsOrgViewModel() { IsOrg = false, Conferences = conferences, Tags = tags });
          }
          else
          {
-            var conferences = await _conferences.GetConferenceViewModels();
-            return View(new KeyValuePair<bool, ConferenceViewModel[]>(false, conferences));
+            var conferences = await _conferences.GetConferenceViewModels(tagNames, 5, 0);
+            return View(new ConferencesAndIsOrgViewModel() { IsOrg = false, Conferences = conferences, Tags = tags });
          }
       }
 
-      [HttpGet]
+        [HttpGet]
+        [Route("ConferencesTag/{tags}")]
+        public async Task<IActionResult> ConferencesTag([FromRoute] string? tags)
+        {
+            return RedirectToAction("Conferences", "Conference", new { tagNamesString = tags });
+        }
+
+        [HttpPost]
+        [Route("ConferencesMore/{take}/{skip}/{tags?}")]
+        public async Task<ConferenceViewModel[]> ConferencesMore([FromRoute] int take, [FromRoute] int skip, [FromRoute] string? tags = null)
+        {
+            string[] tagNames = null;
+            if (tags != null)
+            {
+                tags = tags.Replace('_', '/');
+                tagNames = tags.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            }
+
+            var news = await _conferences.GetConferenceViewModels(tagNames, take, skip);
+            return news;
+        }
+
+        [HttpGet]
       [Route("YourConferences")]
       public async Task<IActionResult> YourConferences()
       {
@@ -65,7 +100,26 @@ namespace EduSciencePro.Controllers
          return View(conferenceViewModels);
       }
 
-      [HttpGet]
+        [HttpPost]
+        [Route("YouConferencesMore/{take}/{skip}")]
+        public async Task<ConferenceViewModel[]> YourConferencesMore([FromRoute] int take, [FromRoute] int skip)
+        {
+            ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+            var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+            var user = await _users.GetUserByEmail(claimEmail);
+
+            var organization = await _organizations.GetOrganizationByUserId(user.Id);
+            if (organization == null)
+            {
+                var projects = new ConferenceViewModel[0];
+                return projects;
+            }
+
+            var projectViewModels = await _conferences.GetConferenceViewModelsByOrganizationId(organization.Id, take, skip);
+            return projectViewModels;
+        }
+
+        [HttpGet]
       [Route("AddConference")]
       public async Task<IActionResult> AddConference()
       {

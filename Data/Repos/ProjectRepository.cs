@@ -26,7 +26,7 @@ namespace EduSciencePro.Data.Repos
 
       public async Task<Project[]> GetProjectsByOrganizationId(Guid organizationId) => await _db.Projects.OrderByDescending(p => p.StartDate).Where(p => p.OrganizationId == organizationId).ToArrayAsync();
 
-      public async Task<ProjectViewModel[]> GetProjectViewModels(string[] tagNames = null, int take = 10, int skip = 0)
+      public async Task<ProjectViewModel[]> GetProjectViewModels(string[] tagNames = null, int take = 5, int skip = 0)
       {
             List<Project> projectList = new();
             if (tagNames != null && tagNames.Length != 0)
@@ -101,7 +101,7 @@ namespace EduSciencePro.Data.Repos
          return projectViewModels.ToArray();
       }
 
-      public async Task<ProjectViewModel[]> GetProjectViewModelsByOrganizationId(Guid organizationId, int take = 10, int skip = 0)
+      public async Task<ProjectViewModel[]> GetProjectViewModelsByOrganizationId(Guid organizationId, int take = 5, int skip = 0)
       {
             List<Project> projects = new();
             projects = await _db.Projects.OrderByDescending(p => p.StartDate).Where(p => p.OrganizationId == organizationId).ToListAsync();

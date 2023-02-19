@@ -1,5 +1,5 @@
 ﻿@using EduSciencePro.ViewModels.Response
-@model KeyValuePair<bool, ConferenceViewModel[]>;
+@model ConferencesAndIsOrgViewModel;
 
 @{
     ViewData["Title"] = "Конференции";
@@ -9,7 +9,7 @@
 <div class="border_blue p-4 m-3 bg-white">
     @if (Context.User.Identity.IsAuthenticated)
     {
-        @if (Model.Key)
+        @if (Model.IsOrg)
         {
             <p class="w-100 text-end"><a class="mr-2" asp-action="YourConferences" asp-controller="Conference">Ваши конференции</a></p>
         }
@@ -35,20 +35,51 @@
 
     <h3 class="mb-5 mt-2 underline_h3 text-center">Конференции</h3>
 
-    <div class="row justify-content-center">
-        @if (Model.Value != null && Model.Value.Length != 0)
+    <div class="row justify-content-center" id="projects">
+
+        <div class="col-10 m-auto d-flex justify-content-between mb-3 row">
+
+            <div class="col-9" id="tags_div">
+                @{
+                    if (Model.Tags == null || Model.Tags.Count() == 0)
+                    {
+                        <span class="p-1 border_blue all_tags">Все теги</span>
+                    }
+                    else
+                    {
+                        foreach (var tag in Model.Tags)
+                        {
+                            <span class="p-1 border_blue">@tag</span>
+                        }
+                    }
+                }
+            </div>
+            <div class="col-3">
+                <button class="button form-control-plaintext p-1" data-bs-toggle="collapse" data-bs-target="#tags_form" aria-expanded="false" aria-controls="tags_form">Добавить свой фильтр</button>
+            </div>
+        </div>
+
+        <div class="col-10 collapse m-auto mt-2 mb-3" id="tags_form">
+
+            <label class="text-start label_input w-100 mt-4">Направления</label>
+            <input class="text-center w-75 p-1" placeholder="Направление" id="input_tag" />
+            <p><button class="button form-control-plaintext w-25 mt-4 mr-2 d-inline-block" id="button_addtag">Добавить</button><button class="button form-control-plaintext w-25 mt-4 d-inline-block" id="button_removetag">Очистить</button></p>
+        </div>
+
+        @if (Model.Conferences != null && Model.Conferences.Length != 0)
         {
-            @foreach (var conference in Model.Value)
+            @foreach (var conference in Model.Conferences)
             {
                 <div class="col-md-10 mt-4 mb-4" style="padding:10px;">
                     <h5 class="fw-bold">@conference.Title</h5>
                     <p>Дата проведения: @conference.EventDate</p>
                     <p>Организатор: @conference.Organization.Name</p>
                     <p>
-                        @foreach (var tag in conference.Tags)
-                        {
-                            <span class="bg_blue p-2 m-2 d-inline-block">@tag.Name</span>
-                        }
+                        @if (conference.Tags != null)
+                            @foreach (var tag in conference.Tags)
+                            {
+                                <span class="bg_blue p-2 m-2 d-inline-block">@tag.Name</span>
+                            }
                     </p>
                     <p class="text-center"><a asp-action="LookingConference" asp-controller="Conference" asp-route-conferenceId="@conference.Id">Узнать больше</a></p>
                 </div>
@@ -60,4 +91,54 @@
         }
     </div>
 
+    @if (Model.Conferences != null && Model.Conferences.Length == 5)
+    {
+        <p><button class="button form-control-plaintext w-25 m-auto mt-4" id="button_addnewstag">Загрузить ещё</button></p>
+    }
+
 </div>
+
+<script>
+    $(document).ready(function () {
+        let take = 5;
+        let skip = 0;
+        var tags = "";
+        $("#tags_div").children().each(function () {
+            if (!$(this).hasClass("all_tags")) {
+                tags += $(this).text() + "_";
+            }
+        });
+        $("#button_addtag").click(function () {
+            tags += $("#input_tag").val() + "_";
+            window.location.href = '/ConferencesTag/' + tags;
+        });
+        $("#button_removetag").click(function () {
+            window.location.href = '/Conferences';
+        });
+        $("#button_addnewstag").click(function () {
+            take += 5;
+            skip += 5;
+
+            $.ajax({
+                url: '/ConferencesMore/' + take + '/' + skip + '/' + tags,
+                type: 'POST',
+                success: function (data) {
+                    var tags = "";
+
+                    for (var i = 0; i < data.length; i++) {
+
+                        if (data[i].tags != null) {
+                            for (var j = 0; j < data[i].tags.length; j++) {
+                                tags += `<span class="bg_blue p-2 m-2">` + data[i].tags[j].name + `</span>`;
+                            }
+                        }
+                        $("#projects").append(`<div class="col-md-10 mt-4 mb-4" style="padding:10px;"><h5 class="fw-bold">` + data[i].title + `</h5><p>Дата проведения: ` + data[i].eventDate + `</p><p>Организатор: ` + data[i].organization.name + `</p><p>` + tags + `</p><p class="text-center"><a href="/LookingConference?conferenceId=` + data[i].id + `">Узнать больше</a></p></div>`);
+                    }
+                    if (data.length < 5) {
+                        $("#button_addnewstag").addClass('d-none');
+                    }
+                }
+            });
+        });
+    });
+</script>
