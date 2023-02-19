@@ -1,5 +1,5 @@
 ﻿@using EduSciencePro.ViewModels.Response
-@model List<KeyValuePair<UserViewModel, ResumeViewModel>>;
+@model ResumeCollectionViewModel;
 
 @{
     ViewData["Title"] = "Сборник резюме";
@@ -10,10 +10,10 @@
 
     <h3 class="mb-5 mt-2 underline_h3 text-center">Сборник резюме</h3>
 
-    <div class="row justify-content-center">
-        @if (Model != null && Model.Count != 0)
+    <div class="row justify-content-center" id="projects">
+        @if (Model.Resumes != null && Model.Resumes.Count != 0)
         {
-            @foreach (var resume in Model)
+            @foreach (var resume in Model.Resumes)
             {
                 <div class="col-md-10 mt-4 mb-4 row" style="padding:10px;">
                     <div class="col-md-4 d-flex justify-content-center">
@@ -28,7 +28,7 @@
                     </div>
                     <div class="col-md-8">
                         <h4 class="fw-bold text-decoration-underline">@resume.Key.FullName</h4>
-                        @if (@resume.Value.Education != null)
+                        @if (resume.Value.Education != null)
                         {
                             <p><span class="fw-bold">Образование: </span>@resume.Value.Education.Name</p>
                         }
@@ -43,7 +43,7 @@
                         @if (@resume.Value.Organization != null)
                         {
                             <p><span class="fw-bold">Организация: </span>@resume.Value.Organization.Name</p>
-                        }                        
+                        }
                     </div>
                     <p class="d-flex justify-content-center">
                         @foreach (var skill in resume.Value.Skills)
@@ -60,5 +60,66 @@
             <p class="text-center col-md-10">Проектов нет. Возвращайтесь позже.</p>
         }
     </div>
-
+    @if (Model.Resumes != null && Model.Resumes.Count() == 5)
+    {
+        <p><button class="button form-control-plaintext w-25 m-auto mt-4" id="button_addnewstag">Загрузить ещё</button></p>
+    }
 </div>
+
+<script>
+    $(document).ready(function () {
+        let take = 5;
+        let skip = 0;
+        $("#button_addnewstag").click(function () {
+            take += 5;
+            skip += 5;
+
+            $.ajax({
+                url: '/ResumeCollectionMore/' + take + '/' + skip,
+                type: 'POST',
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++) {
+
+                        var skills = "";
+                        var opt = "";
+                        var img = "";
+
+                        if (data[i].key.image != null && data[i].key.image.length != 0) {
+                            img += `<div class="d-block" style="height:100px;width:100px;background-image:url(data:image/jpeg;base64,` + data[i].key.image + `);background-position:center;background-size:cover;"></div>`;
+                        }
+                        else {
+                            img += `<div class="d-block" style="height:100px;width:100px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;"></div>`;
+                        }
+
+                        if (data[i].value.education != null) {
+                            opt += `<p><span class="fw-bold">Образование: </span>` + data[i].value.education.name + `</p>`;
+                        }
+
+                        if (data[i].value.specialization != null) {
+                            opt += `<p><span class="fw-bold">Специализация: </span>` + data[i].value.specialization + `</p>`;
+                        }
+
+                        if (data[i].value.placeWork != null) {
+                            opt += `<p><span class="fw-bold">Место работы: </span>` + data[i].value.placeWork.name + `</p>`;
+                        }
+
+                        if (data[i].value.organization != null) {
+                            opt += `<p><span class="fw-bold">Организация: </span>` + data[i].value.organization.name + `</p>`;
+                        }
+
+
+                        if (data[i].skills != null) {
+                            for (var j = 0; j < data[i].value.skills.length; j++) {
+                                skills += `<span class="bg_blue p-2 m-2">` + data[i].value.skills[j].name + `</span>`;
+                            }
+                        }
+                        $("#projects").append(`<div class="col-md-10 mt-4 mb-4 row" style="padding:10px;"><div class="col-md-4 d-flex justify-content-center">` + img + `</div><div class="col-md-8"><h4 class="fw-bold text-decoration-underline">` + data[i].key.fullName + `</h4>` + opt + `</div><p class="d-flex justify-content-center">` + skills + `</p><p class="text-center"><a href="/GetUser?userId=` + data[i].key.id + `">Перейти на страницу</a></p></div>`);
+                    }
+                    if (data.length < 5) {
+                        $("#button_addnewstag").addClass('d-none');
+                    }
+                }
+            });
+        });
+    });
+</script>

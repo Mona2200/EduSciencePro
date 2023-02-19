@@ -21,9 +21,30 @@ namespace EduSciencePro.Data.Repos
       }
 
       public async Task<Cooperation[]> GetCooperations() => await _db.Cooperations.OrderByDescending(p => p.EndDate).Where(p => p.EndDate > DateTime.Now).ToArrayAsync();
-      public async Task<CooperationViewModel[]> GetCooperationViewModels()
+      public async Task<CooperationViewModel[]> GetCooperationViewModels(string[] tagNames = null, int take = 5, int skip = 0)
       {
-         var cooperations = await GetCooperations();
+            List<Cooperation> cooperations = new();
+            if (tagNames != null && tagNames.Length != 0)
+            {
+                foreach (var tagName in tagNames)
+                {
+                    var tag = await _db.Skills.FirstOrDefaultAsync(t => t.Name == tagName);
+                    if (tag != null)
+                    {
+                        var tagPosts = await _db.SkillCooperations.Where(t => t.SkillId == tag.Id).ToListAsync();
+                        foreach (var tagPost in tagPosts)
+                        {
+                            var tagNew = await _db.Cooperations.FirstOrDefaultAsync(p => p.Id == tagPost.CooperationId);
+                            if (tagNew != null && cooperations.FirstOrDefault(n => n.Id == tagNew.Id) == null)
+                                cooperations.Add(tagNew);
+                        }
+                    }
+                }
+            }
+            else
+                cooperations = await _db.Cooperations.ToListAsync();
+            cooperations = cooperations.OrderByDescending(n => n.EndDate).Where(p => p.EndDate > DateTime.Now).Take(take).Skip(skip).ToList();
+
          List<CooperationViewModel> cooperationViewModels = new List<CooperationViewModel>();
          foreach (var cooperation in cooperations)
          {
@@ -61,9 +82,12 @@ namespace EduSciencePro.Data.Repos
 
       public async Task<Cooperation[]> GetCooperationsByOrganizationId(Guid organizationid) => await _db.Cooperations.OrderByDescending(p => p.EndDate).Where(t => t.OrganizationId == organizationid).ToArrayAsync();
 
-      public async Task<CooperationViewModel[]> GetCooperationViewModelsByOrganizationId(Guid organizationid)
+      public async Task<CooperationViewModel[]> GetCooperationViewModelsByOrganizationId(Guid organizationid, int take = 5, int skip = 0)
       {
-         var cooperations = await GetCooperationsByOrganizationId(organizationid);
+            List<Cooperation> cooperations = new();
+            cooperations = await _db.Cooperations.OrderByDescending(p => p.EndDate).Where(p => p.OrganizationId == organizationid).ToListAsync();
+            cooperations = cooperations.Take(take).Skip(skip).ToList();
+
          List<CooperationViewModel> cooperationViewModels = new List<CooperationViewModel>();
          foreach (var cooperation in cooperations)
          {
@@ -196,9 +220,9 @@ namespace EduSciencePro.Data.Repos
    public interface ICooperationRepository
    {
       Task<Cooperation[]> GetCooperations();
-      Task<CooperationViewModel[]> GetCooperationViewModels();
+      Task<CooperationViewModel[]> GetCooperationViewModels(string[] tagNames = null, int take = 5, int skip = 0);
       Task<Cooperation[]> GetCooperationsByOrganizationId(Guid organizationid);
-      Task<CooperationViewModel[]> GetCooperationViewModelsByOrganizationId(Guid organizationid);
+      Task<CooperationViewModel[]> GetCooperationViewModelsByOrganizationId(Guid organizationid, int take = 5, int skip = 0);
       Task<Cooperation> GetCooperationById(Guid id);
       Task<CooperationViewModel> GetCooperationViewModelById(Guid id);
       Task Save(AddCooperationViewModel model);

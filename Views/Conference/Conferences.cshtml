@@ -123,10 +123,10 @@
                 url: '/ConferencesMore/' + take + '/' + skip + '/' + tags,
                 type: 'POST',
                 success: function (data) {
-                    var tags = "";
+                    
 
                     for (var i = 0; i < data.length; i++) {
-
+                        var tags = "";
                         if (data[i].tags != null) {
                             for (var j = 0; j < data[i].tags.length; j++) {
                                 tags += `<span class="bg_blue p-2 m-2">` + data[i].tags[j].name + `</span>`;

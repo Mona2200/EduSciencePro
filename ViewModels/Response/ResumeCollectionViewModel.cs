@@ -2,7 +2,6 @@
 {
     public class ResumeCollectionViewModel
     {
-    public UserViewModel User { get; set; }
-    public ResumeViewModel Resume { get; set; }
+    public List<KeyValuePair<UserViewModel, ResumeViewModel>> Resumes{ get; set; }
     }
 }

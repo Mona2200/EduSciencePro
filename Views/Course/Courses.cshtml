@@ -115,11 +115,12 @@
                 url: '/CoursesMore/' + take + '/' + skip + '/' + tags,
                 type: 'POST',
                 success: function (data) {
-                    var skills = "";
-                    var programms = "";
-                    var name = data[i].user.firstName + " " + data[i].user.lastName + " " + data[i].user.middleName;
+                    
 
                     for (var i = 0; i < data.length; i++) {
+                       var skills = "";
+                    var programms = "";
+                    var name = data[i].user.firstName + " " + data[i].user.lastName + " " + data[i].user.middleName;
 
                         if (data[i].skills != null) {
                             for (var j = 0; j < data[i].skills.length; j++) {

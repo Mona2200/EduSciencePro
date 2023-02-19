@@ -119,10 +119,10 @@
                 url: '/InternshipsMore/' + take + '/' + skip + '/' + tags,
                 type: 'POST',
                 success: function (data) {
-                    var skills = "";
+                    
 
                     for (var i = 0; i < data.length; i++) {
-
+                        var skills = "";
                         if (data[i].skills != null) {
                             for (var j = 0; j < data[i].skills.length; j++) {
                                 skills += `<span class="bg_blue p-2 m-2">` + data[i].skills[j].name + `</span>`;

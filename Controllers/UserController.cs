@@ -585,6 +585,13 @@ namespace EduSciencePro.Controllers
         }
 
         [HttpGet]
+        [Route("ForEconomy")]
+        public async Task<IActionResult> ForEconomy()
+        {
+            return View("~/Views/Shared/ForEconomy.cshtml");
+        }
+
+        [HttpGet]
         [Route("GetCookieEmail")]
         public async Task<string> GetCookieEmail()
         {
@@ -601,7 +608,7 @@ namespace EduSciencePro.Controllers
             var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
             var user = await _users.GetUserByEmail(claimEmail);
 
-            var ResumeUsers = await _users.GetUserViewModels();
+            var ResumeUsers = await _users.GetUserViewModels(5, 0);
             List<KeyValuePair<UserViewModel, ResumeViewModel>> resumes = new List<KeyValuePair<UserViewModel, ResumeViewModel>>();
             foreach (var ResumeUser in ResumeUsers)
             {
@@ -612,7 +619,29 @@ namespace EduSciencePro.Controllers
                         resumes.Add(new KeyValuePair<UserViewModel, ResumeViewModel>(ResumeUser, resume));
                 }
             }
-            return View(resumes);
+            return View(new ResumeCollectionViewModel() { Resumes = resumes});
+        }
+
+        [HttpPost]
+        [Route("ResumeCollectionMore/{take}/{skip}/{tags?}")]
+        public async Task<List<KeyValuePair<UserViewModel, ResumeViewModel>>> ResumeCollectionMore([FromRoute] int take, [FromRoute] int skip)
+        {
+            ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+            var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+            var user = await _users.GetUserByEmail(claimEmail);
+
+            var ResumeUsers = await _users.GetUserViewModels(take, skip);
+            List<KeyValuePair<UserViewModel, ResumeViewModel>> resumes = new List<KeyValuePair<UserViewModel, ResumeViewModel>>();
+            foreach (var ResumeUser in ResumeUsers)
+            {
+                if (ResumeUser.Id != user.Id)
+                {
+                    var resume = await _resumes.GetResumeViewModelByUserId(ResumeUser.Id);
+                    if (resume.Education != null || resume.PlaceWork != null || resume.Organization != null || resume.Specialization != null)
+                        resumes.Add(new KeyValuePair<UserViewModel, ResumeViewModel>(ResumeUser, resume));
+                }
+            }
+            return resumes;
         }
 
         private async Task<EditUserViewModel> ValidEditUser(User user, EditUserViewModel model)

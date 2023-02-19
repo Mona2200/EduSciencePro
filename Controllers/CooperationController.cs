@@ -21,25 +21,60 @@ namespace EduSciencePro.Controllers
 
       [HttpGet]
       [Route("Cooperations")]
-      public async Task<IActionResult> Cooperations()
+      public async Task<IActionResult> Cooperations(string? tagNamesString)
       {
          ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
          var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
          var user = await _users.GetUserByEmail(claimEmail);
 
-         var cooperations = await _cooperations.GetCooperationViewModels();
+            List<string> tags = new();
+            string[] tagNames = null;
+            if (tagNamesString != null)
+            {
+                tagNamesString = tagNamesString.Replace('_', '/');
+                tagNames = tagNamesString.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var tagName in tagNames)
+                {
+                    tags.Add(tagName);
+                }
+            }
+
+            var cooperations = await _cooperations.GetCooperationViewModels(tagNames, 5, 0);
 
          var organization = await _organizations.GetOrganizationByUserId(user.Id);
 
          if (organization != null)
          {
-            return View(new KeyValuePair<bool, CooperationViewModel[]>(true, cooperations.Where(c => c.Organization.Id != organization.Id).ToArray()));
+            return View(new CooperationsAndTagsViewModel() { IsOrg = true, Cooperations = cooperations.Where(c => c.Organization.Id != organization.Id).ToArray(), Tags = tags });
          }
          else
-            return View(new KeyValuePair<bool, CooperationViewModel[]>(false, cooperations));
+            return View(new CooperationsAndTagsViewModel() { IsOrg = false, Cooperations = cooperations, Tags = tags });
       }
 
-      [HttpGet]
+        [HttpGet]
+        [Route("CooperationsTag/{tags}")]
+        public async Task<IActionResult> CooperationsTag([FromRoute] string? tags)
+        {
+            return RedirectToAction("Cooperations", "Cooperation", new { tagNamesString = tags });
+        }
+
+        [HttpPost]
+        [Route("CooperationsMore/{take}/{skip}/{tags?}")]
+        public async Task<CooperationViewModel[]> CooperationsMore([FromRoute] int take, [FromRoute] int skip, [FromRoute] string? tags = null)
+        {
+            string[] tagNames = null;
+            if (tags != null)
+            {
+                tags = tags.Replace('_', '/');
+                tagNames = tags.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            }
+
+            var news = await _cooperations.GetCooperationViewModels(tagNames, take, skip);
+            return news;
+        }
+
+        [HttpGet]
       [Route("YourCooperations")]
       public async Task<IActionResult> YourCooperations()
       {
@@ -51,11 +86,30 @@ namespace EduSciencePro.Controllers
          if (organization == null)
             return View(null);
 
-         var cooperationViewModels = await _cooperations.GetCooperationViewModelsByOrganizationId(organization.Id);
+         var cooperationViewModels = await _cooperations.GetCooperationViewModelsByOrganizationId(organization.Id, 5, 0);
          return View(cooperationViewModels);
       }
 
-      [HttpGet]
+        [HttpPost]
+        [Route("YourCooperationsMore/{take}/{skip}")]
+        public async Task<CooperationViewModel[]> YourCooperationsMore([FromRoute] int take, [FromRoute] int skip)
+        {
+            ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+            var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+            var user = await _users.GetUserByEmail(claimEmail);
+
+            var organization = await _organizations.GetOrganizationByUserId(user.Id);
+            if (organization == null)
+            {
+                var projects = new CooperationViewModel[0];
+                return projects;
+            }
+
+            var projectViewModels = await _cooperations.GetCooperationViewModelsByOrganizationId(organization.Id, take, skip);
+            return projectViewModels;
+        }
+
+        [HttpGet]
       [Route("AddCooperation")]
       public async Task<IActionResult> AddCooperation()
       {

@@ -120,15 +120,15 @@
                 url: '/ProjectsMore/' + take + '/' + skip + '/' + tags,
                 type: 'POST',
                 success: function (data) {
-                   var skills = "";
-
                     for (var i = 0; i < data.length; i++) {
 
-                       if (data[i].skills != null) {
-                          for (var j = 0; j < data[i].skills.length; j++) {
+                        var skills = "";
+
+                        if (data[i].skills != null) {
+                            for (var j = 0; j < data[i].skills.length; j++) {
                                 skills += `<span class="bg_blue p-2 m-2">` + data[i].skills[j].name + `</span>`;
-                          }
-                       }
+                            }
+                        }
                         $("#projects").append(`<div class="col-md-10 mt-4 mb-4" style="padding:10px;"><h5 class="fw-bold">` + data[i].title + `</h5><p>Дата начала и окончания: ` + data[i].startDate + ` - ` + data[i].endDate + `</p><p>Финансирующая организация: ` + data[i].organization.name + `</p><p>` + skills + `</p><p class="text-center"><a href="/LookingProject?projectId=` + data[i].id + `">Узнать больше</a></p></div>`);
                     }
                     if (data.length < 5) {

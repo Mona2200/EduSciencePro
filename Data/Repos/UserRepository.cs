@@ -43,10 +43,11 @@ namespace EduSciencePro.Data.Repos
          return await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
       }
 
-      public async Task<UserViewModel[]> GetUserViewModels()
+      public async Task<UserViewModel[]> GetUserViewModels(int take = 5, int skip = 0)
       {
-         var users = await _db.Users.ToArrayAsync();
-         var userViewModels = new UserViewModel[users.Length];
+         var users = await _db.Users.ToListAsync();
+         users.Take(take).Skip(skip);
+         var userViewModels = new UserViewModel[users.Count()];
          int i = 0;
          foreach (var user in users)
          {
@@ -380,7 +381,7 @@ namespace EduSciencePro.Data.Repos
       Task<User[]> GetUsers();
       Task<User> GetUserById(Guid id);
       Task<User> GetUserByEmail(string email);
-      Task<UserViewModel[]> GetUserViewModels();
+      Task<UserViewModel[]> GetUserViewModels(int take = 5, int skip = 0);
       Task<UserViewModel[]> ShortInfoUserViewModels();
       Task<UserViewModel> GetUserViewModelById(Guid id);
       Task<UserViewModel> GetUserViewModelByEmail(string email);
