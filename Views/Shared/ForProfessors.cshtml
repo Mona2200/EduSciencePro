@@ -1,0 +1,99 @@
+﻿@{
+    ViewData["Title"] = "Профессорско-преподавательскому составу сферы высшего образования";
+    Layout = "_Layout";
+}
+
+<div class="border_blue p-4 m-3 bg-white">
+    <div class="container">
+        <h3 class="underline text-uppercase text-start underline mt-5">Научно-Практические конференции</h3>
+        <div class="row d-flex justify-content-between mt-5 mb-5">
+
+            <div class="col-xl-6 col-12 align-self-center mt-5">
+                <p>На научно-технических конференциях обсуждают теоретические основы и подходы к решению научных вопросов и проблем.</p>
+                <p>Они также сосредоточены на обсуждении и обмене опытом по решению практических проблем.</p>
+                <p>Здесь собраны самые актуальные мероприятия разных направлений.</p>
+                <div class="col-12 text-center">
+                    <a class="m-2" asp-action="Conferences" asp-controller="Conference">Все конференции</a>
+                    <span>
+                        <svg width="60" height="8" viewBox="0 0 60 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0.64645 3.64645C0.451187 3.84171 0.451187 4.15829 0.64645 4.35355L3.82843 7.53553C4.02369 7.7308 4.34027 7.7308 4.53554 7.53553C4.7308 7.34027 4.7308 7.02369 4.53554 6.82843L1.70711 4L4.53554 1.17157C4.7308 0.976311 4.7308 0.659728 4.53554 0.464466C4.34027 0.269204 4.02369 0.269204 3.82843 0.464466L0.64645 3.64645ZM60 3.5L1 3.5V4.5L60 4.5V3.5Z" fill="#00109F" />
+                        </svg>
+                    </span>
+                </div>
+
+            </div>
+
+            <div class="col-xl-4 col-12 mt-5 text-center">
+                <img src="~/src/image18.png" />
+            </div>
+
+        </div>
+
+        <h3 class="underline text-uppercase text-end underline_end mt-5">Научно-Исследовательская деятельность - проекты</h3>
+        <div class="row d-flex justify-content-between mt-5 mb-5">
+
+            <img src="~/src/img20.png" class="col-xl-7 col-12 mt-5 align-self-center" />
+
+            <div class="col-xl-4 col-12 align-self-center align-self-center mt-5">
+                <p>Научные исследования проводятся для разработки новых научных методов.</p>
+                <p>Научная работа обеспечивает теоретическую основу для новых технологий и изобретений.</p>
+            </div>
+        </div>
+
+        <h3 class="underline text-uppercase text-start underline mt-5">Учебные материалы</h3>
+        <div class="row d-flex justify-content-between mt-5 mb-5">
+
+            <div class="col-xl-6 col-12 align-self-center align-self-center">
+                <p>Каждый участник научного сообщества может публиковать учебные материалы, способствуя созданию целой научной библиотеки.</p>
+                <p>Электронная библиотека может обеспечить доступ к широкому спектру ресурсов, включая электронные книги, журналы, газеты, журфаки и другие цифровые материалы.</p>
+            </div>
+
+            <div class="col-xl-6 col-12 text-center align-self-center">
+                <img height="250px" width="297px" src="~/src/library1.png" />
+            </div>
+
+
+        </div>
+
+        <h3 class="underline text-uppercase text-end underline_end mt-5">Актуальные новости</h3>
+        <div class="row d-flex justify-content-between mt-5 mb-5">
+
+            <div class="col-xl-4 col-12 mt-5 text-center align-self-center">
+                <span>
+                    <svg width="52" height="8" viewBox="0 0 52 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M51.3536 4.35356C51.5488 4.1583 51.5488 3.84171 51.3536 3.64645L48.1716 0.46447C47.9763 0.269208 47.6597 0.269208 47.4645 0.46447C47.2692 0.659732 47.2692 0.976315 47.4645 1.17158L50.2929 4L47.4645 6.82843C47.2692 7.02369 47.2692 7.34028 47.4645 7.53554C47.6597 7.7308 47.9763 7.7308 48.1716 7.53554L51.3536 4.35356ZM-4.37114e-08 4.5L51 4.5L51 3.5L4.37114e-08 3.5L-4.37114e-08 4.5Z" fill="#00109F" />
+                    </svg>
+                </span>
+                <a class="m-2" asp-action="NewsPosts" asp-controller="Post">Все новости</a>
+            </div>
+
+            <div class="col-xl-8 col-12 align-self-center align-self-center mt-5">
+                <p>Здесь собраны самые свежие новости любых категорий, чтобы вы всегда могли следить за обновлениями и быть в курсе событий.</p>
+                <p>Вы можете сами опубликовать новость. Для этого на платформе установлен удобный редактор, с помощью которого можно не только сделать содержательную публикацию но и красиво её оформить.</p>
+                <p>Вашу новость смогут лайкать и комментировать, а все ваши публикации будут отображаться на вашей главной странице, тем самым формируя ваш собственный блог.</p>
+            </div>
+        </div>
+
+        <h3 class="underline text-uppercase text-start underline mt-5">Актуальные обсуждения</h3>
+        <div class="row d-flex justify-content-between mt-5 mb-5">
+
+            <div class="col-xl-6 col-12 align-self-center mt-5 align-self-center">
+                <p>Возможность задавать вопросы и делиться своими размышлениями в комментариях.</p>
+                <p>Платформа предоставляет все инструменты для того, чтобы начать вести свой блог и активно участвовать в обсуждении волнующих вопросов.</p>
+                <p>Здесь вы сможете найти ответы на любые ваши вопросы!</p>
+            </div>
+
+            <div class="col-xl-4 col-12 mt-5 text-center align-self-center">
+                <a class="m-2" asp-action="DiscussionPosts" asp-controller="Post">Все обсуждения</a>
+                <span>
+                    <svg width="60" height="8" viewBox="0 0 60 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0.64645 3.64645C0.451187 3.84171 0.451187 4.15829 0.64645 4.35355L3.82843 7.53553C4.02369 7.7308 4.34027 7.7308 4.53554 7.53553C4.7308 7.34027 4.7308 7.02369 4.53554 6.82843L1.70711 4L4.53554 1.17157C4.7308 0.976311 4.7308 0.659728 4.53554 0.464466C4.34027 0.269204 4.02369 0.269204 3.82843 0.464466L0.64645 3.64645ZM60 3.5L1 3.5V4.5L60 4.5V3.5Z" fill="#00109F" />
+                    </svg>
+                </span>
+            </div>
+
+        </div>
+        <p class="text-center mt-5">Станьте частью нашего сообщества прямо сейчас!</p>
+        <p><a class="button form-control-plaintext text-decoration-none text-black text-center m-auto w-25 mt-4" asp-controller="User" asp-action="Register">Зарегистрироваться</a></p>
+    </div>
+</div>
