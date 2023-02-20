@@ -1,0 +1,92 @@
+﻿@using EduSciencePro.ViewModels.Response
+@model CommentViewModel[]
+
+@{
+    ViewData["Title"] = "Комментарии";
+    Layout = "_Layout";
+}
+
+<div class="border_blue p-4 m-3 bg-white">
+    <div class="container">
+        <h3 class="mb-5 mt-2 underline_h3 text-center">Комментарии</h3>
+
+        <div class="row justify-content-center" id="comments">
+
+            @if (Model != null && Model.Length != 0)
+            {
+                @foreach (var comment in Model)
+                {
+                    <div class="border_blue p-4 m-3 bg-white d-flex justify-content-center mt-5">
+                        <div class="col-md-10">
+                            <div class="d-flex flex-row align-items-center">
+                                @if (comment.User.Image != null)
+                                {
+                                    <div style="height:40px;width:40px;background-image:url(data:image/jpeg;base64,@(Convert.ToBase64String(comment.User.Image)));background-position:center;background-size:cover;"></div>
+                                }
+                                else
+                                {
+                                    <div style="height:40px;width:40px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;"></div>
+                                }
+                                @{
+                                    var fullName = $"{comment.User.FirstName} {comment.User.LastName} {comment.User.MiddleName}";
+                                }
+                                <p style="margin:0 10px;">@fullName</p>
+                                <p class="color-blue" style="margin:0 10px;">@comment.CreatedDate</p>
+                            </div>
+                            <p class="mt-4">@comment.Content</p>
+
+                        </div>
+                    </div>
+                    <p class="text-center"><a asp-action="LookingPost" asp-controller="Post" asp-route-postId="@comment.PostId">Перейти к публикации</a></p>
+                }
+            }
+            else
+            {
+                <p class="text-center col-md-10">Комментариев нет.</p>
+            }
+        </div>
+
+        @if (Model != null && Model.Length == 5)
+        {
+            <p><button class="button form-control-plaintext w-25 m-auto mt-4" id="button_addnewstag">Загрузить ещё</button></p>
+        }
+    </div>
+
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        let take = 5;
+        let skip = 0;
+        $("#button_addnewstag").click(function () {
+            take += 5;
+            skip += 5;
+
+            $.ajax({
+                url: '/CommentsByUserMore/' + take + '/' + skip,
+                type: 'POST',
+                success: function (data) {
+                   console.log(data);
+
+                    for (var i = 0; i < data.length; i++) {
+                        var name = data[i].user.firstName + " " + data[i].user.lastName + " " + data[i].user.middleName;
+                        var img = "";
+
+                        if (data[i].user.image != null) {
+                            img += `<div style="height:40px;width:40px;background-image:url(data:image/jpeg;base64,` + data[i].user.image + `);background-position:center;background-size:cover;"></div>`;
+                        }
+                        else {
+                           img += `<div style="height:40px;width:40px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;" > </div>`;
+                        }
+
+                        $("#comments").append(`<div class="border_blue p-4 m-3 bg-white d-flex justify-content-center mt-5"><div class="col-md-10"><div class="d-flex flex-row align-items-center">` + img + `<p style="margin:0 10px;">` + name + `</p><p class="color-blue" style="margin:0 10px;">` + data[i].createdDate + `</p></div><p class="mt-4">` + data[i].content + `</p></div></div><p class="text-center"><a href="/LookingPost?postId=` + data[i].postId + `">Перейти к публикации</a></p>`);
+                    }
+                    if (data.length < 5) {
+                        $("#button_addnewstag").addClass('d-none');
+                    }
+                }
+            });
+        });
+    });
+</script>

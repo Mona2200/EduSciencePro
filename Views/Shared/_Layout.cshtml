@@ -46,8 +46,7 @@
 
                                     <div class="position-absolute border_blue menu_width d-none" id="desktop_menu">
                                         <a asp-controller="User" asp-action="Main" class="p-2 border_bottom_dark m-0 d-block form-control-plaintext text-decoration-none">Мой профиль</a>
-                                        <a class="p-2 border_bottom_dark m-0 form-control-plaintext text-decoration-none">Комментарии</a>
-                                        <a class="p-2 border_bottom_dark m-0 form-control-plaintext text-decoration-none">Подписки</a>
+                                        <a class="p-2 border_bottom_dark m-0 form-control-plaintext text-decoration-none" asp-action="Comments" asp-controller="Comment">Комментарии</a>
                                         <a class="p-2 border_bottom_dark m-0 form-control-plaintext text-decoration-none" asp-action="Messages" asp-controller="Message">Сообщения</a>
                                         <a class="form-control-plaintext text-decoration-none" asp-controller="User" asp-action="Logout" class="p-2 border_bottom_dark m-0 d-block">Выход</a>
                                     </div>
@@ -133,12 +132,12 @@
                     }
                     else
                     {
-                        <p class="m-4 text-uppercase small"><a>Школьникам</a></p>
-                        <p class="m-4 text-uppercase small"><a>Студентам, Аспирантам или Соискателям</a></p>
-                        <p class="m-4 text-uppercase small"><a>Представителям сферы среднего профессионального образования</a></p>
-                        <p class="m-4 text-uppercase small"><a>Профессорско-преподавательскому составу сферы высшего образования</a></p>
-                        <p class="m-4 text-uppercase small"><a>Научным сотрудникам</a></p>
-                        <p class="m-4 text-uppercase small"><a>Представителям реального сектора экономики</a></p>
+                        <p class="m-4 text-uppercase small types_user"><a class="form-control-plaintext text-decoration-none" asp-action="ForSchoolchildren" asp-controller="User">Школьникам</a></p>
+                        <p class="m-4 text-uppercase small types_user"><a class="form-control-plaintext text-decoration-none" asp-action="ForStudents" asp-controller="User">Студентам, Аспирантам или Соискателям</a></p>
+                        <p class="m-4 text-uppercase small types_user"><a class="form-control-plaintext text-decoration-none" asp-action="ForMiddleEdu" asp-controller="User">Представителям сферы среднего профессионального образования</a></p>
+                        <p class="m-4 text-uppercase small types_user"><a class="form-control-plaintext text-decoration-none" asp-action="ForProfessors" asp-controller="User">Профессорско-преподавательскому составу сферы высшего образования</a></p>
+                        <p class="m-4 text-uppercase small types_user"><a class="form-control-plaintext text-decoration-none" asp-action="ForSciencer" asp-controller="User">Научным сотрудникам</a></p>
+                        <p class="m-4 text-uppercase small types_user"><a class="form-control-plaintext text-decoration-none" asp-action="ForEconomy" asp-controller="User">Представителям реального сектора экономики</a></p>
                     }
                     <div>
                         <ul class="navbar-nav align-items-center">
@@ -157,8 +156,8 @@
                                     {
 
                                         <a asp-controller="User" asp-action="Main" class="p-2 m-0 d-block form-control-plaintext text-decoration-none">Мой профиль</a>
-                                        <a class="form-control-plaintext text-decoration-none p-2 m-0 d-block">Комментарии</a>
-                                        <a class="form-control-plaintext text-decoration-none p-2 m-0 d-block">Подписки</a>
+                                        <a class="p-2 border_bottom_dark m-0 form-control-plaintext text-decoration-none" asp-action="Comments" asp-controller="Comment">Комментарии</a>
+                                        //<a class="form-control-plaintext text-decoration-none p-2 m-0 d-block">Подписки</a>
                                         <a class="form-control-plaintext text-decoration-none p-2 m-0 d-block" asp-action="Messages" asp-controller="Message">Сообщения</a>
                                         <a class="form-control-plaintext text-decoration-none p-2 m-0 d-block" asp-controller="User" asp-action="Logout">Выход</a>
                                     }
