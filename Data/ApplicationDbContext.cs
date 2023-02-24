@@ -7,92 +7,96 @@ using System.Net;
 
 namespace EduSciencePro.Data
 {
-   public class ApplicationDbContext : DbContext
-   {
-      public DbSet<User> Users { get; set; }
-      public DbSet<Role> Roles { get; set; }
-      public DbSet<Education> Educations { get; set; }
-      public DbSet<Link> Links { get; set; }
-      public DbSet<Organization> Organizations { get; set; }
-      public DbSet<PlaceWork> PlaceWorks { get; set; }
-      public DbSet<Resume> Resumes { get; set; }
-      public DbSet<Skill> Skills { get; set; }
-      public DbSet<TypeModel> TypeModels { get; set; }
-      public DbSet<TypeUser> TypeUsers { get; set; }
-      public DbSet<ResumeSkill> ResumeSkills { get; set; }
-      public DbSet<UserOrganization> UserOrganizations { get; set; }
+    public class ApplicationDbContext : DbContext
+    {
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<Education> Educations { get; set; }
+        public DbSet<Link> Links { get; set; }
+        public DbSet<Organization> Organizations { get; set; }
+        public DbSet<PlaceWork> PlaceWorks { get; set; }
+        public DbSet<Resume> Resumes { get; set; }
+        public DbSet<Skill> Skills { get; set; }
+        public DbSet<TypeModel> TypeModels { get; set; }
+        public DbSet<TypeUser> TypeUsers { get; set; }
+        public DbSet<ResumeSkill> ResumeSkills { get; set; }
+        public DbSet<UserOrganization> UserOrganizations { get; set; }
 
-      public DbSet<ConfirmationCode> Codes { get; set; }
+        public DbSet<ConfirmationCode> Codes { get; set; }
 
-      public DbSet<Post> Posts { get; set; }
-      public DbSet<Tag> Tags { get; set; }
+        public DbSet<Post> Posts { get; set; }
+        public DbSet<Tag> Tags { get; set; }
 
-      public DbSet<TagPost> TagPosts { get; set; }
-      public DbSet<LikePost> LikePosts { get; set; }
+        public DbSet<TagPost> TagPosts { get; set; }
+        public DbSet<LikePost> LikePosts { get; set; }
 
-      public DbSet<Comment> Comments { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
-      public DbSet<Project> Projects { get; set; }
-      public DbSet<ProjectSkill> ProjectSkills { get; set; }
-      public DbSet<Conference> Conferences { get; set; }
-      public DbSet<TagConference> TagConferences { get; set; }
-      public DbSet<Cooperation> Cooperations { get; set; }
-      public DbSet<SkillCooperation> SkillCooperations { get; set; }
-      public DbSet<Internship> Internships { get; set; }
-      public DbSet<SkillInternship> SkillInternships { get; set; }
-      public DbSet<Course> Courses { get; set; }
-      public DbSet<CourseSkill> CourseSkills { get; set; }
-      public DbSet<Material> Materials { get; set; }
-      public DbSet<TagMaterial> TagMaterials { get; set; }
+        public DbSet<Project> Projects { get; set; }
+        public DbSet<ProjectSkill> ProjectSkills { get; set; }
+        public DbSet<Conference> Conferences { get; set; }
+        public DbSet<TagConference> TagConferences { get; set; }
+        public DbSet<Cooperation> Cooperations { get; set; }
+        public DbSet<SkillCooperation> SkillCooperations { get; set; }
+        public DbSet<Internship> Internships { get; set; }
+        public DbSet<SkillInternship> SkillInternships { get; set; }
+        public DbSet<Course> Courses { get; set; }
+        public DbSet<CourseSkill> CourseSkills { get; set; }
+        public DbSet<Material> Materials { get; set; }
+        public DbSet<TagMaterial> TagMaterials { get; set; }
 
-      public DbSet<Message> Messages { get; set; }
-      public DbSet<Dialog> Dialogs { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<Dialog> Dialogs { get; set; }
 
-      public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-      {
-         Database.EnsureCreated();
-         Database.Migrate();
-      }
+        public DbSet<Notification> Notifications { get; set; }
 
-      protected override void OnModelCreating(ModelBuilder builder)
-      {
-         builder.Entity<User>().ToTable("Users");
-         builder.Entity<Role>().ToTable("Roles");
-         builder.Entity<Education>().ToTable("Educations");
-         builder.Entity<Link>().ToTable("Links");
-         builder.Entity<Organization>().ToTable("Organizations");
-         builder.Entity<PlaceWork>().ToTable("PlaceWorks");
-         builder.Entity<Resume>().ToTable("Resumes");
-         builder.Entity<Skill>().ToTable("Skills");
-         builder.Entity<TypeModel>().ToTable("TypeModels");
-         builder.Entity<TypeUser>().ToTable("TypeUsers");
-         builder.Entity<ResumeSkill>().ToTable("ResumeSkills");
-         builder.Entity<UserOrganization>().ToTable("UserOrganizations");
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        {
+            Database.EnsureCreated();
+            Database.Migrate();
+        }
 
-         builder.Entity<ConfirmationCode>().ToTable("Codes");
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<User>().ToTable("Users");
+            builder.Entity<Role>().ToTable("Roles");
+            builder.Entity<Education>().ToTable("Educations");
+            builder.Entity<Link>().ToTable("Links");
+            builder.Entity<Organization>().ToTable("Organizations");
+            builder.Entity<PlaceWork>().ToTable("PlaceWorks");
+            builder.Entity<Resume>().ToTable("Resumes");
+            builder.Entity<Skill>().ToTable("Skills");
+            builder.Entity<TypeModel>().ToTable("TypeModels");
+            builder.Entity<TypeUser>().ToTable("TypeUsers");
+            builder.Entity<ResumeSkill>().ToTable("ResumeSkills");
+            builder.Entity<UserOrganization>().ToTable("UserOrganizations");
 
-         builder.Entity<Post>().ToTable("Posts");
-         builder.Entity<Tag>().ToTable("Tags");
-         builder.Entity<TagPost>().ToTable("TagPosts");
-         builder.Entity<LikePost>().ToTable("LikePosts");
+            builder.Entity<ConfirmationCode>().ToTable("Codes");
 
-         builder.Entity<Comment>().ToTable("Comments");
+            builder.Entity<Post>().ToTable("Posts");
+            builder.Entity<Tag>().ToTable("Tags");
+            builder.Entity<TagPost>().ToTable("TagPosts");
+            builder.Entity<LikePost>().ToTable("LikePosts");
 
-         builder.Entity<Project>().ToTable("Projects");
-         builder.Entity<ProjectSkill>().ToTable("ProjectSkills");
-         builder.Entity<Conference>().ToTable("Conferences");
-         builder.Entity<TagConference>().ToTable("TagConferences");
-         builder.Entity<Cooperation>().ToTable("Cooperations");
-         builder.Entity<SkillCooperation>().ToTable("SkillCooperations");
-         builder.Entity<Internship>().ToTable("Internships");
-         builder.Entity<SkillInternship>().ToTable("SkillInternships");
-         builder.Entity<Course>().ToTable("Courses");
-         builder.Entity<CourseSkill>().ToTable("CourseSkills");
-         builder.Entity<Material>().ToTable("Materials");
-         builder.Entity<TagMaterial>().ToTable("TagMaterials");
+            builder.Entity<Comment>().ToTable("Comments");
 
-         builder.Entity<Message>().ToTable("Messages");
-         builder.Entity<Dialog>().ToTable("Dialogs");
-      }
-   }
+            builder.Entity<Project>().ToTable("Projects");
+            builder.Entity<ProjectSkill>().ToTable("ProjectSkills");
+            builder.Entity<Conference>().ToTable("Conferences");
+            builder.Entity<TagConference>().ToTable("TagConferences");
+            builder.Entity<Cooperation>().ToTable("Cooperations");
+            builder.Entity<SkillCooperation>().ToTable("SkillCooperations");
+            builder.Entity<Internship>().ToTable("Internships");
+            builder.Entity<SkillInternship>().ToTable("SkillInternships");
+            builder.Entity<Course>().ToTable("Courses");
+            builder.Entity<CourseSkill>().ToTable("CourseSkills");
+            builder.Entity<Material>().ToTable("Materials");
+            builder.Entity<TagMaterial>().ToTable("TagMaterials");
+
+            builder.Entity<Message>().ToTable("Messages");
+            builder.Entity<Dialog>().ToTable("Dialogs");
+
+            builder.Entity<Notification>().ToTable("Notifications");
+        }
+    }
 }

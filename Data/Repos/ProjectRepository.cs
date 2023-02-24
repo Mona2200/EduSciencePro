@@ -164,6 +164,9 @@ namespace EduSciencePro.Data.Repos
         {
             var project = await GetProjectById(id);
 
+            if (project == null)
+                return null;
+
             var projectViewModel = _mapper.Map<Project, ProjectViewModel>(project);
 
             string startDate = "";

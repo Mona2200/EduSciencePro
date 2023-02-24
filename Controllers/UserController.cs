@@ -12,6 +12,7 @@ using System;
 using EduSciencePro.ViewModels.Response;
 using EduSciencePro.Data.Services;
 using System.Data;
+using EduSciencePro.Models;
 
 namespace EduSciencePro.Controllers
 {
@@ -28,8 +29,10 @@ namespace EduSciencePro.Controllers
         private readonly IPlaceWorkRepository _placeWorks;
         private readonly IOrganizationRepository _organizations;
 
+        private readonly INotificationRepository _notifications;
+
         private readonly IMapper _mapper;
-        public UserController(IUserRepository users, IRoleRepository roles, ITypeRepository types, IResumeRepository resumes, IMapper mapper, IEducationRepository education, IPlaceWorkRepository placeWork, IOrganizationRepository organizations, IConfirmationCodeRepository codes)
+        public UserController(IUserRepository users, IRoleRepository roles, ITypeRepository types, IResumeRepository resumes, IMapper mapper, IEducationRepository education, IPlaceWorkRepository placeWork, IOrganizationRepository organizations, IConfirmationCodeRepository codes, INotificationRepository notifications)
         {
             _users = users;
             _roles = roles;
@@ -40,6 +43,7 @@ namespace EduSciencePro.Controllers
             _placeWorks = placeWork;
             _organizations = organizations;
             _codes = codes;
+            _notifications = notifications;
         }
 
         public async Task<IActionResult> Index()
@@ -642,6 +646,30 @@ namespace EduSciencePro.Controllers
                 }
             }
             return resumes;
+        }
+
+        [HttpGet]
+        [Route("Notifications")]
+        public async Task<IActionResult> Notifications()
+        {
+            ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+            var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+            var user = await _users.GetUserByEmail(claimEmail);
+
+            var notifications = await _notifications.GetNotificationsByUserId(user.Id);
+            return View(notifications);
+        }
+
+        [HttpPost]
+        [Route("NotificationsMore/{take}/{skip}")]
+        public async Task<Notification[]> NotificationsMore(int take, int skip)
+        {
+            ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+            var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+            var user = await _users.GetUserByEmail(claimEmail);
+
+            var notifications = await _notifications.GetNotificationsByUserId(user.Id, take, skip);
+            return notifications;
         }
 
         private async Task<EditUserViewModel> ValidEditUser(User user, EditUserViewModel model)

@@ -9,23 +9,25 @@ namespace EduSciencePro.Controllers
 {
     public class InternshipController : Controller
     {
-      private readonly IInternshipRepository _internships;
-      private readonly IOrganizationRepository _organizations;
-      private readonly IUserRepository _users;
-      public InternshipController(IInternshipRepository internships, IOrganizationRepository organizations, IUserRepository users)
-      {
-         _internships = internships;
-         _organizations = organizations;
-         _users = users;
-      }
+        private readonly IInternshipRepository _internships;
+        private readonly IOrganizationRepository _organizations;
+        private readonly IUserRepository _users;
+        private readonly INotificationRepository _notifications;
+        public InternshipController(IInternshipRepository internships, IOrganizationRepository organizations, IUserRepository users, INotificationRepository notifications)
+        {
+            _internships = internships;
+            _organizations = organizations;
+            _users = users;
+            _notifications = notifications;
+        }
 
-      [HttpGet]
-      [Route("Internships")]
-      public async Task<IActionResult> Internships(string? tagNamesString)
-      {
-         ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
-         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
-         var user = await _users.GetUserByEmail(claimEmail);
+        [HttpGet]
+        [Route("Internships")]
+        public async Task<IActionResult> Internships(string? tagNamesString)
+        {
+            ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+            var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+            var user = await _users.GetUserByEmail(claimEmail);
 
             List<string> tags = new();
             string[] tagNames = null;
@@ -42,16 +44,16 @@ namespace EduSciencePro.Controllers
 
             var internshipViewModels = await _internships.GetInternshipViewModels(tagNames, 5, 0);
 
-         var organization = await _organizations.GetOrganizationByUserId(user.Id);
+            var organization = await _organizations.GetOrganizationByUserId(user.Id);
 
-         if (organization != null)
-         {
-            return View(new IntershipsAndIsOrgViewModel() { IsOrg = true, Internships = internshipViewModels.Where(p => p.Organization.Id != organization.Id).ToArray(), Tags = tags });
-         }
-         else
-            return View(new IntershipsAndIsOrgViewModel() { IsOrg = false, Internships = internshipViewModels, Tags = tags });
+            if (organization != null)
+            {
+                return View(new IntershipsAndIsOrgViewModel() { IsOrg = true, Internships = internshipViewModels.Where(p => p.Organization.Id != organization.Id).ToArray(), Tags = tags });
+            }
+            else
+                return View(new IntershipsAndIsOrgViewModel() { IsOrg = false, Internships = internshipViewModels, Tags = tags });
 
-      }
+        }
 
         [HttpGet]
         [Route("InternshipsTag/{tags}")]
@@ -76,125 +78,150 @@ namespace EduSciencePro.Controllers
         }
 
         [HttpGet]
-      [Route("YourInternships")]
-      public async Task<IActionResult> YourInternships()
-      {
-         ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
-         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
-         var user = await _users.GetUserByEmail(claimEmail);
+        [Route("YourInternships")]
+        public async Task<IActionResult> YourInternships()
+        {
+            ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+            var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+            var user = await _users.GetUserByEmail(claimEmail);
 
-         var organization = await _organizations.GetOrganizationByUserId(user.Id);
-         if (organization == null)
-            return View(null);
-
-         var internshipViewModels = await _internships.GetInternshipViewModelsByOrganizationId(organization.Id, 5, 0);
-         return View(internshipViewModels);
-      }
-
-      [HttpGet]
-      [Route("AddInternship")]
-      public async Task<IActionResult> AddInternship()
-      {
-         ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
-         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
-         var user = await _users.GetUserByEmail(claimEmail);
-
-         var organization = await _organizations.GetOrganizationByUserId(user.Id);
-         var minStartDate = DateTime.Now;
-         var minEndDate = new DateTime(minStartDate.Year, minStartDate.Month, minStartDate.Day);
-            minEndDate.AddDays(7);
-
-         var addInternshipViewModel = new AddIntershipViewModel()
-         {
-            OrganizationName = organization.Name,
-            minStartDate = FromDateToString(minStartDate),
-            minEndDate = FromDateToString(minEndDate)
-         };
-
-         return View(addInternshipViewModel);
-      }
-
-      [HttpPost]
-      [Route("AddInternship")]
-      public async Task<IActionResult> AddInternship(AddIntershipViewModel model)
-      {
-         ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
-         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
-         var user = await _users.GetUserByEmail(claimEmail);
-
-         if (!ValidInternship(model))
-         {
             var organization = await _organizations.GetOrganizationByUserId(user.Id);
-            model.OrganizationName = organization.Name;
+            if (organization == null)
+                return View(null);
 
+            var internshipViewModels = await _internships.GetInternshipViewModelsByOrganizationId(organization.Id, 5, 0);
+            return View(internshipViewModels);
+        }
+
+        [HttpGet]
+        [Route("AddInternship")]
+        public async Task<IActionResult> AddInternship()
+        {
+            ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+            var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+            var user = await _users.GetUserByEmail(claimEmail);
+
+            var organization = await _organizations.GetOrganizationByUserId(user.Id);
             var minStartDate = DateTime.Now;
             var minEndDate = new DateTime(minStartDate.Year, minStartDate.Month, minStartDate.Day);
             minEndDate.AddDays(7);
-            model.minStartDate = FromDateToString(minStartDate);
-            model.minEndDate = FromDateToString(minEndDate);
-            return View(model);
-         }
-         try
-         {
-            await _internships.Save(model);
-         }
-         catch (Exception ex)
-         {
 
-         };
-         return RedirectToAction("Internships");
-      }
-
-      [HttpGet]
-      [Route("LookingInternship")]
-      public async Task<IActionResult> LookingInternship(Guid internshipId)
-      {
-         ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
-         var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
-         var user = await _users.GetUserByEmail(claimEmail);
-
-         var organization = await _organizations.GetOrganizationByUserId(user.Id);
-
-         var internshipViewModel = await _internships.GetInternshipViewModelById(internshipId);
-
-         var yourProject = internshipViewModel.Organization.Id == organization?.Id;
-
-         var lookingInternship = new KeyValuePair<bool, InternshipViewModel>(yourProject, internshipViewModel);
-
-         return View(lookingInternship);
-      }
-
-      [HttpGet]
-      [Route("DeleteInternship")]
-      public async Task<IActionResult> DeleteInternship(Guid internshipId)
-      {
-         await _internships.Delete(internshipId);
-         return RedirectToAction("YourInternships");
-      }
-
-      private bool ValidInternship(AddIntershipViewModel model)
-      {
-         if (!ModelState.IsValid)
-         {
-            foreach (var key in ModelState.Keys)
+            var addInternshipViewModel = new AddIntershipViewModel()
             {
-               if (ModelState[key].Errors.Count > 0)
-                  ModelState.AddModelError($"{key}", $"{ModelState[key].Errors[0].ErrorMessage}");
-            }
-            return false;
-         }
-         return true;
-      }
+                OrganizationName = organization.Name,
+                minStartDate = FromDateToString(minStartDate),
+                minEndDate = FromDateToString(minEndDate)
+            };
 
-      private string FromDateToString(DateTime date)
-      {
-         var day = date.Day.ToString();
-         if (day.Length == 1)
-            day = "0" + day;
-         var month = date.Month.ToString();
-         if (month.Length == 1)
-            month = "0" + month;
-         return $"{date.Year}-{month}-{day}";
-      }
-   }
+            return View(addInternshipViewModel);
+        }
+
+        [HttpPost]
+        [Route("AddInternship")]
+        public async Task<IActionResult> AddInternship(AddIntershipViewModel model)
+        {
+            ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+            var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+            var user = await _users.GetUserByEmail(claimEmail);
+
+            if (!ValidInternship(model))
+            {
+                var organization = await _organizations.GetOrganizationByUserId(user.Id);
+                model.OrganizationName = organization.Name;
+
+                var minStartDate = DateTime.Now;
+                var minEndDate = new DateTime(minStartDate.Year, minStartDate.Month, minStartDate.Day);
+                minEndDate.AddDays(7);
+                model.minStartDate = FromDateToString(minStartDate);
+                model.minEndDate = FromDateToString(minEndDate);
+                return View(model);
+            }
+            try
+            {
+                await _internships.Save(model);
+            }
+            catch (Exception ex)
+            {
+
+            };
+            return RedirectToAction("Internships");
+        }
+
+        [HttpGet]
+        [Route("LookingInternship")]
+        public async Task<IActionResult> LookingInternship(Guid internshipId)
+        {
+            ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+            var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+            var user = await _users.GetUserByEmail(claimEmail);
+
+            var organization = await _organizations.GetOrganizationByUserId(user.Id);
+
+            var internshipViewModel = await _internships.GetInternshipViewModelById(internshipId);
+
+            var yourProject = internshipViewModel.Organization.Id == organization?.Id;
+
+            var lookingInternship = new KeyValuePair<bool, InternshipViewModel>(yourProject, internshipViewModel);
+
+            return View(lookingInternship);
+        }
+
+        [HttpGet]
+        [Route("DeleteInternship")]
+        public async Task<IActionResult> DeleteInternship(Guid internshipId)
+        {
+            await _internships.Delete(internshipId);
+            return RedirectToAction("YourInternships");
+        }
+
+        [HttpPost]
+        [Route("SendNotificationInternship/{internshipId}")]
+        public async Task SendNotificationInternship([FromRoute] Guid internshipId)
+        {
+            ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+            var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+            var user = await _users.GetUserByEmail(claimEmail);
+
+            var internship = await _internships.GetInternshipById(internshipId);
+            if (internship != null)
+            {
+                var organization = await _organizations.GetOrganizationById(internship.OrganizationId);
+                if (organization != null)
+                {
+                    var notification = new Notification()
+                    {
+                        UserId = organization.LeaderId,
+                        Content = $"<a href='/GetUser?userId={user.Id}'>{user.FirstName} {user.LastName} {user.MiddleName}</a> подал(а) заявку на участие в практике/стажировке <a href='/LookingInternship?internshipId={internship.Id}'>{internship.Name}</a>"
+                    };
+                    await _notifications.Save(notification);
+                }
+            }
+
+        }
+
+        private bool ValidInternship(AddIntershipViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                foreach (var key in ModelState.Keys)
+                {
+                    if (ModelState[key].Errors.Count > 0)
+                        ModelState.AddModelError($"{key}", $"{ModelState[key].Errors[0].ErrorMessage}");
+                }
+                return false;
+            }
+            return true;
+        }
+
+        private string FromDateToString(DateTime date)
+        {
+            var day = date.Day.ToString();
+            if (day.Length == 1)
+                day = "0" + day;
+            var month = date.Month.ToString();
+            if (month.Length == 1)
+                month = "0" + month;
+            return $"{date.Year}-{month}-{day}";
+        }
+    }
 }

@@ -1,0 +1,55 @@
+﻿@model Notification[]
+
+@{
+    ViewData["Title"] = "Уведомления";
+    Layout = "_Layout";
+}
+
+<div class="border_blue p-4 m-3 bg-white">
+    <div class="container">
+        <h3 class="mb-5 mt-2 underline_h3 text-center">Уведомления</h3>
+
+        <div class="row justify-content-center" id="notifications">
+
+            @if (Model != null && Model.Length != 0)
+            {
+                @foreach (var notification in Model)
+                {
+                    <div class="border_blue p-4 m-3 bg-white d-flex justify-content-center mt-5">
+                        <div class="col-md-10">
+                            <p>@Html.Raw(notification.Content)</p>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+    @if (Model != null && Model.Length == 5)
+    {
+        <p><button class="button form-control-plaintext w-25 m-auto mt-4" id="button_addnewstag">Загрузить ещё</button></p>
+    }
+</div>
+
+<script>
+    $(document).ready(function () {
+        let take = 5;
+        let skip = 0;
+        $("#button_addnewstag").click(function () {
+            take += 5;
+            skip += 5;
+
+            $.ajax({
+                url: '/NotificationsMore/' + take + '/' + skip,
+                type: 'POST',
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        $("#notifications").append(`<div class="border_blue p-4 m-3 bg-white d-flex justify-content-center mt-5"><div class="col-md-10"><p>` + data[i].content + `</p></div></div>`);
+                    };
+                    if (data.length < 5) {
+                        $("#button_addnewstag").addClass('d-none');
+                    }
+                }
+            });
+        });
+    });
+</script>

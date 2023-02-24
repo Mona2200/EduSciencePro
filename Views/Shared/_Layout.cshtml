@@ -46,6 +46,7 @@
 
                                     <div class="position-absolute border_blue menu_width d-none" id="desktop_menu">
                                         <a asp-controller="User" asp-action="Main" class="p-2 border_bottom_dark m-0 d-block form-control-plaintext text-decoration-none">Мой профиль</a>
+                                        <a class="p-2 border_bottom_dark m-0 form-control-plaintext text-decoration-none" asp-action="Notifications" asp-controller="User">Уведомления</a>
                                         <a class="p-2 border_bottom_dark m-0 form-control-plaintext text-decoration-none" asp-action="Comments" asp-controller="Comment">Комментарии</a>
                                         <a class="p-2 border_bottom_dark m-0 form-control-plaintext text-decoration-none" asp-action="Messages" asp-controller="Message">Сообщения</a>
                                         <a class="form-control-plaintext text-decoration-none" asp-controller="User" asp-action="Logout" class="p-2 border_bottom_dark m-0 d-block">Выход</a>
@@ -156,8 +157,8 @@
                                     {
 
                                         <a asp-controller="User" asp-action="Main" class="p-2 m-0 d-block form-control-plaintext text-decoration-none">Мой профиль</a>
+                                        <a class="p-2 border_bottom_dark m-0 form-control-plaintext text-decoration-none" asp-action="Notifications" asp-controller="User">Уведомления</a>
                                         <a class="p-2 border_bottom_dark m-0 form-control-plaintext text-decoration-none" asp-action="Comments" asp-controller="Comment">Комментарии</a>
-                                        //<a class="form-control-plaintext text-decoration-none p-2 m-0 d-block">Подписки</a>
                                         <a class="form-control-plaintext text-decoration-none p-2 m-0 d-block" asp-action="Messages" asp-controller="Message">Сообщения</a>
                                         <a class="form-control-plaintext text-decoration-none p-2 m-0 d-block" asp-controller="User" asp-action="Logout">Выход</a>
                                     }
@@ -441,19 +442,61 @@
             });
         };
 
-                //function send_message(sender, theme, title) {
-                //    $.ajax({
-                //        url: '@Url.Action("AddMessage", "Message")',
-                //        type: 'POST',
-                //        data: { 'organizationId': sender, 'theme': theme },
-                //        success: function (data) {
-                //            $("#button_send_message").removeClass('button').addClass('btn-success').addClass('btn');
-                //        },
-                //        error: function () {
+        function send_notificationProject(id) {
+            $.ajax({
+                url: '/SendNotificationProject/' + id,
+                type: 'POST',
+                success: function (data) {
+                    $("#button_send_message").text("Заявка отправлена");
+                    $("#button_send_message").prop("disabled",true);
+                },
+                error: function () {
 
-                //        }
-                //    });
-                //};
+                }
+            })
+        };
+
+        function send_notificationInternship(id) {
+            $.ajax({
+                url: '/SendNotificationInternship/' + id,
+                type: 'POST',
+                success: function (data) {
+                    $("#button_send_message").text("Заявка отправлена");
+                    $("#button_send_message").prop("disabled", true);
+                },
+                error: function () {
+
+                }
+            })
+        };
+
+        function send_notificationCooperation(id) {
+            $.ajax({
+                url: '/SendNotificationCooperation/' + id,
+                type: 'POST',
+                success: function (data) {
+                    $("#button_send_message").text("Заявка отправлена");
+                    $("#button_send_message").prop("disabled", true);
+                },
+                error: function () {
+
+                }
+            })
+        };
+
+        function send_notificationConference(id) {
+            $.ajax({
+                url: '/SendNotificationConference/' + id,
+                type: 'POST',
+                success: function (data) {
+                    $("#button_send_message").text("Заявка отправлена");
+                    $("#button_send_message").prop("disabled", true);
+                },
+                error: function () {
+
+                }
+            })
+        };
 
 
 

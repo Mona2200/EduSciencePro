@@ -43,6 +43,8 @@ builder.Services.AddSingleton<IMaterialRepository, MaterialRepository>();
 
 builder.Services.AddSingleton<IMessageRepository, MessageRepository>();
 
+builder.Services.AddSingleton<INotificationRepository, NotificationRepository>();
+
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection), ServiceLifetime.Singleton);
 

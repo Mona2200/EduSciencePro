@@ -14,12 +14,14 @@ namespace EduSciencePro.Controllers
         private readonly IProjectRepository _projects;
         private readonly IUserRepository _users;
         private readonly IOrganizationRepository _organizations;
+        private readonly INotificationRepository _notifications;
 
-        public ProjectController(IProjectRepository projects, IUserRepository users, IOrganizationRepository organizations)
+        public ProjectController(IProjectRepository projects, IUserRepository users, IOrganizationRepository organizations, INotificationRepository notifications)
         {
             _projects = projects;
             _users = users;
             _organizations = organizations;
+            _notifications = notifications;
         }
 
         [HttpGet]
@@ -108,7 +110,7 @@ namespace EduSciencePro.Controllers
                 var projects = new ProjectViewModel[0];
                 return projects;
             }
-              
+
             var projectViewModels = await _projects.GetProjectViewModelsByOrganizationId(organization.Id, take, skip);
             return projectViewModels;
         }
@@ -180,6 +182,7 @@ namespace EduSciencePro.Controllers
             var projectViewModel = await _projects.GetProjectViewModelById(projectId);
 
             var lookingProject = new LookingProjectViewModel() { Project = projectViewModel };
+            if (projectViewModel != null)
             lookingProject.YourProject = projectViewModel.Organization.Id == organization?.Id;
 
             return View(lookingProject);
@@ -199,6 +202,30 @@ namespace EduSciencePro.Controllers
         {
             var skills = await _projects.GetSkillsSearch(str);
             return skills.Take(5).ToArray();
+        }
+
+        [HttpPost]
+        [Route("SendNotificationProject/{projectId}")]
+        public async Task SendNotificationProject([FromRoute] Guid projectId)
+        {
+            ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+            var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+            var user = await _users.GetUserByEmail(claimEmail);
+
+            var project = await _projects.GetProjectById(projectId);
+            if (project != null)
+            {
+                var organization = await _organizations.GetOrganizationById(project.OrganizationId);
+                if (organization != null)
+                {
+                    var notification = new Notification()
+                    {
+                        UserId = organization.LeaderId,
+                        Content = $"<a href='/GetUser?userId={user.Id}'>{user.FirstName} {user.LastName} {user.MiddleName}</a> подал(а) заявку на участие в научно-исследовательском проекте <a href='/LookingProject?projectId={project.Id}'>{project.Title}</a>"
+                    };
+                    await _notifications.Save(notification);
+                }
+            }
         }
 
         private bool ValidProject(AddProjectViewModel model)
