@@ -8,7 +8,6 @@ using System.Security.Claims;
 
 namespace EduSciencePro.Controllers
 {
-    [Authorize]
     public class CooperationController : Controller
     {
         private readonly ICooperationRepository _cooperations;
@@ -28,8 +27,6 @@ namespace EduSciencePro.Controllers
         public async Task<IActionResult> Cooperations(string? tagNamesString)
         {
             ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
-            var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
-            var user = await _users.GetUserByEmail(claimEmail);
 
             List<string> tags = new();
             string[] tagNames = null;
@@ -46,13 +43,16 @@ namespace EduSciencePro.Controllers
 
             var cooperations = await _cooperations.GetCooperationViewModels(tagNames, 5, 0);
 
-            var organization = await _organizations.GetOrganizationByUserId(user.Id);
 
-            if (organization != null)
+
+            if (ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name) != null)
             {
-                return View(new CooperationsAndTagsViewModel() { IsOrg = true, Cooperations = cooperations.Where(c => c.Organization.Id != organization.Id).ToArray(), Tags = tags });
+                var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
+                var user = await _users.GetUserByEmail(claimEmail);
+                var organization = await _organizations.GetOrganizationByUserId(user.Id);
+                if (organization != null)
+                    return View(new CooperationsAndTagsViewModel() { IsOrg = true, Cooperations = cooperations.Where(c => c.Organization.Id != organization.Id).ToArray(), Tags = tags });
             }
-            else
                 return View(new CooperationsAndTagsViewModel() { IsOrg = false, Cooperations = cooperations, Tags = tags });
         }
 
@@ -78,6 +78,7 @@ namespace EduSciencePro.Controllers
             return news;
         }
 
+        [Authorize]
         [HttpGet]
         [Route("YourCooperations")]
         public async Task<IActionResult> YourCooperations()
@@ -94,6 +95,7 @@ namespace EduSciencePro.Controllers
             return View(cooperationViewModels);
         }
 
+        [Authorize]
         [HttpPost]
         [Route("YourCooperationsMore/{take}/{skip}")]
         public async Task<CooperationViewModel[]> YourCooperationsMore([FromRoute] int take, [FromRoute] int skip)
@@ -113,6 +115,7 @@ namespace EduSciencePro.Controllers
             return projectViewModels;
         }
 
+        [Authorize]
         [HttpGet]
         [Route("AddCooperation")]
         public async Task<IActionResult> AddCooperation()
@@ -133,6 +136,7 @@ namespace EduSciencePro.Controllers
             return View(addCooperationViewModel);
         }
 
+        [Authorize]
         [HttpPost]
         [Route("AddCooperation")]
         public async Task<IActionResult> AddCooperation(AddCooperationViewModel model)
@@ -161,6 +165,7 @@ namespace EduSciencePro.Controllers
             return RedirectToAction("Cooperations");
         }
 
+        [Authorize]
         [HttpGet]
         [Route("LookingCooperation")]
         public async Task<IActionResult> LookingCooperation(Guid cooperationId)
@@ -179,6 +184,7 @@ namespace EduSciencePro.Controllers
             return View(lookingCooperation);
         }
 
+        [Authorize]
         [HttpGet]
         [Route("DeleteCooperation")]
         public async Task<IActionResult> DeleteCooperation(Guid cooperationId)
@@ -199,6 +205,7 @@ namespace EduSciencePro.Controllers
             return RedirectToAction("YourCooperations");
         }
 
+        [Authorize]
         [HttpPost]
         [Route("SendNotificationCooperation/{cooperationId}")]
         public async Task SendNotificationCooperation([FromRoute] Guid cooperationId)

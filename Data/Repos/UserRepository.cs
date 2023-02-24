@@ -5,6 +5,12 @@ using EduSciencePro.ViewModels.Request;
 using EduSciencePro.ViewModels.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Processing;
+using System.Drawing.Imaging;
 using System.Reflection.Metadata;
 using Type = EduSciencePro.Models.User.TypeModel;
 
@@ -305,11 +311,13 @@ namespace EduSciencePro.Data.Repos
 
             if (model.Img != null)
             {
+                var img = Image.Load(model.Img.OpenReadStream());
+                img.Mutate(h => h.Resize(300, 300));
+
                 byte[] imageData = null;
-                using (var fs1 = model.Img.OpenReadStream())
                 using (var ms1 = new MemoryStream())
                 {
-                    fs1.CopyTo(ms1);
+                    img.Save(ms1, new PngEncoder());
                     imageData = ms1.ToArray();
                 }
                 editUser.Image = imageData;
@@ -377,9 +385,9 @@ namespace EduSciencePro.Data.Repos
 
         public async Task UpdateBase()
         {
-            var user = _db.Users.FirstOrDefault(u => u.Id == Guid.Parse("B08EC89E-5023-43C9-B0EF-D2BC325A9108"));
-            user.RoleId = Guid.Parse("B1CC6BA7-CE32-43D8-81DC-6153ED446905");
-            _db.Users.Update(user);
+            var type = _db.TypeModels.FirstOrDefault(u => u.Id == Guid.Parse("CCE5CA63-98B6-40E7-8F25-7D7CD07839B5"));
+            type.Name = "Представитель сферы среднего образования";
+            _db.TypeModels.Update(type);
             await _db.SaveChangesAsync();
         }
     }

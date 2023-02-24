@@ -7,27 +7,30 @@
 }
 
 <div class="border_blue p-4 m-3 bg-white">
-    @if (Model.IsOrg)
+    @if (Context.User.Identity.IsAuthenticated)
     {
-        <p class="w-100 text-end"><a class="mr-2" asp-action="YourCooperations" asp-controller="Cooperation">Ваше сотрудничество</a></p>
-    }
-    else
-    {
-        <p class="w-100 text-end"><a class="mr-2" data-bs-toggle="modal" data-bs-target="#isNotOrg" style="cursor:pointer">Ваше сотрудничество</a></p>
+        @if (Model.IsOrg)
+        {
+            <p class="w-100 text-end"><a class="mr-2" asp-action="YourCooperations" asp-controller="Cooperation">Ваше сотрудничество</a></p>
+        }
+        else
+        {
+            <p class="w-100 text-end"><a class="mr-2" data-bs-toggle="modal" data-bs-target="#isNotOrg" style="cursor:pointer">Ваше сотрудничество</a></p>
 
-        <div class="modal fade" id="isNotOrg" tabindex="-1" role="dialog" aria-bs-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body pb-5 pr-3 pl-3">
-                        <h4 class="mb-3 text-center">Создание сотрудничества недоступно</h4>
-                        <p>Чтобы вам было доступно создание сотрудничества, необходимо заполнить информацию об организации в профиле</p>
+            <div class="modal fade" id="isNotOrg" tabindex="-1" role="dialog" aria-bs-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body pb-5 pr-3 pl-3">
+                            <h4 class="mb-3 text-center">Создание сотрудничества недоступно</h4>
+                            <p>Чтобы вам было доступно создание сотрудничества, необходимо заполнить информацию об организации в профиле</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        }
     }
 
     <h3 class="mb-5 mt-2 underline_h3 text-center">Сотрудничество</h3>
@@ -80,7 +83,10 @@
                                 <span class="bg_blue p-2 m-2 d-inline-block">@skill.Name</span>
                             }
                     </p>
-                    <p class="text-center"><a asp-action="LookingCooperation" asp-controller="Cooperation" asp-route-cooperationId="@cooperation.Id">Узнать больше</a></p>
+                    @if (Context.User.Identity.IsAuthenticated)
+                    {
+                        <p class="text-center"><a asp-action="LookingCooperation" asp-controller="Cooperation" asp-route-cooperationId="@cooperation.Id">Узнать больше</a></p>
+                    }
                 </div>
             }
         }
