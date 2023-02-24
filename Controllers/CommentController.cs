@@ -32,12 +32,22 @@ namespace EduSciencePro.Controllers
 
             var posts = await _posts.GetPostViewModelsByUserId(user.Id);
 
+            var commenstsByUser = await _comments.GetCommentViewModelsByUserId(user.Id);
+            foreach (var comment in commenstsByUser)
+            {
+                comments.Add(comment);
+            }
+
             foreach (var post in posts)
             {
                 var commentsPost = await _comments.GetCommentViewModelsByPostId(post.Id);
-                comments = comments.Concat(commentsPost).ToList();
+                foreach (var comment in commentsPost)
+                {
+                    if (comments.FirstOrDefault(c => c.Id == comment.Id) == null)
+                        comments.Add(comment);
+                }
             }
-            return View(comments.Take(5).ToArray());
+            return View(comments.OrderByDescending(c => c.CreatedDate).Take(5).ToArray());
         }
 
         [HttpPost]
@@ -50,15 +60,25 @@ namespace EduSciencePro.Controllers
 
             List<CommentViewModel> comments = new();
 
+            var commenstsByUser = await _comments.GetCommentViewModelsByUserId(user.Id);
+            foreach (var comment in commenstsByUser)
+            {
+                comments.Add(comment);
+            }
+
             var posts = await _posts.GetPostViewModelsByUserId(user.Id);
 
             foreach (var post in posts)
             {
                 var commentsPost = await _comments.GetCommentViewModelsByPostId(post.Id);
-                comments = comments.Concat(commentsPost).ToList();
+                foreach (var comment in commentsPost)
+                {
+                    if (comments.FirstOrDefault(c => c.Id == comment.Id) == null)
+                        comments.Add(comment);
+                }
             }
 
-            return comments.Take(take).Skip(skip).ToArray();
+            return comments.OrderByDescending(c => c.CreatedDate).Take(take).Skip(skip).ToArray();
         }
 
         [HttpPost]
