@@ -123,7 +123,8 @@ namespace EduSciencePro.Controllers
 
             var organization = await _organizations.GetOrganizationByUserId(user.Id);
             var minStartDate = DateTime.Now;
-            var minEndDate = new DateTime(minStartDate.Year, minStartDate.Month, minStartDate.Day + 7);
+            var minEndDate = new DateTime(minStartDate.Year, minStartDate.Month, minStartDate.Day);
+            minEndDate.AddDays(7);
 
             var addProjectViewModel = new AddProjectViewModel()
             {
@@ -149,7 +150,8 @@ namespace EduSciencePro.Controllers
                 model.OrganizationName = organization.Name;
 
                 var minStartDate = DateTime.Now;
-                var minEndDate = new DateTime(minStartDate.Year, minStartDate.Month, minStartDate.Day + 7);
+                var minEndDate = new DateTime(minStartDate.Year, minStartDate.Month, minStartDate.Day);
+                minEndDate.AddDays(7);
                 model.minStartDate = FromDateToString(minStartDate);
                 model.minEndDate = FromDateToString(minEndDate);
                 return View(model);
@@ -189,6 +191,14 @@ namespace EduSciencePro.Controllers
         {
             await _projects.Delete(projectId);
             return RedirectToAction("YourProjects");
+        }
+
+        [HttpPost]
+        [Route("SkillSearch/{str}")]
+        public async Task<Skill[]> SkillSearch([FromRoute] string str)
+        {
+            var skills = await _projects.GetSkillsSearch(str);
+            return skills.Take(5).ToArray();
         }
 
         private bool ValidProject(AddProjectViewModel model)

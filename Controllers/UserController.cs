@@ -619,7 +619,7 @@ namespace EduSciencePro.Controllers
                         resumes.Add(new KeyValuePair<UserViewModel, ResumeViewModel>(ResumeUser, resume));
                 }
             }
-            return View(new ResumeCollectionViewModel() { Resumes = resumes});
+            return View(new ResumeCollectionViewModel() { Resumes = resumes });
         }
 
         [HttpPost]
@@ -763,5 +763,12 @@ namespace EduSciencePro.Controllers
 
             return null;
         }
+
+        //[HttpGet]
+        //[Route("UpdateBase")]
+        //public async Task UpdateBase()
+        //{
+        //    await _users.UpdateBase();
+        //}
     }
 }

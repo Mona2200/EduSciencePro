@@ -19,7 +19,7 @@
             }
             @if (Context.User.Identity.Name == Model.Email)
             {
-                <p><a class="button_dark form-control-plaintext m-auto w-50 mt-4" asp-controller="User" asp-action="EditUser">Редактировать</a></p>
+                <p><a class="button_dark form-control-plaintext m-auto w-50 mt-4 text-decoration-none text-black" asp-controller="User" asp-action="EditUser">Редактировать</a></p>
             }
             @if (Context.User.Identity.Name != Model.Email)
             {
@@ -138,7 +138,7 @@
         @if (Context.User.Identity.Name == Model.Email)
         {
             <div class="row justify-content-center">
-                <p class="col-xl-4 col-10"><a class="button_light form-control-plaintext text-center m-auto p-2 mt-4" asp-controller="Post" asp-action="AddPost">Создать публикацию</a></p>
+                <p class="col-xl-4 col-10"><a class="button_light form-control-plaintext text-center m-auto p-2 mt-4 text-decoration-none text-black" asp-controller="Post" asp-action="AddPost">Создать публикацию</a></p>
             </div>
         }
         <div style="width:85%;margin:auto;">

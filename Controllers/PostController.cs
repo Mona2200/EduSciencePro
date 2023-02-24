@@ -87,10 +87,10 @@ namespace EduSciencePro.Controllers
             {
                 tagNamesString = tagNamesString.Replace('_', '/');
                 tagNames = tagNamesString.Split('/', StringSplitOptions.RemoveEmptyEntries);
-              
+
                 foreach (var tagName in tagNames)
                 {
-                        tags.Add(tagName);
+                    tags.Add(tagName);
                 }
             }
 
@@ -114,15 +114,15 @@ namespace EduSciencePro.Controllers
 
         [HttpGet]
         [Route("NewsPostsTag/{tags}")]
-        public async Task<IActionResult> NewsPostsTag([FromRoute]string? tags)
+        public async Task<IActionResult> NewsPostsTag([FromRoute] string? tags)
         {
             return RedirectToAction("NewsPosts", "Post", new { tagNamesString = tags });
         }
 
         [HttpPost]
         [Route("NewsPostsMore/{take}/{skip}/{tags?}")]
-        public async Task<PostViewModel[]> NewsPostsMore( [FromRoute] int take, [FromRoute] int skip, [FromRoute] string? tags = null)
-        {           
+        public async Task<PostViewModel[]> NewsPostsMore([FromRoute] int take, [FromRoute] int skip, [FromRoute] string? tags = null)
+        {
             string[] tagNames = null;
             if (tags != null)
             {
@@ -286,6 +286,14 @@ namespace EduSciencePro.Controllers
 
             var likes = await _likePosts.GetLikePostsByPostId(postId);
             return likes.Length;
+        }
+
+        [HttpPost]
+        [Route("TagSearch/{str}")]
+        public async Task<Tag[]> TagSearch([FromRoute] string str)
+        {
+            var tags = await _tags.GetTagsSearch(str);
+            return tags.Take(5).ToArray();
         }
 
         private bool PostValid(AddPostViewModel model)

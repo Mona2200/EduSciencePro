@@ -101,7 +101,8 @@ namespace EduSciencePro.Controllers
 
          var organization = await _organizations.GetOrganizationByUserId(user.Id);
          var minStartDate = DateTime.Now;
-         var minEndDate = new DateTime(minStartDate.Year, minStartDate.Month, minStartDate.Day + 7);
+         var minEndDate = new DateTime(minStartDate.Year, minStartDate.Month, minStartDate.Day);
+            minEndDate.AddDays(7);
 
          var addInternshipViewModel = new AddIntershipViewModel()
          {
@@ -127,7 +128,8 @@ namespace EduSciencePro.Controllers
             model.OrganizationName = organization.Name;
 
             var minStartDate = DateTime.Now;
-            var minEndDate = new DateTime(minStartDate.Year, minStartDate.Month, minStartDate.Day + 7);
+            var minEndDate = new DateTime(minStartDate.Year, minStartDate.Month, minStartDate.Day);
+            minEndDate.AddDays(7);
             model.minStartDate = FromDateToString(minStartDate);
             model.minEndDate = FromDateToString(minEndDate);
             return View(model);

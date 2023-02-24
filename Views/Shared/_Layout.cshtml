@@ -292,24 +292,47 @@
                 }
             });
 
-            //$(".TagsInput").keyup(function (e) {
-            //    $(".Search_Tags p").each(function () {
-            //        $(this).remove();
-            //    });
-            //    $.ajax({
-            //        url: '@Url.Action("GetTagsSearch", "Post")',
-            //        type: 'POST',
-            //        data: { 'search': $(this).val() },
-            //        success: function (data) {
-            //            for (var i = 0; i < data.length && i < 5; i++) {
-            //                $(".Search_Tags").append("<p onclick='Search_Tags_Click(this)'>" + data[i].name + "</p>");
-            //            };
-            //        },
-            //        error: function () {
+            $(".TagsInput").keyup(function (e) {
+                $(".Search_Tags p").each(function () {
+                    $(this).remove();
+                });
+                var str = $(".TagsInput").val().toLowerCase();
+                if (str.replace(/\s/g, "") != "") {
+                    $.ajax({
+                        url: '/TagSearch/' + str,
+                        type: 'POST',
+                        success: function (data) {
+                            for (var i = 0; i < data.length && i < 5; i++) {
+                                $(".Search_Tags").append("<p onclick='Search_Tags_Click(this)'>" + data[i].name + "</p>");
+                            };
+                        },
+                        error: function () {
 
-            //        }
-            //    });
-            //});
+                        }
+                    })
+                }
+            });
+
+            $(".SkillsInput").keyup(function (e) {
+                $(".Search_Tags p").each(function () {
+                    $(this).remove();
+                });
+                var str = $(".SkillsInput").val().toLowerCase();
+                if (str.replace(/\s/g, "") != "") {
+                    $.ajax({
+                        url: '/SkillSearch/' + str,
+                        type: 'POST',
+                        success: function (data) {
+                            for (var i = 0; i < data.length && i < 5; i++) {
+                                $(".Search_Tags").append("<p onclick='Search_Tags_Click(this)'>" + data[i].name + "</p>");
+                            };
+                        },
+                        error: function () {
+
+                        }
+                    })
+                }
+            });
 
             $("#button_addpost").click(function () {
                 var html = $("#editor").find(".ProseMirror.toastui-editor-contents").html();
@@ -418,21 +441,21 @@
             });
         };
 
-        //function send_message(sender, theme, title) {
-        //    $.ajax({
-        //        url: '@Url.Action("AddMessage", "Message")',
-        //        type: 'POST',
-        //        data: { 'organizationId': sender, 'theme': theme },
-        //        success: function (data) {
-        //            $("#button_send_message").removeClass('button').addClass('btn-success').addClass('btn');
-        //        },
-        //        error: function () {
+                //function send_message(sender, theme, title) {
+                //    $.ajax({
+                //        url: '@Url.Action("AddMessage", "Message")',
+                //        type: 'POST',
+                //        data: { 'organizationId': sender, 'theme': theme },
+                //        success: function (data) {
+                //            $("#button_send_message").removeClass('button').addClass('btn-success').addClass('btn');
+                //        },
+                //        error: function () {
 
-        //        }
-        //    });
-        //};
+                //        }
+                //    });
+                //};
 
-        
+
 
     </script>
 

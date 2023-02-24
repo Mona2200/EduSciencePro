@@ -6,7 +6,7 @@
 
     $(".Search_Organization").width($(".OrganizationInput").parent().width() - 2 + "px");
 
-    $(".Search_Tags").width($(".TagsInput").parent().width() - 2 + "px");
+    $(".Search_Tags").width($(".inpsearch").width() + 7 + "px");
 
     $("#Link_Select").val("");
 
@@ -85,7 +85,7 @@
     $("#Add_Skills").click(function () {
         var inp = $(".Skills_Input");
         if (inp.val() != "") {
-            var skill = inp.val().replace(/\s/g, "");
+            var skill = inp.val().toLowerCase().replace(/\s/g, "");
             if (skill != "") {
                 $("#Skills_List").append('<p class="text-start"><span class="p-1" style="background-color: #e9ecef;">' + skill + '</span><img onclick="Cross_Click_Skills(this)" class="Cross ml-2 position-absolute" style="transform: translateY(40%);" src="src/Cross.svg" /></p>');
                 $("#Skills_Value").val($("#Skills_Value").val() + skill + "/");
@@ -104,7 +104,7 @@
     });
 
     $("#tag_click").click(function () {
-        var str = $(this).prev().val();
+        var str = $(this).prev().val().toLowerCase();
         if (str.replace(/\s/g, "") != "") {
             $("#div_tags").append('<span class="bg_blue p-2 m-2 d-inline-block"><span>' + str + '</span><span style="padding-left: 5px;cursor:pointer;" onclick="remove_tag(this)">&#10008</span></span>');
             $("#tags_input").val($("#tags_input").val() + "/" + str);
@@ -143,6 +143,23 @@
             $(this).parent().next('.div_ability_post').addClass('d-none');
         }
     });
+
+    //$(".TagsInput").keyup(function () {
+    //    var str = $(".TagsInput").val().toLowerCase();
+
+    //    if (str.replace(/\s/g, "") != "") {
+    //        $.ajax({
+    //            url: '/TagSearch/' + str,
+    //            type: 'POST',
+    //            success: function (data) {
+    //                $(".Search_Tags p").each(function () {
+    //                    $(this).remove();
+    //                })
+    //                $(".Search_Tags p").append(``);
+    //            }
+    //        })
+    //    }
+    //});
 
 
     //$(".Education").keyup(function (I) {

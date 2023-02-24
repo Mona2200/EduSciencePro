@@ -29,8 +29,11 @@
 
         <label asp-for="Tags" class="text-start label_input mt-3"></label>
         <input id="tags_input" class="d-none" name="Tags" value="@tags">
-        <p class="col-md-6 text-start"><input class="TagsInput text-center w-75 p-1" placeholder="Теги"><span id="tag_click" class="span_click">+</span></p>
-        <p class="Search_Tags position-absolute m-0"></p>
+        <div class="col-md-6 text-start mb-4">
+            <input class="TagsInput inpsearch text-center w-75 p-1" placeholder="Теги">
+            <span id="tag_click" class="span_click">+</span>
+            <p class="Search_Tags Search position-absolute m-0" style="transform:translateY(-0.8px);z-index:100"></p>
+        </div>
         <div class="text-start mb-4" id="div_tags">
            @if (Model.Tags != null)
            {
@@ -72,7 +75,7 @@
         }
 
 
-        <p><button class="button form-control-plaintext m-auto w-50 mt-4" id="button_editpost">Сохранить</button></p>
+        <p><button class="button form-control-plaintext m-auto w-50 mt-4 text-decoration-none text-black" id="button_editpost">Сохранить</button></p>
 
     </form>
 </div>
