@@ -2,11 +2,14 @@
 using EduSciencePro.Models;
 using EduSciencePro.ViewModels.Request;
 using EduSciencePro.ViewModels.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using System.Security.Claims;
 
 namespace EduSciencePro.Controllers
 {
+    [Authorize]
     public class InternshipController : Controller
     {
         private readonly IInternshipRepository _internships;
@@ -170,6 +173,18 @@ namespace EduSciencePro.Controllers
         [Route("DeleteInternship")]
         public async Task<IActionResult> DeleteInternship(Guid internshipId)
         {
+            ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+            if (ident.Claims.FirstOrDefault(u => u.Value == "Модератор") != null)
+            {
+                var internship = await _internships.GetInternshipById(internshipId);
+                var organization = await _organizations.GetOrganizationById(internship.OrganizationId);
+                var notification = new Notification()
+                {
+                    UserId = organization.LeaderId,
+                    Content = $"Ваша стажировка/практика {internship.Name} была удалена модератором."
+                };
+                await _notifications.Save(notification);
+            }
             await _internships.Delete(internshipId);
             return RedirectToAction("YourInternships");
         }

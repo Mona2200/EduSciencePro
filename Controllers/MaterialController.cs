@@ -2,11 +2,13 @@
 using EduSciencePro.Models;
 using EduSciencePro.ViewModels.Request;
 using EduSciencePro.ViewModels.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduSciencePro.Controllers
 {
-   public class MaterialController : Controller
+    [Authorize]
+    public class MaterialController : Controller
    {
       private readonly IMaterialRepository _materials;
       public MaterialController(IMaterialRepository materials)

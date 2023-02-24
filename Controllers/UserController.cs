@@ -13,6 +13,7 @@ using EduSciencePro.ViewModels.Response;
 using EduSciencePro.Data.Services;
 using System.Data;
 using EduSciencePro.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EduSciencePro.Controllers
 {
@@ -196,6 +197,7 @@ namespace EduSciencePro.Controllers
 
         //}
 
+        [Authorize]
         [HttpGet]
         [Route("AddTypes")]
         public async Task<IActionResult> AddTypes()
@@ -230,7 +232,6 @@ namespace EduSciencePro.Controllers
             return Ok();
         }
 
-        [HttpGet]
         [Route("Main")]
         public async Task<IActionResult> Main()
         {
@@ -240,6 +241,7 @@ namespace EduSciencePro.Controllers
             return View(userViewModel);
         }
 
+        [Authorize]
         [HttpGet]
         [Route("GetUser")]
         public async Task<IActionResult> GetUser(Guid userId)
@@ -248,6 +250,7 @@ namespace EduSciencePro.Controllers
             return View("Main", userViewModel);
         }
 
+        [Authorize]
         [HttpGet]
         [Route("EditUser")]
         public async Task<IActionResult> EditUser()
@@ -288,6 +291,7 @@ namespace EduSciencePro.Controllers
             return View(editUserViewModel);
         }
 
+        [Authorize]
         [HttpPost]
         [Route("EditUser")]
         public async Task<IActionResult> EditUser(EditUserViewModel model)
@@ -338,6 +342,7 @@ namespace EduSciencePro.Controllers
             return RedirectToAction("Main");
         }
 
+        [Authorize]
         [HttpPost]
         [Route("EditResume")]
         public async Task<IActionResult> EditResume(EditResumeViewModel model)
@@ -363,6 +368,7 @@ namespace EduSciencePro.Controllers
             return RedirectToAction("Main");
         }
 
+        [Authorize]
         [HttpGet]
         [Route("EditEmail")]
         public async Task<IActionResult> EditEmail()
@@ -375,6 +381,7 @@ namespace EduSciencePro.Controllers
             return View(editViewModel);
         }
 
+        [Authorize]
         [HttpPost]
         [Route("EditEmail")]
         public async Task<IActionResult> EditEmail(string Email, bool Consent)
@@ -396,6 +403,7 @@ namespace EduSciencePro.Controllers
             return View("~/Views/User/ConfirmationCodeEmail.cshtml", model);
         }
 
+        [Authorize]
         [HttpGet]
         [Route("DeleteImage")]
         public async Task<IActionResult> DeleteImage()
@@ -425,6 +433,7 @@ namespace EduSciencePro.Controllers
                 return View(users);
         }
 
+        [Authorize]
         [HttpGet]
         [Route("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword()
@@ -432,22 +441,27 @@ namespace EduSciencePro.Controllers
             return View(new ForgotPasswordViewModel());
         }
 
+        [Authorize]
         [HttpPost]
         [Route("GetEducation")]
         public async Task<Education[]> GetEducation(string search) => await _educations.GetEducationsSearch(search);
 
+        [Authorize]
         [HttpPost]
         [Route("GetPlaceWork")]
         public async Task<PlaceWork[]> GetPlaceWork(string search) => await _placeWorks.GetPlaceWorksSearch(search);
 
+        [Authorize]
         [HttpPost]
         [Route("GetOrganization")]
         public async Task<Organization[]> GetOrganization(string search) => await _organizations.GetOrganizationsSearch(search);
 
+        [Authorize]
         [HttpGet]
         [Route("AddOrganization")]
         public async Task<IActionResult> AddOrganization() => View(new AddOrganizationViewModel());
 
+        [Authorize]
         [HttpPost]
         [Route("AddOrganization")]
         public async Task<IActionResult> AddOrganization(AddOrganizationViewModel model)
@@ -472,6 +486,7 @@ namespace EduSciencePro.Controllers
 
         }
 
+        [Authorize]
         [HttpPost]
         [Route("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
@@ -490,6 +505,7 @@ namespace EduSciencePro.Controllers
             return View("~/Views/User/ConfirmationCode.cshtml", model);
         }
 
+        [Authorize]
         [HttpPost]
         [Route("ConfirmationCode")]
         public async Task<IActionResult> ConfirmationCode(ForgotPasswordViewModel model)
@@ -504,6 +520,7 @@ namespace EduSciencePro.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
         [Route("ConfirmationCodeEmail")]
         public async Task<IActionResult> ConfirmationCodeEmail(ForgotPasswordViewModel model)
@@ -518,6 +535,7 @@ namespace EduSciencePro.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
         [Route("ChangePassword")]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
@@ -541,6 +559,7 @@ namespace EduSciencePro.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize]
         [HttpGet]
         [Route("Logout")]
         public async Task<IActionResult> Logout()
@@ -595,6 +614,7 @@ namespace EduSciencePro.Controllers
             return View("~/Views/Shared/ForEconomy.cshtml");
         }
 
+        [Authorize]
         [HttpGet]
         [Route("GetCookieEmail")]
         public async Task<string> GetCookieEmail()
@@ -604,6 +624,7 @@ namespace EduSciencePro.Controllers
             return claimEmail;
         }
 
+        [Authorize]
         [HttpGet]
         [Route("ResumeCollection")]
         public async Task<IActionResult> ResumeCollection()
@@ -648,6 +669,7 @@ namespace EduSciencePro.Controllers
             return resumes;
         }
 
+        [Authorize]
         [HttpGet]
         [Route("Notifications")]
         public async Task<IActionResult> Notifications()
@@ -660,6 +682,7 @@ namespace EduSciencePro.Controllers
             return View(notifications);
         }
 
+        [Authorize]
         [HttpPost]
         [Route("NotificationsMore/{take}/{skip}")]
         public async Task<Notification[]> NotificationsMore(int take, int skip)
@@ -792,11 +815,11 @@ namespace EduSciencePro.Controllers
             return null;
         }
 
-        //[HttpGet]
-        //[Route("UpdateBase")]
-        //public async Task UpdateBase()
-        //{
-        //    await _users.UpdateBase();
-        //}
+        [HttpGet]
+        [Route("UpdateBase")]
+        public async Task UpdateBase()
+        {
+            await _users.UpdateBase();
+        }
     }
 }

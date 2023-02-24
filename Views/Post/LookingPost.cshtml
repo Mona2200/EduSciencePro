@@ -72,7 +72,7 @@
                 </svg>
             </span>
 
-            @if (Model.Post.User.Email == Context.User.Identity.Name)
+            @if (Model.Post.User.Email == Context.User.Identity.Name || Context.User.Claims.FirstOrDefault(c => c.Value == "Модератор") != null)
             {
                 <span style="cursor:pointer;font-size: 25px;" class="ability_post col-xl-6 col-xxl-8 col-lg-4 col-md-8 col-sm-4 col-sm-4 col-2 color-blue text-end">…</span>
                 <div class="div_ability_post d-none position-absolute border_blue menu_width" style="background-color: white;right: 0;transform: translate(-50%, -120px);padding:0;">

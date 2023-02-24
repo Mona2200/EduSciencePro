@@ -2,11 +2,13 @@
 using EduSciencePro.Models;
 using EduSciencePro.ViewModels.Request;
 using EduSciencePro.ViewModels.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace EduSciencePro.Controllers
 {
+    [Authorize]
     public class CooperationController : Controller
     {
         private readonly ICooperationRepository _cooperations;
@@ -181,6 +183,18 @@ namespace EduSciencePro.Controllers
         [Route("DeleteCooperation")]
         public async Task<IActionResult> DeleteCooperation(Guid cooperationId)
         {
+            ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+            if (ident.Claims.FirstOrDefault(u => u.Value == "Модератор") != null)
+            {
+                var cooperation = await _cooperations.GetCooperationById(cooperationId);
+                var organization = await _organizations.GetOrganizationById(cooperation.OrganizationId);
+                var notification = new Notification()
+                {
+                    UserId = organization.LeaderId,
+                    Content = $"Ваш проект для сотрудничества {cooperation.Name} был удалён модератором."
+                };
+                await _notifications.Save(notification);
+            }
             await _cooperations.Delete(cooperationId);
             return RedirectToAction("YourCooperations");
         }

@@ -3,7 +3,9 @@ using EduSciencePro.Models;
 using EduSciencePro.Models.User;
 using EduSciencePro.ViewModels.Request;
 using EduSciencePro.ViewModels.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using System;
 using System.Security.Claims;
 using System.Text;
@@ -17,16 +19,19 @@ namespace EduSciencePro.Controllers
         private readonly IPostRepository _posts;
         private readonly ILikePostRepository _likePosts;
         private readonly IConferenceRepository _conferences;
+        private readonly INotificationRepository _notifications;
 
-        public PostController(ITagRepository tags, IUserRepository users, IPostRepository posts, ILikePostRepository likePosts, IConferenceRepository conferences)
+        public PostController(ITagRepository tags, IUserRepository users, IPostRepository posts, ILikePostRepository likePosts, IConferenceRepository conferences, INotificationRepository notifications)
         {
             _tags = tags;
             _users = users;
             _posts = posts;
             _likePosts = likePosts;
             _conferences = conferences;
+            _notifications = notifications;
         }
 
+        [Authorize]
         [HttpGet]
         [Route("AddPost")]
         public async Task<IActionResult> AddPost() => View(new AddPostViewModel());
@@ -35,6 +40,7 @@ namespace EduSciencePro.Controllers
         [Route("GetTagsSearch")]
         public async Task<Tag[]> GetTagsSearch(string search) => await _tags.GetTagsSearch(search);
 
+        [Authorize]
         [HttpPost]
         [Route("AddPost")]
         [ValidateAntiForgeryToken]
@@ -205,6 +211,7 @@ namespace EduSciencePro.Controllers
             return news;
         }
 
+        [Authorize]
         [HttpGet]
         [Route("EditPost")]
         public async Task<IActionResult> EditPost(Guid postId)
@@ -213,6 +220,7 @@ namespace EduSciencePro.Controllers
             return View(post);
         }
 
+        [Authorize]
         [HttpPost]
         [Route("EditPost")]
         public async Task<IActionResult> EditPost(EditPostViewModel model)
@@ -238,10 +246,22 @@ namespace EduSciencePro.Controllers
             return RedirectToAction("Main", "User");
         }
 
+        [Authorize]
         [HttpGet]
         [Route("DeletePost")]
         public async Task<IActionResult> DeletePost(Guid postId)
         {
+            ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+            if (ident.Claims.FirstOrDefault(u => u.Value == "Модератор") != null)
+            {
+                var post = await _posts.GetPostById(postId);
+                var notification = new Notification()
+                {
+                    UserId = post.UserId,
+                    Content = $"Ваша публикация {post.Title} была удалена модератором."
+                };
+                await _notifications.Save(notification);
+            }
             await _posts.Delete(postId);
             return RedirectToAction("Main", "User");
         }
@@ -270,6 +290,7 @@ namespace EduSciencePro.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
         [Route("LikePost")]
         public async Task<int> LikePost(Guid postId)

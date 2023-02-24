@@ -47,6 +47,11 @@
         {
             <p><button class="button form-control-plaintext m-auto w-50 mt-4 text-decoration-none text-black" style="cursor:pointer" onclick="send_notificationProject('@Model.Project.Id')" id="button_send_message">Оставить заявку</button></p>
         }
+
+        @if (Context.User.Claims.FirstOrDefault(c => c.Value == "Модератор") != null)
+        {
+            <p class="text-center"><a asp-action="DeleteProject" asp-controller="Project" asp-route-projectId="@Model.Project.Id">Удалить</a></p>
+        }
         
     </div>
 </div>

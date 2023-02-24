@@ -2,11 +2,13 @@
 using EduSciencePro.Models.User;
 using EduSciencePro.ViewModels.Request;
 using EduSciencePro.ViewModels.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace EduSciencePro.Controllers
 {
+    [Authorize]
     public class CourseController : Controller
     {
         private readonly ICourseRepository _courses;

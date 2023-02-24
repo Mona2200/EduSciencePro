@@ -4,6 +4,7 @@ using EduSciencePro.Models;
 using EduSciencePro.Models.User;
 using EduSciencePro.ViewModels.Request;
 using EduSciencePro.ViewModels.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -80,6 +81,7 @@ namespace EduSciencePro.Controllers
             return news;
         }
 
+        [Authorize]
         [HttpGet]
         [Route("YourProjects")]
         public async Task<IActionResult> YourProjects()
@@ -96,6 +98,7 @@ namespace EduSciencePro.Controllers
             return View(projectViewModels);
         }
 
+        [Authorize]
         [HttpPost]
         [Route("YourProjectsMore/{take}/{skip}")]
         public async Task<ProjectViewModel[]> YourProjectsMore([FromRoute] int take, [FromRoute] int skip)
@@ -115,6 +118,7 @@ namespace EduSciencePro.Controllers
             return projectViewModels;
         }
 
+        [Authorize]
         [HttpGet]
         [Route("AddProject")]
         public async Task<IActionResult> AddProject()
@@ -138,6 +142,7 @@ namespace EduSciencePro.Controllers
             return View(addProjectViewModel);
         }
 
+        [Authorize]
         [HttpPost]
         [Route("AddProject")]
         public async Task<IActionResult> AddProject(AddProjectViewModel model)
@@ -183,15 +188,28 @@ namespace EduSciencePro.Controllers
 
             var lookingProject = new LookingProjectViewModel() { Project = projectViewModel };
             if (projectViewModel != null)
-            lookingProject.YourProject = projectViewModel.Organization.Id == organization?.Id;
+                lookingProject.YourProject = projectViewModel.Organization.Id == organization?.Id;
 
             return View(lookingProject);
         }
 
+        [Authorize]
         [HttpGet]
         [Route("DeleteProject")]
         public async Task<IActionResult> DeleteProject(Guid projectId)
         {
+            ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+            if (ident.Claims.FirstOrDefault(u => u.Value == "Модератор") != null)
+            {
+                var project = await _projects.GetProjectById(projectId);
+                var organization = await _organizations.GetOrganizationById(project.OrganizationId);
+                var notification = new Notification()
+                {
+                    UserId = organization.LeaderId,
+                    Content = $"Ваш проект {project.Title} был удалён модератором."
+                };
+                await _notifications.Save(notification);
+            }
             await _projects.Delete(projectId);
             return RedirectToAction("YourProjects");
         }
@@ -204,6 +222,7 @@ namespace EduSciencePro.Controllers
             return skills.Take(5).ToArray();
         }
 
+        [Authorize]
         [HttpPost]
         [Route("SendNotificationProject/{projectId}")]
         public async Task SendNotificationProject([FromRoute] Guid projectId)

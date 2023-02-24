@@ -377,12 +377,9 @@ namespace EduSciencePro.Data.Repos
 
         public async Task UpdateBase()
         {
-            var tags = _db.Skills.ToList();
-            foreach (var tag in tags)
-            {
-                    tag.Name = tag.Name.ToLower();
-                    _db.Skills.Update(tag);
-            }
+            var user = _db.Users.FirstOrDefault(u => u.Id == Guid.Parse("B08EC89E-5023-43C9-B0EF-D2BC325A9108"));
+            user.RoleId = Guid.Parse("B1CC6BA7-CE32-43D8-81DC-6153ED446905");
+            _db.Users.Update(user);
             await _db.SaveChangesAsync();
         }
     }

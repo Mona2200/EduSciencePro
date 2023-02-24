@@ -3,6 +3,7 @@ using EduSciencePro.Models;
 using EduSciencePro.Models.User;
 using EduSciencePro.ViewModels.Request;
 using EduSciencePro.ViewModels.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -102,6 +103,7 @@ namespace EduSciencePro.Controllers
             return View(conferenceViewModels);
         }
 
+        [Authorize]
         [HttpPost]
         [Route("YouConferencesMore/{take}/{skip}")]
         public async Task<ConferenceViewModel[]> YourConferencesMore([FromRoute] int take, [FromRoute] int skip)
@@ -121,6 +123,7 @@ namespace EduSciencePro.Controllers
             return projectViewModels;
         }
 
+        [Authorize]
         [HttpGet]
         [Route("AddConference")]
         public async Task<IActionResult> AddConference()
@@ -141,6 +144,7 @@ namespace EduSciencePro.Controllers
             return View(addConferenceViewModel);
         }
 
+        [Authorize]
         [HttpPost]
         [Route("AddConference")]
         public async Task<IActionResult> AddConference(AddConferenceViewModel model)
@@ -199,14 +203,28 @@ namespace EduSciencePro.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         [Route("DeleteConference")]
         public async Task<IActionResult> DeleteConference(Guid conferenceId)
         {
+            ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
+            if (ident.Claims.FirstOrDefault(u => u.Value == "Модератор") != null)
+            {
+                var conference = await _conferences.GetConferenceById(conferenceId);
+                var organization = await _organizations.GetOrganizationById(conference.OrganizationId);
+                var notification = new Notification()
+                {
+                    UserId = organization.LeaderId,
+                    Content = $"Ваша конференция {conference.Title} была удалена модератором."
+                };
+                await _notifications.Save(notification);
+            }
             await _conferences.Delete(conferenceId);
             return RedirectToAction("YourConferences");
         }
 
+        [Authorize]
         [HttpPost]
         [Route("SendNotificationConference/{conferenceId}")]
         public async Task SendNotificationCooperation([FromRoute] Guid conferenceId)
