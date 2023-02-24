@@ -118,7 +118,7 @@ namespace EduSciencePro.Controllers
             {
                 var authProperties = new AuthenticationProperties
                 {
-                    AllowRefresh = true,
+                    IsPersistent = true,
                     ExpiresUtc = DateTimeOffset.UtcNow.AddDays(90)
                 };
 
