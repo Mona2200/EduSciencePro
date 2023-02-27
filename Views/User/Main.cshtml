@@ -21,7 +21,7 @@
             {
                 <p><a class="button_dark form-control-plaintext m-auto w-50 mt-4 text-decoration-none text-black" asp-controller="User" asp-action="EditUser">Редактировать</a></p>
             }
-            @if (Context.User.Identity.Name != Model.Email)
+            @if (Context.User.Identity.IsAuthenticated && Context.User.Identity.Name != Model.Email)
             {
                 <p><a class="button_dark form-control-plaintext m-auto w-50 mt-4 text-decoration-none text-black" asp-controller="Message" asp-action="OpenMessage" asp-route-interlocutorId="@Model.Id">Написать</a></p>
             }

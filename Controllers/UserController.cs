@@ -241,7 +241,6 @@ namespace EduSciencePro.Controllers
             return View(userViewModel);
         }
 
-        [Authorize]
         [HttpGet]
         [Route("GetUser")]
         public async Task<IActionResult> GetUser(Guid userId)
@@ -433,7 +432,6 @@ namespace EduSciencePro.Controllers
                 return View(users);
         }
 
-        [Authorize]
         [HttpGet]
         [Route("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword()
@@ -612,6 +610,13 @@ namespace EduSciencePro.Controllers
         public async Task<IActionResult> ForEconomy()
         {
             return View("~/Views/Shared/ForEconomy.cshtml");
+        }
+
+        [HttpGet]
+        [Route("PrivacyPolicy")]
+        public async Task<IActionResult> PrivacyPolicy()
+        {
+            return View("~/Views/Shared/PrivacyPolicy.cshtml");
         }
 
         [Authorize]
@@ -815,11 +820,11 @@ namespace EduSciencePro.Controllers
             return null;
         }
 
-        [HttpGet]
-        [Route("UpdateBase")]
-        public async Task UpdateBase()
-        {
-            await _users.UpdateBase();
-        }
+        //[HttpGet]
+        //[Route("UpdateBase")]
+        //public async Task UpdateBase()
+        //{
+        //    await _users.UpdateBase();
+        //}
     }
 }

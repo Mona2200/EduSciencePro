@@ -112,8 +112,8 @@
                         <p><a class="form-control-plaintext text-decoration-none text-white" asp-controller="User" asp-action="Logout">Выход из личного кабинета</a></p>
                     }
                     <p><a>Контакты</a></p>
-                    <p><a>Правила сайта</a></p>
-                    <p><a>Политика конфиденциальности</a></p>
+                    @*<p><a>Правила сайта</a></p>*@
+                    <p><a class="form-control-plaintext text-decoration-none text-white" asp-action="PrivacyPolicy" asp-controller="User">Политика конфиденциальности</a></p>
                 </div>
             </div>
         </div>
