@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - EduSciencePro</title>
+    <link rel="icon" href="~/src/logo_short.svg">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/EduSciencePro.styles.css" asp-append-version="true" />
@@ -111,7 +112,7 @@
                     {
                         <p><a class="form-control-plaintext text-decoration-none text-white" asp-controller="User" asp-action="Logout">Выход из личного кабинета</a></p>
                     }
-                    <p><a>Контакты</a></p>
+                    <p><a class="form-control-plaintext text-decoration-none text-white" asp-action="Contacts" asp-controller="User">Контакты</a></p>
                     @*<p><a>Правила сайта</a></p>*@
                     <p><a class="form-control-plaintext text-decoration-none text-white" asp-action="PrivacyPolicy" asp-controller="User">Политика конфиденциальности</a></p>
                 </div>

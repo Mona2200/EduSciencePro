@@ -619,6 +619,13 @@ namespace EduSciencePro.Controllers
             return View("~/Views/Shared/PrivacyPolicy.cshtml");
         }
 
+        [HttpGet]
+        [Route("Contacts")]
+        public async Task<IActionResult> Contacts()
+        {
+            return View("~/Views/Shared/Contacts.cshtml");
+        }
+
         [Authorize]
         [HttpGet]
         [Route("GetCookieEmail")]
