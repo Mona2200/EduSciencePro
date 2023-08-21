@@ -1,5 +1,5 @@
 ﻿@using EduSciencePro.ViewModels.Response
-@model CommentViewModel[]
+@model List<CommentViewModel>
 
 @{
     ViewData["Title"] = "Комментарии";
@@ -28,7 +28,7 @@
                                     <div style="height:40px;width:40px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;"></div>
                                 }
                                 @{
-                                    var fullName = $"{comment.User.FirstName} {comment.User.LastName} {comment.User.MiddleName}";
+                                    var fullName = $"{comment.User.LastName} {comment.User.FirstName} {comment.User.MiddleName}";
                                 }
                                 <p style="margin:0 10px;">@fullName</p>
                                 <p class="color-blue" style="margin:0 10px;">@comment.CreatedDate</p>
@@ -48,7 +48,7 @@
 
         @if (Model != null && Model.Length == 5)
         {
-            <p><button class="button form-control-plaintext w-25 m-auto mt-4" id="button_addnewstag">Загрузить ещё</button></p>
+            <p><button class="button form-control-plaintext pr-3 pl-3 m-auto mt-4" id="button_addnewstag">Загрузить ещё</button></p>
         }
     </div>
 
@@ -70,7 +70,7 @@
                    console.log(data);
 
                     for (var i = 0; i < data.length; i++) {
-                        var name = data[i].user.firstName + " " + data[i].user.lastName + " " + data[i].user.middleName;
+                        var name = data[i].user.lastName + " " + data[i].user.firstName + " " + data[i].user.middleName;
                         var img = "";
 
                         if (data[i].user.image != null) {

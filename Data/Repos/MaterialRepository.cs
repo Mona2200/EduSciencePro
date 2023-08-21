@@ -53,7 +53,7 @@ namespace EduSciencePro.Data.Repos
                tags.Add(tag);
             }
             var materialViewModel = _mapper.Map<Material, MaterialViewModel>(material);
-            materialViewModel.Tags = tags.ToArray();
+            materialViewModel.Tags = tags;
             materialViewModels.Add(materialViewModel);
          }
          return materialViewModels.ToArray();

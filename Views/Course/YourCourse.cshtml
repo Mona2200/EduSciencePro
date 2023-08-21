@@ -6,11 +6,11 @@
     Layout = "_Layout";
 }
 
-<div class="border_blue p-4 m-3 bg-white">
+<div class="border_blue p-4 m-3 bg-white row">
     <h3 class="mb-5 mt-2 underline_h3 text-center">Ваши курсы и программы</h3>
     @if (Model == null)
     {
-        <p><a class="button_light form-control-plaintext text-center m-auto w-25 p-2 mt-4" asp-action="AddCourse" asp-controller="Course">Создать курс или программу</a></p>
+        <p class="m-auto col-7 col-xl-3"><a class="button_light form-control-plaintext text-center text-decoration-none text-black p-2 mt-4" asp-action="AddCourse" asp-controller="Course">Создать курс или программу</a></p>
     }
 
     <div class="row justify-content-center">
@@ -19,7 +19,7 @@
 
             <div class="col-md-10 mt-4 mb-4" style="padding:10px;">
                 @{
-                    var fullname = $"{Model.User.FirstName} {Model.User.LastName} {Model.User.MiddleName}";
+                    var fullname = $"{Model.User.LastName} {Model.User.FirstName} {Model.User.MiddleName}";
                 }
                 <h5 class="fw-bold">@fullname</h5>
                 <p>Образование: @Model.Education.Name</p>

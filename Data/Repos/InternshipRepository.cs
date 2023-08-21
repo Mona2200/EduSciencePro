@@ -85,7 +85,7 @@ namespace EduSciencePro.Data.Repos
                     var skill = await _db.Skills.FirstOrDefaultAsync(t => t.Id == skillInternship.SkillId);
                     skills.Add(skill);
                 }
-                internshipViewModel.Skills = skills.Take(4).ToArray();
+                internshipViewModel.Skills = skills.Take(4).ToList();
                 internshipViewModel.Organization = await _db.Organizations.FirstOrDefaultAsync(o => o.Id == internship.OrganizationId);
 
                 internshipViewModels.Add(internshipViewModel);
@@ -141,7 +141,7 @@ namespace EduSciencePro.Data.Repos
                     var skill = await _db.Skills.FirstOrDefaultAsync(t => t.Id == skillInternship.SkillId);
                     skills.Add(skill);
                 }
-                internshipViewModel.Skills = skills.ToArray();
+                internshipViewModel.Skills = skills;
                 internshipViewModel.Organization = await _db.Organizations.FirstOrDefaultAsync(o => o.Id == internship.OrganizationId);
 
                 internshipViewModels.Add(internshipViewModel);
@@ -191,7 +191,7 @@ namespace EduSciencePro.Data.Repos
                 var skill = await _db.Skills.FirstOrDefaultAsync(t => t.Id == skillInternship.SkillId);
                 skills.Add(skill);
             }
-            internshipViewModel.Skills = skills.ToArray();
+            internshipViewModel.Skills = skills;
             internshipViewModel.Organization = await _db.Organizations.FirstOrDefaultAsync(o => o.Id == internship.OrganizationId);
 
             return internshipViewModel;

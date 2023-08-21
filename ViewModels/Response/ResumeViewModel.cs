@@ -10,7 +10,7 @@ namespace EduSciencePro.ViewModels.Response
       public string? Specialization { get; set; }
       public PlaceWork? PlaceWork { get; set; }
       public Organization? Organization { get; set; }
-      public Skill[] Skills { get; set; } = { };
+      public List<Skill>? Skills { get; set; }
       public string? AboutYourself { get; set; }
    }
 }

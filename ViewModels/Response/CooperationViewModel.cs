@@ -14,6 +14,6 @@ namespace EduSciencePro.ViewModels.Response
       public string Conditions { get; set; }
       public int Cost { get; set; }
       public string Contacts { get; set; }
-      public Skill[] Skills { get; set; }
+      public List<Skill> Skills { get; set; }
    }
 }

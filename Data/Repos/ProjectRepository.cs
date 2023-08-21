@@ -94,7 +94,7 @@ namespace EduSciencePro.Data.Repos
                 foreach (var projectSkill in projectSkills)
                     skills.Add(await _db.Skills.FirstOrDefaultAsync(s => s.Id == projectSkill.SkillId));
 
-                projectViewModel.Skills = skills.Take(4).ToArray();
+                projectViewModel.Skills = skills.Take(4).ToList();
 
                 projectViewModels.Add(projectViewModel);
             }
@@ -151,7 +151,7 @@ namespace EduSciencePro.Data.Repos
                 foreach (var projectSkill in projectSkills)
                     skills.Add(await _db.Skills.FirstOrDefaultAsync(s => s.Id == projectSkill.SkillId));
 
-                projectViewModel.Skills = skills.ToArray();
+                projectViewModel.Skills = skills;
 
                 projectViewModels.Add(projectViewModel);
             }
@@ -207,7 +207,7 @@ namespace EduSciencePro.Data.Repos
             foreach (var projectSkill in projectSkills)
                 skills.Add(await _db.Skills.FirstOrDefaultAsync(s => s.Id == projectSkill.SkillId));
 
-            projectViewModel.Skills = skills.ToArray();
+            projectViewModel.Skills = skills;
 
 
             return projectViewModel;

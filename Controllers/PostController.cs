@@ -38,7 +38,7 @@ namespace EduSciencePro.Controllers
 
         [HttpPost]
         [Route("GetTagsSearch")]
-        public async Task<Tag[]> GetTagsSearch(string search) => await _tags.GetTagsSearch(search);
+        public async Task<List<Tag>> GetTagsSearch(string search) => await _tags.GetTagsSearch(search);
 
         [Authorize]
         [HttpPost]
@@ -71,11 +71,11 @@ namespace EduSciencePro.Controllers
         [Route("AllPosts")]
         public async Task<IActionResult> AllPosts()
         {
-            var posts = new AllPostsViewModel()
+            var posts = new MainPageViewModel()
             {
-                News = (await _posts.GetPostViewModelsNews(null, 4, 0)).ToArray(),
-                Discuss = (await _posts.GetPostViewModelsDiscussions(null, 6, 0)).ToArray(),
-                Conferences = (await _conferences.GetConferenceViewModels()).Take(4).ToArray()
+                LastNews = (await _posts.GetPostViewModelsNews(null, 4, 0)).ToList(),
+                LastDiscuss = (await _posts.GetPostViewModelsDiscussions(null, 6, 0)).ToList(),
+                LastConferences = (await _conferences.GetConferenceViewModels()).Take(4).ToList()
             };
             return View(posts);
         }
@@ -127,7 +127,7 @@ namespace EduSciencePro.Controllers
 
         [HttpPost]
         [Route("NewsPostsMore/{take}/{skip}/{tags?}")]
-        public async Task<PostViewModel[]> NewsPostsMore([FromRoute] int take, [FromRoute] int skip, [FromRoute] string? tags = null)
+        public async Task<List<PostViewModel>> NewsPostsMore([FromRoute] int take, [FromRoute] int skip, [FromRoute] string? tags = null)
         {
             string[] tagNames = null;
             if (tags != null)
@@ -186,7 +186,7 @@ namespace EduSciencePro.Controllers
 
         [HttpPost]
         [Route("DiscussionsPostsMore/{take}/{skip}/{tags?}")]
-        public async Task<PostViewModel[]> DiscussionsPostsMore([FromRoute] int take, [FromRoute] int skip, [FromRoute] string? tags = null)
+        public async Task<List<PostViewModel>> DiscussionsPostsMore([FromRoute] int take, [FromRoute] int skip, [FromRoute] string? tags = null)
         {
             string[] tagNames = null;
             if (tags != null)
@@ -201,7 +201,7 @@ namespace EduSciencePro.Controllers
 
         [HttpPost]
         [Route("PostsMore/{take}/{skip}")]
-        public async Task<PostViewModel[]> PostsMore([FromRoute] int take, [FromRoute] int skip)
+        public async Task<List<PostViewModel>> PostsMore([FromRoute] int take, [FromRoute] int skip)
         {
             ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
             var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name).Value;
@@ -272,7 +272,7 @@ namespace EduSciencePro.Controllers
         {
             var postViewModel = await _posts.GetPostViewModelById(postId);
 
-            postViewModel.Comments = postViewModel.Comments.Take(5).ToArray();
+            postViewModel.Comments = postViewModel.Comments.Take(5).ToList();
 
             ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
             var claimEmail = ident.Claims.FirstOrDefault(u => u.Type == ClaimTypes.Name)?.Value;

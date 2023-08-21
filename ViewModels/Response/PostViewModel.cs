@@ -11,9 +11,9 @@ namespace EduSciencePro.ViewModels.Response
       public string CreatedDate { get; set; }
       public byte[]? Cover { get; set; }
       public bool IsNews { get; set; }
-      public Tag[]? Tags { get; set; }
-      public LikePost[] Likes { get; set; }
-      public CommentViewModel[] Comments { get; set; }
+      public List<Tag>? Tags { get; set; }
+      public List<LikePost>? Likes { get; set; }
+      public List<CommentViewModel>? Comments { get; set; }
       public User User { get; set; }
    }
 }

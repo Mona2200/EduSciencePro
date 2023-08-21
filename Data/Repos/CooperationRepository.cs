@@ -1,231 +1,268 @@
 ﻿using AutoMapper;
+using EduSciencePro.Data.Services;
 using EduSciencePro.Models;
 using EduSciencePro.Models.User;
 using EduSciencePro.ViewModels.Request;
 using EduSciencePro.ViewModels.Response;
 using Microsoft.EntityFrameworkCore;
 
-namespace EduSciencePro.Data.Repos
+namespace EduSciencePro.Data.Repos;
+
+/// <summary>
+/// Репозиторий для работы с сотрудничествами.
+/// </summary>
+public class CooperationRepository : ICooperationRepository
 {
-   public class CooperationRepository : ICooperationRepository
-   {
-      private readonly ApplicationDbContext _db;
-      private readonly IMapper _mapper;
-      private readonly IOrganizationRepository _organizations;
+    /// <summary>
+    /// Контекст базы данных.
+    /// </summary>
+    private readonly ApplicationDbContext _db;
 
-      public CooperationRepository(ApplicationDbContext db, IMapper mapper, IOrganizationRepository organizations)
-      {
-         _db = db;
-         _mapper = mapper;
-         _organizations = organizations;
-      }
+    /// <summary>
+    /// Маппер для преобразования типов.
+    /// </summary>
+    private readonly IMapper _mapper;
 
-      public async Task<Cooperation[]> GetCooperations() => await _db.Cooperations.OrderByDescending(p => p.EndDate).Where(p => p.EndDate > DateTime.Now).ToArrayAsync();
-      public async Task<CooperationViewModel[]> GetCooperationViewModels(string[] tagNames = null, int take = 5, int skip = 0)
-      {
-            List<Cooperation> cooperations = new();
-            if (tagNames != null && tagNames.Length != 0)
+    /// <summary>
+    /// Репозиторий для работы с организациями.
+    /// </summary>
+    private readonly IOrganizationRepository _organizations;
+
+    /// <summary>
+    /// Сервис для преобразование формата времени.
+    /// </summary>
+    private readonly DateTimeService _timeService;
+
+    public CooperationRepository(ApplicationDbContext db, IMapper mapper, IOrganizationRepository organizations, DateTimeService timeService)
+    {
+        _db = db;
+        _mapper = mapper;
+        _organizations = organizations;
+        _timeService = timeService;
+    }
+
+    /// <inheritdoc/>
+    public async Task<List<Cooperation>> GetCooperations()
+    {
+        return await _db.Cooperations.OrderByDescending(p => p.EndDate).Where(p => p.EndDate > DateTime.Now).ToListAsync();
+    }
+
+    /// <inheritdoc/>
+    public async Task<List<CooperationViewModel>> GetCooperationViewModels(string[]? skillNames = null, int take = 5, int skip = 0)
+    {
+        List<Cooperation> cooperations = new();
+        if (skillNames != null && skillNames.Length != 0)
+        {
+            foreach (string skillName in skillNames)
             {
-                foreach (var tagName in tagNames)
+                Skill? skill = await _db.Skills.FirstOrDefaultAsync(t => t.Name == skillName);
+                if (skill is null)
+                    continue;
+
+                List<SkillCooperation> skillCooperations = await _db.SkillCooperations.Where(t => t.SkillId == skill.Id).ToListAsync();
+                foreach (SkillCooperation skillCooperation in skillCooperations)
                 {
-                    var tag = await _db.Skills.FirstOrDefaultAsync(t => t.Name == tagName);
-                    if (tag != null)
-                    {
-                        var tagPosts = await _db.SkillCooperations.Where(t => t.SkillId == tag.Id).ToListAsync();
-                        foreach (var tagPost in tagPosts)
-                        {
-                            var tagNew = await _db.Cooperations.FirstOrDefaultAsync(p => p.Id == tagPost.CooperationId);
-                            if (tagNew != null && cooperations.FirstOrDefault(n => n.Id == tagNew.Id) == null)
-                                cooperations.Add(tagNew);
-                        }
-                    }
+                    Cooperation? cooperation = await _db.Cooperations.FirstOrDefaultAsync(p => p.Id == skillCooperation.CooperationId);
+                    if (cooperation != null && cooperations.SingleOrDefault(n => n.Id == cooperation.Id) == null)
+                        cooperations.Add(cooperation);
                 }
             }
-            else
-                cooperations = await _db.Cooperations.ToListAsync();
-            cooperations = cooperations.OrderByDescending(n => n.EndDate).Where(p => p.EndDate > DateTime.Now).Take(take).Skip(skip).ToList();
+        }
+        else
+            cooperations = await _db.Cooperations.ToListAsync();
+        cooperations = cooperations.OrderByDescending(n => n.EndDate).Where(p => p.EndDate > DateTime.Now).Take(take).Skip(skip).ToList();
 
-         List<CooperationViewModel> cooperationViewModels = new List<CooperationViewModel>();
-         foreach (var cooperation in cooperations)
-         {
+        List<CooperationViewModel> cooperationViewModels = new();
+        foreach (Cooperation cooperation in cooperations)
+        {
             CooperationViewModel cooperationViewModel = _mapper.Map<Cooperation, CooperationViewModel>(cooperation);
+            cooperationViewModel.EndDate = _timeService.GetDate(cooperation.EndDate);
 
-            string date = "";
-
-            if (cooperation.EndDate.Day.ToString().Length == 1)
-               date += "0" + cooperation.EndDate.Day.ToString() + ".";
-            else
-               date += cooperation.EndDate.Day.ToString() + ".";
-
-            if (cooperation.EndDate.Month.ToString().Length == 1)
-               date += "0" + cooperation.EndDate.Month.ToString() + ".";
-            else
-               date += cooperation.EndDate.Month.ToString() + ".";
-            date += cooperation.EndDate.Year.ToString();
-
-            cooperationViewModel.EndDate = date;
-
-            var skillCooperations = await _db.SkillCooperations.Where(t => t.CooperationId == cooperation.Id).ToArrayAsync();
-            List<Skill> skills = new List<Skill>();
-            foreach (var skillCooperation in skillCooperations)
+            List<SkillCooperation> skillCooperations = await _db.SkillCooperations.Where(t => t.CooperationId == cooperation.Id).ToListAsync();
+            List<Skill> skills = new();
+            foreach (SkillCooperation skillCooperation in skillCooperations)
             {
-               var skill = await _db.Skills.FirstOrDefaultAsync(t => t.Id == skillCooperation.SkillId);
-               skills.Add(skill);
+                Skill? skill = await _db.Skills.SingleOrDefaultAsync(t => t.Id == skillCooperation.SkillId);
+                if (skill != null)
+                    skills.Add(skill);
             }
-            cooperationViewModel.Skills = skills.Take(4).ToArray();
-            cooperationViewModel.Organization = await _db.Organizations.FirstOrDefaultAsync(o => o.Id == cooperation.OrganizationId);
+            cooperationViewModel.Skills = skills.Take(4).ToList();
+            cooperationViewModel.Organization = await _db.Organizations.SingleOrDefaultAsync(o => o.Id == cooperation.OrganizationId);
 
             cooperationViewModels.Add(cooperationViewModel);
-         }
-         return cooperationViewModels.ToArray();
-      }
+        }
+        return cooperationViewModels;
+    }
 
-      public async Task<Cooperation[]> GetCooperationsByOrganizationId(Guid organizationid) => await _db.Cooperations.OrderByDescending(p => p.EndDate).Where(t => t.OrganizationId == organizationid).ToArrayAsync();
+    /// <inheritdoc/>
+    public async Task<List<Cooperation>> GetCooperationsByOrganizationId(Guid organizationid)
+    {
+        return await _db.Cooperations.OrderByDescending(p => p.EndDate).Where(t => t.OrganizationId == organizationid).ToListAsync();
+    }
 
-      public async Task<CooperationViewModel[]> GetCooperationViewModelsByOrganizationId(Guid organizationid, int take = 5, int skip = 0)
-      {
-            List<Cooperation> cooperations = new();
-            cooperations = await _db.Cooperations.OrderByDescending(p => p.EndDate).Where(p => p.OrganizationId == organizationid).ToListAsync();
-            cooperations = cooperations.Take(take).Skip(skip).ToList();
+    /// <inheritdoc/>
+    public async Task<List<CooperationViewModel>> GetCooperationViewModelsByOrganizationId(Guid organizationid, int take = 5, int skip = 0)
+    {
+        List<Cooperation> cooperations = await GetCooperationsByOrganizationId(organizationid);
+        cooperations = cooperations.Take(take).Skip(skip).ToList();
 
-         List<CooperationViewModel> cooperationViewModels = new List<CooperationViewModel>();
-         foreach (var cooperation in cooperations)
-         {
+        List<CooperationViewModel> cooperationViewModels = new List<CooperationViewModel>();
+        foreach (Cooperation cooperation in cooperations)
+        {
             CooperationViewModel cooperationViewModel = _mapper.Map<Cooperation, CooperationViewModel>(cooperation);
+            cooperationViewModel.EndDate = _timeService.GetDate(cooperation.EndDate);
 
-            string date = "";
-
-            if (cooperation.EndDate.Day.ToString().Length == 1)
-               date += "0" + cooperation.EndDate.Day.ToString() + ".";
-            else
-               date += cooperation.EndDate.Day.ToString() + ".";
-
-            if (cooperation.EndDate.Month.ToString().Length == 1)
-               date += "0" + cooperation.EndDate.Month.ToString() + ".";
-            else
-               date += cooperation.EndDate.Month.ToString() + ".";
-            date += cooperation.EndDate.Year.ToString();
-
-            cooperationViewModel.EndDate = date;
-
-            var skillCooperations = await _db.SkillCooperations.Where(t => t.CooperationId == cooperation.Id).ToArrayAsync();
-            List<Skill> skills = new List<Skill>();
-            foreach (var skillCooperation in skillCooperations)
+            List<SkillCooperation> skillCooperations = await _db.SkillCooperations.Where(t => t.CooperationId == cooperation.Id).ToListAsync();
+            List<Skill> skills = new();
+            foreach (SkillCooperation skillCooperation in skillCooperations)
             {
-               var skill = await _db.Skills.FirstOrDefaultAsync(t => t.Id == skillCooperation.SkillId);
-               skills.Add(skill);
+                Skill? skill = await _db.Skills.SingleOrDefaultAsync(t => t.Id == skillCooperation.SkillId);
+                if (skill != null)
+                    skills.Add(skill);
             }
-            cooperationViewModel.Skills = skills.ToArray();
-            cooperationViewModel.Organization = await _db.Organizations.FirstOrDefaultAsync(o => o.Id == cooperation.OrganizationId);
+            cooperationViewModel.Skills = skills.Take(4).ToList();
+            cooperationViewModel.Organization = await _db.Organizations.SingleOrDefaultAsync(o => o.Id == cooperation.OrganizationId);
 
             cooperationViewModels.Add(cooperationViewModel);
-         }
-         return cooperationViewModels.ToArray();
-      }
+        }
+        return cooperationViewModels;
+    }
 
-      public async Task<Cooperation> GetCooperationById(Guid id) => await _db.Cooperations.FirstOrDefaultAsync(c => c.Id == id);
+    /// <inheritdoc/>
+    public async Task<Cooperation?> GetCooperationById(Guid id)
+    {
+        return await _db.Cooperations.SingleOrDefaultAsync(c => c.Id == id);
+    }
 
-      public async Task<CooperationViewModel> GetCooperationViewModelById(Guid id)
-      {
-         var cooperation = await GetCooperationById(id);
-         CooperationViewModel cooperationViewModel = _mapper.Map<Cooperation, CooperationViewModel>(cooperation);
+    /// <inheritdoc/>
+    public async Task<CooperationViewModel?> GetCooperationViewModelById(Guid id)
+    {
+        Cooperation? cooperation = await GetCooperationById(id);
+        if (cooperation is null)
+            return null;
 
-         string date = "";
+        CooperationViewModel cooperationViewModel = _mapper.Map<Cooperation, CooperationViewModel>(cooperation);
+        cooperationViewModel.EndDate = _timeService.GetDate(cooperation.EndDate);
 
-         if (cooperation.EndDate.Day.ToString().Length == 1)
-            date += "0" + cooperation.EndDate.Day.ToString() + ".";
-         else
-            date += cooperation.EndDate.Day.ToString() + ".";
+        List<SkillCooperation> skillCooperations = await _db.SkillCooperations.Where(t => t.CooperationId == cooperation.Id).ToListAsync();
+        List<Skill> skills = new();
+        foreach (SkillCooperation skillCooperation in skillCooperations)
+        {
+            Skill? skill = await _db.Skills.SingleOrDefaultAsync(t => t.Id == skillCooperation.SkillId);
+            if (skill != null)
+                skills.Add(skill);
+        }
+        cooperationViewModel.Skills = skills.Take(4).ToList();
+        cooperationViewModel.Organization = await _db.Organizations.SingleOrDefaultAsync(o => o.Id == cooperation.OrganizationId);
 
-         if (cooperation.EndDate.Month.ToString().Length == 1)
-            date += "0" + cooperation.EndDate.Month.ToString() + ".";
-         else
-            date += cooperation.EndDate.Month.ToString() + ".";
-         date += cooperation.EndDate.Year.ToString();
+        return cooperationViewModel;
+    }
 
-         cooperationViewModel.EndDate = date;
+    /// <inheritdoc/>
+    public async Task Save(AddCooperationViewModel model)
+    {
+        Cooperation cooperation = _mapper.Map<AddCooperationViewModel, Cooperation>(model);
+        Organization? organization = await _organizations.GetOrganizationByName(model.OrganizationName);
+        if (organization is null)
+            return;
 
-         var skillCooperations = await _db.SkillCooperations.Where(t => t.CooperationId == cooperation.Id).ToArrayAsync();
-         List<Skill> skills = new List<Skill>();
-         foreach (var skillCooperation in skillCooperations)
-         {
-            var skill = await _db.Skills.FirstOrDefaultAsync(t => t.Id == skillCooperation.SkillId);
-            skills.Add(skill);
-         }
-         cooperationViewModel.Skills = skills.ToArray();
-         cooperationViewModel.Organization = await _db.Organizations.FirstOrDefaultAsync(o => o.Id == cooperation.OrganizationId);
-
-         return cooperationViewModel;
-      }
-
-      public async Task Save(AddCooperationViewModel model)
-      {
-         Cooperation cooperation = _mapper.Map<AddCooperationViewModel, Cooperation>(model);
-         var organization = await _organizations.GetOrganizationByName(model.OrganizationName);
-         if (organization != null)
-         {
-            cooperation.OrganizationId = organization.Id;
-            if (model.Skills != null)
+        cooperation.OrganizationId = organization.Id;
+        if (model.Skills != null)
+        {
+            string[] skillNames = model.Skills.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            List<Skill> skills = new List<Skill>();
+            foreach (string skillName in skillNames)
             {
-               string[] skillNames = model.Skills.Split('/', StringSplitOptions.RemoveEmptyEntries);
-               List<Skill> skills = new List<Skill>();
-               foreach (var skillName in skillNames)
-               {
-                  Skill? skill = await _db.Skills.FirstOrDefaultAsync(t => t.Name == skillName);
-                  if (skill != null)
-                  {
-                     SkillCooperation skillCooperation = new SkillCooperation() { CooperationId = cooperation.Id, SkillId = skill.Id };
-                     var entry = _db.SkillCooperations.Entry(skillCooperation);
-                     if (entry.State == EntityState.Detached)
-                        await _db.SkillCooperations.AddAsync(skillCooperation);
-                  }
-                  else
-                  {
-                     Skill newSkill = new Skill() { Name = skillName };
-                     var entry = _db.Skills.Entry(newSkill);
-                     if (entry.State == EntityState.Detached)
-                        await _db.Skills.AddAsync(newSkill);
+                Skill? skill = await _db.Skills.FirstOrDefaultAsync(t => t.Name == skillName);
+                if (skill != null)
+                {
+                    SkillCooperation skillCooperation = new SkillCooperation() { CooperationId = cooperation.Id, SkillId = skill.Id };
+                    await _db.SkillCooperations.AddAsync(skillCooperation);
+                }
+                else
+                {
+                    Skill newSkill = new Skill() { Name = skillName };
+                    await _db.Skills.AddAsync(newSkill);
 
-                     SkillCooperation skillCooperation = new SkillCooperation() { CooperationId = cooperation.Id, SkillId = newSkill.Id };
-                     var newentry = _db.SkillCooperations.Entry(skillCooperation);
-                     if (newentry.State == EntityState.Detached)
-                        await _db.SkillCooperations.AddAsync(skillCooperation);
-                  }
-               }
+                    SkillCooperation skillCooperation = new SkillCooperation() { CooperationId = cooperation.Id, SkillId = newSkill.Id };
+                    await _db.SkillCooperations.AddAsync(skillCooperation);
+                }
             }
-            
-            var cooperationEntry = _db.Cooperations.Entry(cooperation);
-            if (cooperationEntry.State == EntityState.Detached)
-               await _db.Cooperations.AddAsync(cooperation);
-            await _db.SaveChangesAsync();
-         }
-      }
+        }
+        await _db.Cooperations.AddAsync(cooperation);
+        await _db.SaveChangesAsync();
+    }
 
-      public async Task Delete(Guid id)
-      {
-         var cooperation = await GetCooperationById(id);
-         if (cooperation != null)
-         {
-            var skillCooperations = await _db.SkillCooperations.Where(t => t.CooperationId == cooperation.Id).ToArrayAsync();
-            foreach (var skillCooperation in skillCooperations)
-            {
-               _db.SkillCooperations.Remove(skillCooperation);
-            }
-            _db.Cooperations.Remove(cooperation);
-            await _db.SaveChangesAsync();
-         }
-      }
-   }
+    /// <inheritdoc/>
+    public async Task Delete(Guid id)
+    {
+        Cooperation? cooperation = await GetCooperationById(id);
+        if (cooperation is null)
+            return;
 
-   public interface ICooperationRepository
-   {
-      Task<Cooperation[]> GetCooperations();
-      Task<CooperationViewModel[]> GetCooperationViewModels(string[] tagNames = null, int take = 5, int skip = 0);
-      Task<Cooperation[]> GetCooperationsByOrganizationId(Guid organizationid);
-      Task<CooperationViewModel[]> GetCooperationViewModelsByOrganizationId(Guid organizationid, int take = 5, int skip = 0);
-      Task<Cooperation> GetCooperationById(Guid id);
-      Task<CooperationViewModel> GetCooperationViewModelById(Guid id);
-      Task Save(AddCooperationViewModel model);
-      Task Delete(Guid id);
-   }
+        List<SkillCooperation> skillCooperations = await _db.SkillCooperations.Where(t => t.CooperationId == cooperation.Id).ToListAsync();
+        foreach (SkillCooperation skillCooperation in skillCooperations)
+            _db.SkillCooperations.Remove(skillCooperation);
+
+        _db.Cooperations.Remove(cooperation);
+        await _db.SaveChangesAsync();
+    }
+}
+
+/// <summary>
+/// Интерфейс для работы с сотрудничествами.
+/// </summary>
+public interface ICooperationRepository
+{
+/// <summary>
+/// Возвращает все сотрудничества, сортированные по убыванию даты.
+/// </summary>
+    Task<List<Cooperation>> GetCooperations();
+
+    /// <summary>
+    /// Возвращает все сотрудничества, сортированные по убыванию даты.
+    /// </summary>
+    /// <param name="skillNames">Навыки</param>
+    /// <param name="take">Количество возвращаемых сотрудничеств</param>
+    /// <param name="skip">Количество пропускаемых сотрудничеств</param>
+    /// <returns></returns>
+    Task<List<CooperationViewModel>> GetCooperationViewModels(string[]? skillNames = null, int take = 5, int skip = 0);
+
+    /// <summary>
+    /// Возвращает все сотрудничества организации, сортированные по убыванию даты.
+    /// </summary>
+    /// <param name="organizationid">Идентификатор организации</param>
+    Task<List<Cooperation>> GetCooperationsByOrganizationId(Guid organizationid);
+
+    /// <summary>
+    /// Возвращает все сотрудничества организации, сортированные по убыванию даты.
+    /// </summary>
+    /// <param name="organizationid">Идентификатор организации</param>
+    /// <param name="take">Количество возвращаемых сотрудничеств</param>
+    /// <param name="skip">Количество пропускаемых сотрудничеств</param>
+    Task<List<CooperationViewModel>> GetCooperationViewModelsByOrganizationId(Guid organizationid, int take = 5, int skip = 0);
+
+    /// <summary>
+    /// Возвращает сотрудничество по идентификатору.
+    /// </summary>
+    /// <param name="id">Идентификатор сотрудничества</param>
+    Task<Cooperation?> GetCooperationById(Guid id);
+
+    /// <summary>
+    /// Возвращает сотрудничество по идентификатору.
+    /// </summary>
+    /// <param name="id">Идентификатор сотрудничества</param>
+    Task<CooperationViewModel?> GetCooperationViewModelById(Guid id);
+
+    /// <summary>
+    /// Сохраняет сотрудничество.
+    /// </summary>
+    /// <param name="model">Сотрудничество</param>
+    Task Save(AddCooperationViewModel model);
+
+    /// <summary>
+    /// Удаляет сотрудничество.
+    /// </summary>
+    /// <param name="id">Идентификатор сотрудничества</param>
+    Task Delete(Guid id);
 }

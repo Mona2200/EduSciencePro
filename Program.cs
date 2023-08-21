@@ -5,6 +5,7 @@ using EduSciencePro.Hubs;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using Swashbuckle.Swagger;
+using EduSciencePro.Data.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,8 @@ builder.Services.AddSingleton<IMaterialRepository, MaterialRepository>();
 builder.Services.AddSingleton<IMessageRepository, MessageRepository>();
 
 builder.Services.AddSingleton<INotificationRepository, NotificationRepository>();
+
+builder.Services.AddSingleton<DateTimeService>();
 
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection), ServiceLifetime.Singleton);

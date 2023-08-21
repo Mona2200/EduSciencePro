@@ -26,7 +26,7 @@
                         </div>
 
                         @{
-                            var fullName = $"{interlocutor.FirstName} {interlocutor.LastName} {interlocutor.MiddleName}";
+                            var fullName = $"{interlocutor.LastName} {interlocutor.FirstName}  {interlocutor.MiddleName}";
                             var day = message.LastMessage.CreateTime.Day.ToString().Length == 1 ? $"0{message.LastMessage.CreateTime.Day}" : message.LastMessage.CreateTime.Day.ToString();
                             var month = message.LastMessage.CreateTime.Month.ToString().Length == 1 ? $"0{message.LastMessage.CreateTime.Month}" : message.LastMessage.CreateTime.Month.ToString();
                             var createDate = $"{day}.{month}.{message.LastMessage.CreateTime.Year}";
@@ -62,7 +62,7 @@
                         </div>
 
                         @{
-                            var fullName = $"{interlocutor.FirstName} {interlocutor.LastName} {interlocutor.MiddleName}";
+                            var fullName = $"{interlocutor.LastName} {interlocutor.FirstName}  {interlocutor.MiddleName}";
                             var day = message.LastMessage.CreateTime.Day.ToString().Length == 1 ? $"0{message.LastMessage.CreateTime.Day}" : message.LastMessage.CreateTime.Day.ToString();
                             var month = message.LastMessage.CreateTime.Month.ToString().Length == 1 ? $"0{message.LastMessage.CreateTime.Month}" : message.LastMessage.CreateTime.Month.ToString();
                             var createDate = $"{day}.{month}.{message.LastMessage.CreateTime.Year}";

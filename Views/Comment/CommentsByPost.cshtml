@@ -1,5 +1,5 @@
 ﻿@using EduSciencePro.ViewModels.Response
-@model KeyValuePair<Guid, CommentViewModel[]>;
+@model KeyValuePair<Guid, List<CommentViewModel>>;
 
 <div id="comments">
     @foreach (var comm in Model.Value)
@@ -16,7 +16,7 @@
                         <div style="height:40px;width:40px;background-image:url(/src/7fb117f2628e83a0fdfc18e0a3dc7cc0.png);background-position:center;background-size:cover;"></div>
                     }
                     @{
-                        var fullName = $"{comm.User.FirstName} {comm.User.LastName} {comm.User.MiddleName}";
+                        var fullName = $"{comm.User.LastName} {comm.User.FirstName} {comm.User.MiddleName}";
                     }
                     <p style="margin:0 10px;">@fullName</p>
                     <p class="color-blue" style="margin:0 10px;">@comm.CreatedDate</p>
@@ -26,7 +26,7 @@
                     @if (comm.User.Email == Context.User.Identity.Name)
                     {
                         <span style="cursor:pointer;font-size: 25px;" class="ability_post col-md-2 color-blue text-end">…</span>
-                        <div class="div_ability_post d-none position-absolute border_blue menu_width" style="background-color: white;right: 0;transform: translate(-50%, -20px);padding:0;">
+                        <div class="div_ability_post d-none position-absolute border_blue menu_width" style="background-color: white;transform: translateY(-20px);right: 10%;padding:0;">
                             @*<a asp-action="EditPost" asp-controller="Post" asp-route-postId="@post.Id" class="p-2 border_bottom_dark m-0 d-block">Редактировать</a>*@
                             <a asp-action="DeleteComment" asp-controller="Comment" asp-route-commentId="@comm.Id" asp-route-postId="@comm.PostId" class="p-2 border_bottom_dark m-0 d-block">Удалить</a>
                         </div>
@@ -37,9 +37,9 @@
         </div>
     }
 </div>
-@if (Model.Value != null && Model.Value.Length == 5)
+@if (Model.Value != null && Model.Value.Count() == 5)
 {
-    <p><button class="button form-control-plaintext w-25 m-auto mt-4" id="button_addnewstag">Загрузить ещё</button></p>
+    <p><button class="button form-control-plaintext pr-3 pl-3 m-auto mt-4" id="button_addnewstag">Загрузить ещё</button></p>
 }
 
 <script>
@@ -68,7 +68,7 @@
 
                     console.log(data);
                     for (var i = 0; i < data.length; i++) {
-                        var name = data[i].user.firstName + " " + data[i].user.lastName + " " + data[i].user.middleName;
+                        var name = data[i].user.lastName + " " + data[i].user.firstName + " " + data[i].user.middleName;
                         var opt = "";
                         var img = "";
 

@@ -50,12 +50,6 @@ namespace EduSciencePro.Controllers
         public async Task<IActionResult> Index()
         {
             ClaimsIdentity ident = HttpContext.User.Identity as ClaimsIdentity;
-
-            if (ident.IsAuthenticated)
-            {
-                return RedirectToAction("Main");
-            }
-            else
                 return RedirectToAction("AllPosts", "Post");
         }
 
@@ -416,7 +410,7 @@ namespace EduSciencePro.Controllers
 
         [HttpGet]
         [Route("GetUsers")]
-        public async Task<User[]> GetUsers()
+        public async Task<List<User>> GetUsers()
         {
             return await _users.GetUsers();
         }
@@ -484,7 +478,6 @@ namespace EduSciencePro.Controllers
 
         }
 
-        [Authorize]
         [HttpPost]
         [Route("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
@@ -503,7 +496,6 @@ namespace EduSciencePro.Controllers
             return View("~/Views/User/ConfirmationCode.cshtml", model);
         }
 
-        [Authorize]
         [HttpPost]
         [Route("ConfirmationCode")]
         public async Task<IActionResult> ConfirmationCode(ForgotPasswordViewModel model)
@@ -518,7 +510,6 @@ namespace EduSciencePro.Controllers
             }
         }
 
-        [Authorize]
         [HttpPost]
         [Route("ConfirmationCodeEmail")]
         public async Task<IActionResult> ConfirmationCodeEmail(ForgotPasswordViewModel model)
@@ -533,7 +524,6 @@ namespace EduSciencePro.Controllers
             }
         }
 
-        [Authorize]
         [HttpPost]
         [Route("ChangePassword")]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
@@ -742,7 +732,7 @@ namespace EduSciencePro.Controllers
             {
                 model.UserViewModel = _mapper.Map<AddUserViewModel, UserViewModel>(model.AddUserViewModel);
                 if (model.AddUserViewModel.TypeUsers != null)
-                    model.UserViewModel.TypeUsers = model.AddUserViewModel.TypeUsers.Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(s => new TypeModel() { Name = s }).ToArray();
+                    model.UserViewModel.TypeUsers = model.AddUserViewModel.TypeUsers.Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(s => new TypeModel() { Name = s }).ToList();
 
                 List<Link> links = new List<Link>();
                 if (model.AddUserViewModel.TelegramLink != null)
@@ -754,7 +744,7 @@ namespace EduSciencePro.Controllers
                 if (model.AddUserViewModel.AnotherLink != null)
                     links.Add(new Link() { Name = "", Url = model.AddUserViewModel.AnotherLink });
 
-                model.UserViewModel.Links = links.ToArray();
+                model.UserViewModel.Links = links;
             }
             else
             {
@@ -780,7 +770,7 @@ namespace EduSciencePro.Controllers
                 }
             }
 
-            model.Types = await _types.GetTypes();
+            model.Types = (await _types.GetTypes()).ToList();
             if (model.EditResumeViewModel == null)
             {
                 model.EditResumeViewModel = new EditResumeViewModel();

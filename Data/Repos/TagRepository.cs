@@ -3,75 +3,81 @@ using Azure;
 using EduSciencePro.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace EduSciencePro.Data.Repos
+namespace EduSciencePro.Data.Repos;
+
+public class TagRepository : ITagRepository
 {
-   public class TagRepository : ITagRepository
-   {
-      private readonly ApplicationDbContext _db;
-      private readonly IMapper _mapper;
+    private readonly ApplicationDbContext _db;
+    private readonly IMapper _mapper;
 
-      public TagRepository(ApplicationDbContext db, IMapper mapper)
-      {
-         _db = db;
-         _mapper = mapper;
-      }
+    public TagRepository(ApplicationDbContext db, IMapper mapper)
+    {
+        _db = db;
+        _mapper = mapper;
+    }
 
-      public async Task<Tag[]> GetTags() => await _db.Tags.ToArrayAsync();
+    public async Task<List<Tag>> GetTags()
+    {
+        return await _db.Tags.ToListAsync();
+    }
 
-      public async Task<Tag[]> GetTagsByPostId(Guid postId)
-      {
-         var tagPosts = await _db.TagPosts.Where(t => t.PostId == postId).ToArrayAsync();
-         var tags = new Tag[tagPosts.Length];
-         int i = 0;
-         foreach (var tagPost in tagPosts)
-         {
-            tags[i++] = await GetTagById(tagPost.TagId);
-         }
-         return tags;
-      }
+    public async Task<List<Tag>> GetTagsByPostId(Guid postId)
+    {
+        List<TagPost> tagPosts = await _db.TagPosts.Where(t => t.PostId == postId).ToListAsync();
+        List<Tag> tags = new();
+        foreach (TagPost tagPost in tagPosts)
+            tags.Add(await GetTagById(tagPost.TagId));
 
-      public async Task<Tag> GetTagById(Guid id) => await _db.Tags.FirstOrDefaultAsync(t => t.Id == id);
+        return tags;
+    }
 
-      public async Task<Tag> GetTagByName(string name) => await _db.Tags.FirstOrDefaultAsync(t => t.Name == name);
+    public async Task<Tag?> GetTagById(Guid id)
+    {
+        return await _db.Tags.SingleOrDefaultAsync(t => t.Id == id);
+    }
 
-      public async Task<Tag[]> GetTagsSearch(string search) => await _db.Tags.Where(t => t.Name.ToLower().Contains(search.ToLower())).ToArrayAsync();
+    public async Task<Tag?> GetTagByName(string name)
+    {
+        return await _db.Tags.SingleOrDefaultAsync(t => t.Name == name);
+    }
 
-      public async Task Save(string[] tags, Guid postId)
-      {
-         var oldTagPosts = await _db.TagPosts.Where(t => t.PostId == postId).ToArrayAsync();
+    public async Task<List<Tag>> GetTagsSearch(string search)
+    {
+        return await _db.Tags.Where(t => t.Name.ToLower().Contains(search.ToLower())).ToListAsync();
+    }
 
-         foreach (var tagPost in oldTagPosts)
-         {
+    public async Task Save(string[] tags, Guid postId)
+    {
+        List<TagPost> oldTagPosts = await _db.TagPosts.Where(t => t.PostId == postId).ToListAsync();
+        foreach (TagPost tagPost in oldTagPosts)
             _db.TagPosts.Remove(tagPost);
-         }
 
-         foreach (var tag in tags)
-         {
-            var tryTag = await GetTagByName(tag);
+        foreach (string tag in tags)
+        {
+            Tag? tryTag = await GetTagByName(tag);
             if (tryTag == null)
             {
-               var newTag = new Tag() { Name = tag };
-               await _db.Tags.AddAsync(newTag);
+                Tag newTag = new Tag() { Name = tag };
+                await _db.Tags.AddAsync(newTag);
 
-               var tagPost = new TagPost() { PostId = postId, TagId = newTag.Id };
-               await _db.TagPosts.AddAsync(tagPost);
+                TagPost tagPost = new TagPost() { PostId = postId, TagId = newTag.Id };
+                await _db.TagPosts.AddAsync(tagPost);
             }
             else
             {
-               var newTagPost = new TagPost() { PostId = postId, TagId = tryTag.Id };
-               await _db.TagPosts.AddAsync(newTagPost);
+                TagPost newTagPost = new TagPost() { PostId = postId, TagId = tryTag.Id };
+                await _db.TagPosts.AddAsync(newTagPost);
             }
-         }
-      }
-   }
+        }
+    }
+}
 
-   public interface ITagRepository
-   {
-      Task<Tag[]> GetTags();
-        Task<Tag> GetTagByName(string name);
-      Task<Tag[]> GetTagsByPostId(Guid postId);
-      Task<Tag> GetTagById(Guid id);
-      Task<Tag[]> GetTagsSearch(string search);
-      Task Save(string[] tags, Guid postId);
-   }
+public interface ITagRepository
+{
+    Task<List<Tag>> GetTags();
+    Task<Tag?> GetTagByName(string name);
+    Task<List<Tag>> GetTagsByPostId(Guid postId);
+    Task<Tag?> GetTagById(Guid id);
+    Task<List<Tag>> GetTagsSearch(string search);
+    Task Save(string[] tags, Guid postId);
 }

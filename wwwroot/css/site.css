@@ -270,6 +270,12 @@ input {
     outline: none;
 }
 
+.border_list p {
+    text-align: center;
+    border-bottom: 1px #D3D3D3 solid;
+    width: auto;
+}
+
 
 @media (max-width: 1200px) {
     .desctop_nav {

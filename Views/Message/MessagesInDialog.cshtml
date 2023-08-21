@@ -23,7 +23,7 @@
 
                 <div class="col-10">
                     @{
-                        var sendername = $"{message.Sender.FirstName} {message.Sender.LastName} {message.Sender.MiddleName}";
+                        var sendername = $"{message.Sender.LastName} {message.Sender.FirstName} {message.Sender.MiddleName}";
                         var day = message.CreateTime.Day.ToString().Length == 1 ? $"0{message.CreateTime.Day}" : message.CreateTime.Day.ToString();
                         var month = message.CreateTime.Month.ToString().Length == 1 ? $"0{message.CreateTime.Month}" : message.CreateTime.Month.ToString();
                         var createDate = $"{day}.{month}.{message.CreateTime.Year}";

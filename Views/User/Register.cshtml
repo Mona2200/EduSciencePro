@@ -11,13 +11,13 @@
 
         <h3 class="mb-5 mt-5">Регистрация</h3>
 
-        <label asp-for="AddUserViewModel.FirstName" class="w-100 text-start label_input"></label>
-        <p><input class="text-center w-100 p-1" placeholder="Имя" asp-for="AddUserViewModel.FirstName"></p>
-        <p><span asp-validation-for="AddUserViewModel.FirstName" class="text-danger mb-3"></span></p>
-
         <label asp-for="AddUserViewModel.LastName" class="w-100 text-start label_input"></label>
         <p><input class="text-center w-100 p-1" placeholder="Фамилия" asp-for="AddUserViewModel.LastName"></p>
         <p><span asp-validation-for="AddUserViewModel.LastName" class="text-danger mb-3"></span></p>
+
+        <label asp-for="AddUserViewModel.FirstName" class="w-100 text-start label_input"></label>
+        <p><input class="text-center w-100 p-1" placeholder="Имя" asp-for="AddUserViewModel.FirstName"></p>
+        <p><span asp-validation-for="AddUserViewModel.FirstName" class="text-danger mb-3"></span></p>
 
         <label asp-for="AddUserViewModel.MiddleName" class="w-100 text-start label_input"></label>
         <p><input class="text-center w-100 p-1" placeholder="Отчество" asp-for="AddUserViewModel.MiddleName"></p>

@@ -6,17 +6,17 @@
     Layout = "_Layout";
 }
 
-<div class="border_blue p-4 m-3 bg-white">
+<div class="border_blue p-4 m-3 bg-white row">
 
     <h3 class="mb-5 mt-2 underline_h3 text-center">Учебные материалы</h3>
 
-    <p><a class="button_light form-control-plaintext text-center m-auto w-25 p-2 mt-4" asp-action="AddMaterial" asp-controller="Material">Добавить учебный материал</a></p>
+    <p class="m-auto col-7 col-xl-3"><a class="button_light form-control-plaintext text-center text-decoration-none text-black p-2 mt-4" asp-action="AddMaterial" asp-controller="Material">Добавить учебный материал</a></p>
 
     <div class="row justify-content-center" id="projects">
 
         <div class="col-10 m-auto d-flex justify-content-between mb-3 row">
 
-            <div class="col-9" id="tags_div">
+            <div class="m-auto col-12 text-start col-sm-8 p-1" id="tags_div">
                 @{
                     if (Model.Tags == null || Model.Tags.Count() == 0)
                     {
@@ -31,7 +31,7 @@
                     }
                 }
             </div>
-            <div class="col-3">
+            <div class="m-auto col-8 text-center col-sm-4 text-sm-start p-1">
                 <button class="button form-control-plaintext p-1" data-bs-toggle="collapse" data-bs-target="#tags_form" aria-expanded="false" aria-controls="tags_form">Добавить свой фильтр</button>
             </div>
         </div>
@@ -72,7 +72,7 @@
 
     @if (Model.Materials != null && Model.Materials.Length == 5)
     {
-        <p><button class="button form-control-plaintext w-25 m-auto mt-4" id="button_addnewstag">Загрузить ещё</button></p>
+        <p class="col-7 col-xl-3 m-auto mt-4"><button class="button form-control-plaintext" id="button_addnewstag">Загрузить ещё</button></p>
     }
 
 </div>

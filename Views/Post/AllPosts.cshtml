@@ -1,5 +1,5 @@
 ﻿@using EduSciencePro.ViewModels.Response
-@model AllPostsViewModel;
+@model MainPageViewModel;
 
 @{
     ViewData["Title"] = "Главная";
@@ -9,7 +9,7 @@
 <div class="col-md-12 row">
     <div class="col-lg-8 col-md-12 row">
         <p class="underline mt-3 mb-3" style="margin-left:10px;">Новости</p>
-        @foreach (var news in Model.News)
+        @foreach (var news in Model.LastNews)
         {
             <div class="col-lg-6 col-md-12" style="padding:10px;">
                 <a asp-action="LookingPost" asp-controller="Post" asp-route-postId="@news.Id">
@@ -19,15 +19,15 @@
                             <p class="small color-blue">@news.CreatedDate</p>
                             <p class="text-uppercase text-white">@news.Title</p>
                             <p class="row">
-                                <span class="col-xl-3 col-xxl-2 col-lg-4 col-md-2 col-sm-4 col-6">
-                                    <span class="text-white">@news.Likes.Length</span>
+                                <span class="col-xl-3 col-xxl-2 col-lg-4 col-md-2 col-sm-2 col-3">
+                                    <span class="text-white">@news.Likes?.Count()</span>
                                     <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M10 18.35L8.55 17.03C3.4 12.36 0 9.27 0 5.5C0 2.41 2.42 0 5.5 0C7.24 0 8.91 0.81 10 2.08C11.09 0.81 12.76 0 14.5 0C17.58 0 20 2.41 20 5.5C20 9.27 16.6 12.36 11.45 17.03L10 18.35Z" fill="#CDE7FF" />
                                     </svg>
                                 </span>
 
-                                <span class="col-xl-3 col-xxl-2 col-lg-4 col-md-2 col-sm-4 col-sm-4 col-6">
-                                    <span class="text-white">@news.Comments.Length</span>
+                                <span class="col-xl-3 col-xxl-2 col-lg-4 col-md-2 col-sm-2 col-3">
+                                    <span class="text-white">@news.Comments?.Count()</span>
                                     <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M18.3 18.3L16 16H2C1.45 16 0.979333 15.8043 0.588 15.413C0.196 15.021 0 14.55 0 14V2C0 1.45 0.196 0.979 0.588 0.587C0.979333 0.195667 1.45 0 2 0H18C18.55 0 19.021 0.195667 19.413 0.587C19.8043 0.979 20 1.45 20 2V17.575C20 18.025 19.796 18.3373 19.388 18.512C18.9793 18.6873 18.6167 18.6167 18.3 18.3Z" fill="#CDE7FF" />
                                     </svg>
@@ -47,22 +47,22 @@
 
     <div class="col-lg-4 col-md-12">
         <p class="underline mt-3 mb-3" style="margin-left:10px;">Актуальные обсуждения</p>
-        @foreach (var discuss in Model.Discuss)
+        @foreach (var discuss in Model.LastDiscuss)
         {
             <div style="padding:10px;">
                 <a class="form-control-plaintext text-decoration-none" asp-action="LookingPost" asp-controller="Post" asp-route-postId="@discuss.Id">
                     <p class="mt-2 mb-2">@discuss.Title</p>
                 </a>
                 <p class="row">
-                    <span class="col-xl-3 col-xxl-2 col-lg-4 col-md-2 col-sm-4 col-6">
-                        <span>@discuss.Likes.Length</span>
+                    <span class="col-xl-3 col-xxl-2 col-lg-4 col-md-2 col-sm-2 col-3">
+                        <span>@discuss.Likes?.Count()</span>
                         <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 18.35L8.55 17.03C3.4 12.36 0 9.27 0 5.5C0 2.41 2.42 0 5.5 0C7.24 0 8.91 0.81 10 2.08C11.09 0.81 12.76 0 14.5 0C17.58 0 20 2.41 20 5.5C20 9.27 16.6 12.36 11.45 17.03L10 18.35Z" fill="#CDE7FF" />
                         </svg>
                     </span>
 
-                    <span class="col-xl-3 col-xxl-2 col-lg-4 col-md-2 col-sm-4 col-6">
-                        <span>@discuss.Comments.Length</span>
+                    <span class="col-xl-3 col-xxl-2 col-lg-4 col-md-2 col-sm-2 col-3">
+                        <span>@discuss.Comments?.Count()</span>
                         <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M18.3 18.3L16 16H2C1.45 16 0.979333 15.8043 0.588 15.413C0.196 15.021 0 14.55 0 14V2C0 1.45 0.196 0.979 0.588 0.587C0.979333 0.195667 1.45 0 2 0H18C18.55 0 19.021 0.195667 19.413 0.587C19.8043 0.979 20 1.45 20 2V17.575C20 18.025 19.796 18.3373 19.388 18.512C18.9793 18.6873 18.6167 18.6167 18.3 18.3Z" fill="#CDE7FF" />
                         </svg>
@@ -78,10 +78,10 @@
     </div>
 
     <div class="col-md-12 row">
-       @if (Model.Conferences != null && Model.Conferences.Length != 0)
+       @if (Model.LastConferences != null && Model.LastConferences.Count() != 0)
        {
             <p class="underline mt-3 mb-3" style="margin-left:10px;">Проходящие конференции</p>
-            @foreach (var conference in Model.Conferences)
+            @foreach (var conference in Model.LastConferences)
             {
                 <div class="col-xxl-3 col-xl-12">
                     <a class="form-control-plaintext text-decoration-none text-black" asp-action="LookingConference" asp-controller="Conference" asp-route-conferenceId="@conference.Id">

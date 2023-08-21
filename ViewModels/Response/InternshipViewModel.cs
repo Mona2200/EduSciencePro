@@ -18,6 +18,6 @@ namespace EduSciencePro.ViewModels.Response
       public string Responsibility { get; set; }
       public string Development { get; set; }
       public string Contacts { get; set; }
-      public Skill[] Skills { get; set; }
+      public List<Skill> Skills { get; set; }
    }
 }

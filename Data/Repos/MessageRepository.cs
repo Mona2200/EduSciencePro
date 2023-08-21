@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using EduSciencePro.Models;
-using EduSciencePro.ViewModels;
 using EduSciencePro.ViewModels.Response;
 using Microsoft.EntityFrameworkCore;
 

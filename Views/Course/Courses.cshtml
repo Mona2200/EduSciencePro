@@ -6,7 +6,7 @@
     Layout = "_Layout";
 }
 
-<div class="border_blue p-4 m-3 bg-white">
+<div class="border_blue p-4 m-3 bg-white row">
     <p class="w-100 text-end"><a class="mr-2" asp-action="YourCourse" asp-controller="Course">Ваши курсы/программы</a></p>
 
 
@@ -16,7 +16,7 @@
 
         <div class="col-10 m-auto d-flex justify-content-between mb-3 row">
 
-            <div class="col-9" id="tags_div">
+            <div class="m-auto col-12 text-start col-sm-8 p-1" id="tags_div">
                 @{
                     if (Model.Tags == null || Model.Tags.Count() == 0)
                     {
@@ -31,7 +31,7 @@
                     }
                 }
             </div>
-            <div class="col-3">
+            <div class="m-auto col-8 text-center col-sm-4 text-sm-start p-1">
                 <button class="button form-control-plaintext p-1" data-bs-toggle="collapse" data-bs-target="#tags_form" aria-expanded="false" aria-controls="tags_form">Добавить свой фильтр</button>
             </div>
         </div>
@@ -49,7 +49,7 @@
             {
                 <div class="col-md-10 mt-4 mb-4" style="padding:10px;">
                     @{
-                        var fullname = $"{course.User.FirstName} {course.User.LastName} {course.User.MiddleName}";
+                        var fullname = $"{course.User.LastName} {course.User.FirstName} {course.User.MiddleName}";
                     }
                     <a asp-controller="User" asp-action="GetUser" asp-route-userId="@course.User.Id" class="form-control-plaintext text-decoration-none"><h5 class="fw-bold">@fullname</h5></a>
                     <p>Образование: @course.Education.Name</p>
@@ -86,7 +86,7 @@
     </div>
     @if (Model.Courses != null && Model.Courses.Length == 5)
     {
-        <p><button class="button form-control-plaintext w-25 m-auto mt-4" id="button_addnewstag">Загрузить ещё</button></p>
+        <p class="col-7 col-xl-3 m-auto mt-4"><button class="button form-control-plaintext" id="button_addnewstag">Загрузить ещё</button></p>
     }
 </div>
 
@@ -120,7 +120,7 @@
                     for (var i = 0; i < data.length; i++) {
                        var skills = "";
                     var programms = "";
-                    var name = data[i].user.firstName + " " + data[i].user.lastName + " " + data[i].user.middleName;
+                    var name = data[i].user.lastName + " " + data[i].user.firstName + " " + data[i].user.middleName;
 
                         if (data[i].skills != null) {
                             for (var j = 0; j < data[i].skills.length; j++) {

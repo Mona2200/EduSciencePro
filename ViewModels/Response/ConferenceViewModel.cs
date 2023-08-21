@@ -14,6 +14,6 @@ namespace EduSciencePro.ViewModels.Response
       public string? Information { get; set; }
       public string? Program { get; set; }
       public string Contacts { get; set; }
-      public Tag[] Tags { get; set; }
+      public List<Tag> Tags { get; set; }
    }
 }

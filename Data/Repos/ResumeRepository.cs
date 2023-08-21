@@ -4,323 +4,324 @@ using EduSciencePro.ViewModels.Request;
 using EduSciencePro.ViewModels.Response;
 using Microsoft.EntityFrameworkCore;
 
-namespace EduSciencePro.Data.Repos
+namespace EduSciencePro.Data.Repos;
+
+public class ResumeRepository : IResumeRepository
 {
-   public class ResumeRepository : IResumeRepository
-   {
-      private readonly ApplicationDbContext _db;
-      private readonly IMapper _mapper;
+    private readonly ApplicationDbContext _db;
+    private readonly IMapper _mapper;
 
-      public ResumeRepository(ApplicationDbContext db, IMapper mapper)
-      {
-         _db = db;
-         _mapper = mapper;
-      }
+    public ResumeRepository(ApplicationDbContext db, IMapper mapper)
+    {
+        _db = db;
+        _mapper = mapper;
+    }
 
-      public async Task<Resume[]> GetResumes()
-      {
-         return await _db.Resumes.ToArrayAsync();
-      }
+    public async Task<List<Resume>> GetResumes()
+    {
+        return await _db.Resumes.ToListAsync();
+    }
 
-      public async Task<Resume> GetResumeById(Guid id)
-      {
-         return await _db.Resumes.FirstOrDefaultAsync(r => r.Id == id);
-      }
+    public async Task<Resume?> GetResumeById(Guid id)
+    {
+        return await _db.Resumes.SingleOrDefaultAsync(r => r.Id == id);
+    }
 
-      public async Task<Resume> GetResumeByUserId(Guid userId)
-      {
-         var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId);
-         return await _db.Resumes.FirstOrDefaultAsync(r => r.Id == user.ResumeId);
-      }
+    public async Task<Resume?> GetResumeByUserId(Guid userId)
+    {
+        User? user = await _db.Users.SingleOrDefaultAsync(u => u.Id == userId);
+        if (user is null || user.ResumeId is null)
+            return null;
 
-      public async Task<ResumeViewModel[]> GetResumeViewModels()
-      {
-         var resumes = await GetResumes();
-         var models = new ResumeViewModel[resumes.Length];
-         int i = 0;
-         foreach (var res in resumes)
-         {
-            var user = await _db.Users.FirstOrDefaultAsync(u => u.ResumeId == res.Id);
+        return await GetResumeById(user.ResumeId.Value);
+    }
 
-            models[i] = _mapper.Map<Resume, ResumeViewModel>(res);
-            models[i].PlaceWork = await _db.PlaceWorks.FirstOrDefaultAsync(p => p.Id == res.PlaceWorkId);
-            models[i].Education = await _db.Educations.FirstOrDefaultAsync(e => e.Id == res.EducationId);
+    public async Task<List<ResumeViewModel>> GetResumeViewModels()
+    {
+        List<Resume> resumes = await GetResumes();
+        List<ResumeViewModel> resumeViewModels = new();
+        foreach (Resume resume in resumes)
+        {
+            User? user = await _db.Users.FirstOrDefaultAsync(u => u.ResumeId == resume.Id);
+            if (user is null)
+                continue;
 
-            var userOrg = await _db.UserOrganizations.FirstOrDefaultAsync(u => u.IdUser == user.Id);
+            ResumeViewModel resumeViewModel = _mapper.Map<Resume, ResumeViewModel>(resume);
+            resumeViewModel.PlaceWork = await _db.PlaceWorks.SingleOrDefaultAsync(p => p.Id == resume.PlaceWorkId);
+            resumeViewModel.Education = await _db.Educations.SingleOrDefaultAsync(e => e.Id == resume.EducationId);
+
+            UserOrganization? userOrg = await _db.UserOrganizations.FirstOrDefaultAsync(u => u.IdUser == user.Id);
             if (userOrg != null)
-               models[i].Organization = await _db.Organizations.FirstOrDefaultAsync(o => o.Id == userOrg.IdOrganization);
+                resumeViewModel.Organization = await _db.Organizations.SingleOrDefaultAsync(o => o.Id == userOrg.IdOrganization);
 
-            var resumeSkills = await _db.ResumeSkills.Where(rs => rs.ResumeId == res.Id).ToArrayAsync();
-            var skills = new Skill[resumeSkills.Length];
-            int j = 0;
-            foreach (var resumeSkill in resumeSkills)
+            List<ResumeSkill> resumeSkills = await _db.ResumeSkills.Where(rs => rs.ResumeId == resume.Id).ToListAsync();
+            List<Skill> skills = new();
+            foreach (ResumeSkill resumeSkill in resumeSkills)
             {
-               var skill = await _db.Skills.FirstOrDefaultAsync(s => s.Id == resumeSkill.SkillId);
-               if (skill != null)
-                  skills[i++] = skill;
+                Skill? skill = await _db.Skills.SingleOrDefaultAsync(s => s.Id == resumeSkill.SkillId);
+                if (skill != null)
+                    skills.Add(skill);
             }
 
-            models[i++].Skills = skills;
-         }
-         return models;
-      }
+            resumeViewModel.Skills = skills;
+            resumeViewModels.Add(resumeViewModel);
+        }
+        return resumeViewModels;
+    }
 
-      public async Task<ResumeViewModel> GetResumeViewModelById(Guid id)
-      {
-         var user = await _db.Users.FirstOrDefaultAsync(u => u.ResumeId == id);
+    public async Task<ResumeViewModel?> GetResumeViewModelById(Guid id)
+    {
+        User? user = await _db.Users.FirstOrDefaultAsync(u => u.ResumeId == id);
+        if (user is null)
+            return null;
 
-         var resume = await GetResumeById(id);
-         if (resume == null)
-            return new ResumeViewModel();
-         var model = _mapper.Map<Resume, ResumeViewModel>(resume);
-         model.PlaceWork = await _db.PlaceWorks.FirstOrDefaultAsync(p => p.Id == resume.PlaceWorkId);
-         model.Education = await _db.Educations.FirstOrDefaultAsync(e => e.Id == resume.EducationId);
+        Resume? resume = await GetResumeById(id);
+        if (resume is null)
+            return null;
 
-         var userOrg = await _db.UserOrganizations.FirstOrDefaultAsync(u => u.IdUser == user.Id);
-         if (userOrg != null)
-            model.Organization = await _db.Organizations.FirstOrDefaultAsync(o => o.Id == userOrg.IdOrganization);
+        ResumeViewModel resumeViewModel = _mapper.Map<Resume, ResumeViewModel>(resume);
+        resumeViewModel.PlaceWork = await _db.PlaceWorks.SingleOrDefaultAsync(p => p.Id == resume.PlaceWorkId);
+        resumeViewModel.Education = await _db.Educations.SingleOrDefaultAsync(e => e.Id == resume.EducationId);
 
-         var resumeSkills = await _db.ResumeSkills.Where(rs => rs.ResumeId == resume.Id).ToArrayAsync();
-         var skills = new Skill[resumeSkills.Length];
-         int i = 0;
-         foreach (var resumeSkill in resumeSkills)
-         {
-            var skill = await _db.Skills.FirstOrDefaultAsync(s => s.Id == resumeSkill.SkillId);
+        UserOrganization? userOrg = await _db.UserOrganizations.FirstOrDefaultAsync(u => u.IdUser == user.Id);
+        if (userOrg != null)
+            resumeViewModel.Organization = await _db.Organizations.SingleOrDefaultAsync(o => o.Id == userOrg.IdOrganization);
+
+        List<ResumeSkill> resumeSkills = await _db.ResumeSkills.Where(rs => rs.ResumeId == resume.Id).ToListAsync();
+        List<Skill> skills = new();
+        foreach (ResumeSkill resumeSkill in resumeSkills)
+        {
+            Skill? skill = await _db.Skills.SingleOrDefaultAsync(s => s.Id == resumeSkill.SkillId);
             if (skill != null)
-               skills[i++] = skill;
-         }
+                skills.Add(skill);
+        }
+        resumeViewModel.Skills = skills;
+        return resumeViewModel;
+    }
 
-         model.Skills = skills;
-         return model;
-      }
+    public async Task<ResumeViewModel?> GetResumeViewModelByUserId(Guid userId)
+    {
+        User? user = await _db.Users.SingleOrDefaultAsync(u => u.Id == userId);
+        if (user is null)
+            return null;
 
-      public async Task<ResumeViewModel> GetResumeViewModelByUserId(Guid userId)
-      {
-         var resume = await GetResumeByUserId(userId);
-         if (resume == null)
-            return new ResumeViewModel();
-         ResumeViewModel model = _mapper.Map<Resume, ResumeViewModel>(resume);
-         model.PlaceWork = await _db.PlaceWorks.FirstOrDefaultAsync(p => p.Id == resume.PlaceWorkId);
-         model.Education = await _db.Educations.FirstOrDefaultAsync(e => e.Id == resume.EducationId);
+        var resume = await GetResumeByUserId(userId);
+        if (resume is null)
+            return null;
 
-         var userOrg = await _db.UserOrganizations.FirstOrDefaultAsync(u => u.IdUser == userId);
-         if (userOrg != null)
-            model.Organization = await _db.Organizations.FirstOrDefaultAsync(o => o.Id == userOrg.IdOrganization);
+        ResumeViewModel resumeViewModel = _mapper.Map<Resume, ResumeViewModel>(resume);
+        resumeViewModel.PlaceWork = await _db.PlaceWorks.SingleOrDefaultAsync(p => p.Id == resume.PlaceWorkId);
+        resumeViewModel.Education = await _db.Educations.SingleOrDefaultAsync(e => e.Id == resume.EducationId);
 
-         var resumeSkills = await _db.ResumeSkills.Where(rs => rs.ResumeId == resume.Id).ToArrayAsync();
-         var skills = new Skill[resumeSkills.Length];
-         int i = 0;
-         foreach (var resumeSkill in resumeSkills)
-         {
-            var skill = await _db.Skills.FirstOrDefaultAsync(s => s.Id == resumeSkill.SkillId);
+        UserOrganization? userOrg = await _db.UserOrganizations.FirstOrDefaultAsync(u => u.IdUser == user.Id);
+        if (userOrg != null)
+            resumeViewModel.Organization = await _db.Organizations.SingleOrDefaultAsync(o => o.Id == userOrg.IdOrganization);
+
+        List<ResumeSkill> resumeSkills = await _db.ResumeSkills.Where(rs => rs.ResumeId == resume.Id).ToListAsync();
+        List<Skill> skills = new();
+        foreach (ResumeSkill resumeSkill in resumeSkills)
+        {
+            Skill? skill = await _db.Skills.SingleOrDefaultAsync(s => s.Id == resumeSkill.SkillId);
             if (skill != null)
-               skills[i++] = skill;
-         }
+                skills.Add(skill);
+        }
+        resumeViewModel.Skills = skills;
+        return resumeViewModel;
+    }
 
-         model.Skills = skills;
-         return model;
-      }
+    public async Task Save(User user, AddResumeViewModel model)
+    {
+        Resume resume = new();
+        user.ResumeId = resume.Id;
 
-      public async Task Save(User user, AddResumeViewModel model)
-      {
-         var resume = new Resume();
-
-         user.ResumeId = resume.Id;
-
-         if (!String.IsNullOrEmpty(model.Education))
-         {
-            var tryEdu = await _db.Educations.FirstOrDefaultAsync(e => e.Name == model.Education);
+        if (!String.IsNullOrEmpty(model.Education))
+        {
+            Education? tryEdu = await _db.Educations.FirstOrDefaultAsync(e => e.Name == model.Education);
             if (tryEdu != null)
-               resume.EducationId = tryEdu.Id;
+                resume.EducationId = tryEdu.Id;
             else
             {
-               var education = new Education() { Name = model.Education };
-               await _db.Educations.AddAsync(education);
-               resume.EducationId = education.Id;
+                Education education = new Education() { Name = model.Education };
+                await _db.Educations.AddAsync(education);
+                resume.EducationId = education.Id;
             }
 
-         }
+        }
 
-         if (!String.IsNullOrEmpty(model.DateGraduationEducation))
+        if (!String.IsNullOrEmpty(model.DateGraduationEducation))
             resume.DateGraduationEducation = model.DateGraduationEducation;
 
-         if (!String.IsNullOrEmpty(model.Specialization))
+        if (!String.IsNullOrEmpty(model.Specialization))
             resume.Specialization = model.Specialization;
 
-         if (!String.IsNullOrEmpty(model.PlaceWork))
-         {
-            var tryplace = await _db.PlaceWorks.FirstOrDefaultAsync(p => p.Name == model.PlaceWork);
+        if (!String.IsNullOrEmpty(model.PlaceWork))
+        {
+            PlaceWork? tryplace = await _db.PlaceWorks.FirstOrDefaultAsync(p => p.Name == model.PlaceWork);
             if (tryplace != null)
-               resume.PlaceWorkId = tryplace.Id;
+                resume.PlaceWorkId = tryplace.Id;
             else
             {
-               var placeWork = new PlaceWork() { Name = model.PlaceWork };
-               await _db.PlaceWorks.AddAsync(placeWork);
-               resume.PlaceWorkId = placeWork.Id;
+                PlaceWork placeWork = new PlaceWork() { Name = model.PlaceWork };
+                await _db.PlaceWorks.AddAsync(placeWork);
+                resume.PlaceWorkId = placeWork.Id;
             }
 
-         }
-         if (!String.IsNullOrEmpty(model.Organization))
-         {
-            var tryOrganization = await _db.Organizations.FirstOrDefaultAsync(o => o.Name == model.Organization);
+        }
+        if (!String.IsNullOrEmpty(model.Organization))
+        {
+            Organization? tryOrganization = await _db.Organizations.FirstOrDefaultAsync(o => o.Name == model.Organization);
             if (tryOrganization != null)
             {
-               var userOrganization = new UserOrganization() { IdOrganization = tryOrganization.Id, IdUser = user.Id };
-               await _db.UserOrganizations.AddAsync(userOrganization);
+                UserOrganization userOrganization = new UserOrganization() { IdOrganization = tryOrganization.Id, IdUser = user.Id };
+                await _db.UserOrganizations.AddAsync(userOrganization);
             }
-         }
-         if (!String.IsNullOrEmpty(model.Skills))
-         {
-            var nameskills = model.Skills.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        }
+        if (!String.IsNullOrEmpty(model.Skills))
+        {
+            string[] nameskills = model.Skills.Split('/', StringSplitOptions.RemoveEmptyEntries);
             foreach (var name in nameskills)
             {
-               var trySkill = await _db.Skills.FirstOrDefaultAsync(s => s.Name == name);
-               if (trySkill != null)
-               {
-                  var resumeSkill = new ResumeSkill() { ResumeId = resume.Id, SkillId = trySkill.Id };
-                  await _db.ResumeSkills.AddAsync(resumeSkill);
-               }
-               else
-               {
-                  var skill = new Skill() { Name = name };
-                  await _db.Skills.AddAsync(skill);
+                Skill? trySkill = await _db.Skills.FirstOrDefaultAsync(s => s.Name == name);
+                if (trySkill != null)
+                {
+                    ResumeSkill resumeSkill = new ResumeSkill() { ResumeId = resume.Id, SkillId = trySkill.Id };
+                    await _db.ResumeSkills.AddAsync(resumeSkill);
+                }
+                else
+                {
+                    Skill skill = new Skill() { Name = name };
+                    await _db.Skills.AddAsync(skill);
 
-                  var resumeSkill = new ResumeSkill() { ResumeId = resume.Id, SkillId = skill.Id };
-                  await _db.ResumeSkills.AddAsync(resumeSkill);
-               }
+                    ResumeSkill resumeSkill = new ResumeSkill() { ResumeId = resume.Id, SkillId = skill.Id };
+                    await _db.ResumeSkills.AddAsync(resumeSkill);
+                }
             }
-         }
-         if (!String.IsNullOrEmpty(model.AboutYourself))
+        }
+        if (!String.IsNullOrEmpty(model.AboutYourself))
             resume.AboutYourself = model.AboutYourself;
 
-         var entry = _db.Entry(resume);
-         if (entry.State == EntityState.Detached)
-            await _db.Resumes.AddAsync(resume);
+        await _db.Resumes.AddAsync(resume);
+        _db.Users.Update(user);
 
-         var uentry = _db.Entry(user);
-         if (uentry.State == EntityState.Detached)
-            _db.Users.Update(user);
+        await _db.SaveChangesAsync();
+    }
 
-         await _db.SaveChangesAsync();
-      }
-
-      public async Task Update(User user, Resume editResume, AddResumeViewModel newResume)
-      {
-         if (!String.IsNullOrEmpty(newResume.Education))
-         {
+    public async Task Update(User user, Resume editResume, AddResumeViewModel newResume)
+    {
+        if (!String.IsNullOrEmpty(newResume.Education))
+        {
             var tryEdu = await _db.Educations.FirstOrDefaultAsync(e => e.Name == newResume.Education);
             if (tryEdu != null)
-               editResume.EducationId = tryEdu.Id;
+                editResume.EducationId = tryEdu.Id;
             else
             {
-               var education = new Education() { Name = newResume.Education };
-               await _db.Educations.AddAsync(education);
-               editResume.EducationId = education.Id;
+                var education = new Education() { Name = newResume.Education };
+                await _db.Educations.AddAsync(education);
+                editResume.EducationId = education.Id;
             }
-         }
-         else
-         {
+        }
+        else
+        {
             editResume.EducationId = null;
-         }
+        }
 
-         if (!String.IsNullOrEmpty(newResume.DateGraduationEducation))
+        if (!String.IsNullOrEmpty(newResume.DateGraduationEducation))
             editResume.DateGraduationEducation = newResume.DateGraduationEducation;
-         else
+        else
             editResume.DateGraduationEducation = null;
 
-         if (!String.IsNullOrEmpty(newResume.Specialization))
+        if (!String.IsNullOrEmpty(newResume.Specialization))
             editResume.Specialization = newResume.Specialization;
-         else
+        else
             editResume.Specialization = null;
 
-         if (!String.IsNullOrEmpty(newResume.PlaceWork))
-         {
+        if (!String.IsNullOrEmpty(newResume.PlaceWork))
+        {
             var tryplace = await _db.PlaceWorks.FirstOrDefaultAsync(p => p.Name == newResume.PlaceWork);
             if (tryplace != null)
-               editResume.PlaceWorkId = tryplace.Id;
+                editResume.PlaceWorkId = tryplace.Id;
             else
             {
-               var placeWork = new PlaceWork() { Name = newResume.PlaceWork };
-               await _db.AddAsync(placeWork);
-               editResume.PlaceWorkId = placeWork.Id;
+                var placeWork = new PlaceWork() { Name = newResume.PlaceWork };
+                await _db.AddAsync(placeWork);
+                editResume.PlaceWorkId = placeWork.Id;
             }
 
-         }
-         else
-         {
+        }
+        else
+        {
             editResume.PlaceWorkId = null;
-         }
-         if (!String.IsNullOrEmpty(newResume.Organization))
-         {
+        }
+        if (!String.IsNullOrEmpty(newResume.Organization))
+        {
             var tryOrganization = await _db.Organizations.FirstOrDefaultAsync(o => o.Name == newResume.Organization);
             if (tryOrganization != null)
             {
-               var userOrganization = new UserOrganization() { IdOrganization = tryOrganization.Id, IdUser = user.Id };
-               await _db.UserOrganizations.AddAsync(userOrganization);
+                var userOrganization = new UserOrganization() { IdOrganization = tryOrganization.Id, IdUser = user.Id };
+                await _db.UserOrganizations.AddAsync(userOrganization);
             }
-         }
-         var oldResumeSkills = await _db.ResumeSkills.Where(rs => rs.ResumeId == editResume.Id).ToArrayAsync();
-         foreach (var rs in oldResumeSkills)
-         {
+        }
+        var oldResumeSkills = await _db.ResumeSkills.Where(rs => rs.ResumeId == editResume.Id).ToArrayAsync();
+        foreach (var rs in oldResumeSkills)
+        {
             _db.ResumeSkills.Remove(rs);
-         }
-         if (!String.IsNullOrEmpty(newResume.Skills))
-         {
+        }
+        if (!String.IsNullOrEmpty(newResume.Skills))
+        {
             var nameskills = newResume.Skills.Split('/', StringSplitOptions.RemoveEmptyEntries);
             foreach (var name in nameskills)
             {
-               var trySkill = await _db.Skills.FirstOrDefaultAsync(s => s.Name == name);
-               if (trySkill != null)
-               {
-                  var resumeSkill = new ResumeSkill() { ResumeId = editResume.Id, SkillId = trySkill.Id };
-                  await _db.ResumeSkills.AddAsync(resumeSkill);
-               }
-               else
-               {
-                  var skill = new Skill() { Name = name };
-                  await _db.Skills.AddAsync(skill);
+                var trySkill = await _db.Skills.FirstOrDefaultAsync(s => s.Name == name);
+                if (trySkill != null)
+                {
+                    var resumeSkill = new ResumeSkill() { ResumeId = editResume.Id, SkillId = trySkill.Id };
+                    await _db.ResumeSkills.AddAsync(resumeSkill);
+                }
+                else
+                {
+                    var skill = new Skill() { Name = name };
+                    await _db.Skills.AddAsync(skill);
 
-                  var resumeSkill = new ResumeSkill() { ResumeId = editResume.Id, SkillId = skill.Id };
-                  await _db.ResumeSkills.AddAsync(resumeSkill);
-               }
+                    var resumeSkill = new ResumeSkill() { ResumeId = editResume.Id, SkillId = skill.Id };
+                    await _db.ResumeSkills.AddAsync(resumeSkill);
+                }
             }
-         }
-         if (!String.IsNullOrEmpty(newResume.AboutYourself))
+        }
+        if (!String.IsNullOrEmpty(newResume.AboutYourself))
             editResume.AboutYourself = newResume.AboutYourself;
-         else
+        else
             editResume.AboutYourself = null;
 
-         var entry = _db.Entry(editResume);
-         if (entry.State == EntityState.Detached)
+        var entry = _db.Entry(editResume);
+        if (entry.State == EntityState.Detached)
             _db.Resumes.Update(editResume);
 
-         await _db.SaveChangesAsync();
-      }
+        await _db.SaveChangesAsync();
+    }
 
-      public async Task Delete(Resume resume)
-      {
+    public async Task Delete(Resume resume)
+    {
 
-      }
+    }
 
-      public async Task<Skill[]> GetSkills()
-      {
-         return await _db.Skills.ToArrayAsync();
-      }
-   }
+    public async Task<List<Skill>> GetSkills()
+    {
+        return await _db.Skills.ToListAsync();
+    }
+}
 
-   public interface IResumeRepository
-   {
-      Task<Resume[]> GetResumes();
-      Task<Resume> GetResumeById(Guid id);
-      Task<Resume> GetResumeByUserId(Guid userId);
-      Task<ResumeViewModel[]> GetResumeViewModels();
-      Task<ResumeViewModel> GetResumeViewModelById(Guid id);
-      Task<ResumeViewModel> GetResumeViewModelByUserId(Guid userId);
+public interface IResumeRepository
+{
+    Task<List<Resume>> GetResumes();
+    Task<Resume?> GetResumeById(Guid id);
+    Task<Resume?> GetResumeByUserId(Guid userId);
+    Task<List<ResumeViewModel>> GetResumeViewModels();
+    Task<ResumeViewModel?> GetResumeViewModelById(Guid id);
+    Task<ResumeViewModel?> GetResumeViewModelByUserId(Guid userId);
 
-      Task Save(User user, AddResumeViewModel resume);
-      Task Update(User user, Resume editResume, AddResumeViewModel newResume);
-      Task Delete(Resume resume);
+    Task Save(User user, AddResumeViewModel resume);
+    Task Update(User user, Resume editResume, AddResumeViewModel newResume);
+    Task Delete(Resume resume);
 
-      Task<Skill[]> GetSkills();
-   }
+    Task<List<Skill>> GetSkills();
 }

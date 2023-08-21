@@ -11,6 +11,6 @@ namespace EduSciencePro.ViewModels.Response
       public string Url { get; set; }
       public string Annotation { get; set; }
       public string Publication { get; set; }
-      public Tag[] Tags { get; set; }
+      public List<Tag>? Tags { get; set; }
    }
 }

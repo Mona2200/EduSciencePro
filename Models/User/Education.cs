@@ -1,10 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace EduSciencePro.Models.User
+namespace EduSciencePro.Models.User;
+
+public class Education : IModel
 {
-   public class Education
-   {
-   public Guid Id { get; set; } = Guid.NewGuid();
-   public string Name { get; set; }
-   }
+public Guid Id { get; set; } = Guid.NewGuid();
+public string Name { get; set; }
 }
